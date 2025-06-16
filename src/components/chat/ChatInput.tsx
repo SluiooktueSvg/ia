@@ -10,7 +10,7 @@ interface ChatInputProps {
   onSendMessage: (message: string) => void;
   currentMessage: string;
   setCurrentMessage: (message: string) => void;
-  isCentered?: boolean; 
+  isCentered?: boolean;
 }
 
 const ChatInput: React.FC<ChatInputProps> = ({
@@ -24,12 +24,15 @@ const ChatInput: React.FC<ChatInputProps> = ({
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-      // Only adjust scrollHeight if not centered, to avoid jumpiness with text-center
-      if (!isCentered || currentMessage) {
+      // Adjust scrollHeight to fit content, reset to 1 row if empty
+      // to prevent it from staying tall after sending a multiline message.
+      if (currentMessage) {
         textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      } else {
+        textareaRef.current.style.height = 'auto'; // Or specific initial height like '40px'
       }
     }
-  }, [currentMessage, isCentered]);
+  }, [currentMessage]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCurrentMessage(e.target.value);
@@ -49,13 +52,13 @@ const ChatInput: React.FC<ChatInputProps> = ({
       handleSubmit();
     }
   };
-  
+
   return (
-    <form 
-      onSubmit={handleSubmit} 
+    <form
+      onSubmit={handleSubmit}
       className={cn(
         "relative bg-background p-3 md:p-4",
-        !isCentered && "border-t border-border" 
+        !isCentered && "border-t border-border"
       )}
     >
       <div className="relative flex items-end gap-2">
@@ -66,8 +69,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
           onKeyDown={handleKeyDown}
           placeholder="Escribe tu mensaje..."
           className={cn(
-            "flex-grow resize-none overflow-y-auto rounded-lg border-input bg-card p-3 pr-20 shadow-sm focus:ring-accent max-h-40",
-            isCentered && "text-center" // Center text when isCentered is true
+            "flex-grow resize-none overflow-y-auto rounded-lg border-input bg-card p-3 pr-20 shadow-sm focus:ring-accent max-h-40"
+            // No text-center here, default left alignment will apply
           )}
           rows={1}
           aria-label="Chat message input"
