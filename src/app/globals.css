@@ -45,39 +45,40 @@ body {
     --sidebar-ring: 197 71% 63%;
   }
   .dark {
-    --background: 210 13% 10%; /* Dark Slate Blue */
-    --foreground: 0 0% 83%; /* Light Gray */
-    --card: 210 13% 15%; 
-    --card-foreground: 0 0% 83%;
-    --popover: 210 13% 15%;
-    --popover-foreground: 0 0% 83%;
-    --primary: 210 13% 50%; /* Slate Blue */
-    --primary-foreground: 0 0% 98%;
-    --secondary: 210 13% 30%; /* Darker Slate Blue */
-    --secondary-foreground: 0 0% 98%;
-    --muted: 210 13% 25%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 197 71% 73%; /* Sky Blue */
-    --accent-foreground: 210 13% 10%; /* Dark for text on accent */
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 210 13% 28%;
-    --input: 210 13% 20%;
-    --ring: 197 71% 83%; /* Lighter Sky Blue for focus rings in dark mode */
+    --background: 0 0% 0%; /* Black */
+    --foreground: 0 0% 90%; /* Light Gray for text */
+    --card: 0 0% 8%; /* Very Dark Gray for cards (slightly off-black) */
+    --card-foreground: 0 0% 88%; /* Light Gray for text on cards */
+    --popover: 0 0% 8%; /* Very Dark Gray for popovers */
+    --popover-foreground: 0 0% 88%; /* Light Gray for text on popovers */
+    --primary: 210 13% 60%; /* Slightly Lighter Slate Blue for visibility */
+    --primary-foreground: 0 0% 10%; /* Dark text for primary buttons */
+    --secondary: 210 13% 25%; /* Darker Slate Blue */
+    --secondary-foreground: 0 0% 90%; /* Light text for secondary buttons */
+    --muted: 0 0% 15%; /* Dark Gray for muted elements */
+    --muted-foreground: 0 0% 60%; /* Medium Gray for muted text */
+    --accent: 197 71% 65%; /* Adjusted Sky Blue for visibility */
+    --accent-foreground: 0 0% 10%; /* Dark text for accent elements */
+    --destructive: 0 70% 50%; /* Adjusted destructive color */
+    --destructive-foreground: 0 0% 98%; /* Light text for destructive elements */
+    --border: 0 0% 15%; /* Dark Gray for borders */
+    --input: 0 0% 12%; /* Dark Gray for input backgrounds */
+    --ring: 197 71% 70%; /* Lighter Sky Blue for focus rings */
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
 
-    --sidebar-background: 210 13% 18%; 
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 197 71% 68%;
-    --sidebar-primary-foreground: 210 13% 10%;
-    --sidebar-accent: 210 13% 25%;
-    --sidebar-accent-foreground: 0 0% 90%;
-    --sidebar-border: 210 13% 22%;
-    --sidebar-ring: 197 71% 83%;
+    /* Sidebar Dark Theme */
+    --sidebar-background: 0 0% 5%; /* Almost black, slightly different from main background */
+    --sidebar-foreground: 0 0% 88%;
+    --sidebar-primary: 197 71% 65%;
+    --sidebar-primary-foreground: 0 0% 10%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 88%;
+    --sidebar-border: 0 0% 10%;
+    --sidebar-ring: 197 71% 70%;
   }
 }
 
