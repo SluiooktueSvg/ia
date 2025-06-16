@@ -143,7 +143,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           onKeyDown={handleKeyDown}
           placeholder={currentMessage ? "" : currentPlaceholder}
           className={cn(
-            "flex-grow resize-none overflow-y-auto rounded-3xl bg-card p-5 pr-20 shadow-sm max-h-60 text-base",
+            "flex-grow resize-none overflow-y-auto rounded-3xl bg-card p-4 pr-16 shadow-sm max-h-60 text-base",
             "input-animated-focus"
           )}
           rows={1}
@@ -152,11 +152,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
         <Button
           type="submit"
           size="icon"
-          className="absolute bottom-[18px] right-[18px] h-14 w-14 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-accent"
+          className="absolute bottom-3 right-3 h-10 w-10 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-accent"
           aria-label="Send message"
           disabled={!currentMessage.trim()}
         >
-          <SendHorizontal className="h-6 w-6" />
+          <SendHorizontal className="h-5 w-5" />
         </Button>
       </div>
     </form>
