@@ -47,8 +47,10 @@ export function useChatController() {
       debounceTimeoutRef.current = setTimeout(async () => {
         setIsLoadingCompletion(true);
         try {
-          const input: MessageCompletionInput = { messageFragment: text };
-          const result = await completeMessage(input);
+          // For autocomplete, we still use the old "messageFragment" style input temporarily.
+          // This part is for suggestion, not the main response.
+          const suggestionInput: MessageCompletionInput = { userInputText: text };
+          const result = await completeMessage(suggestionInput);
           if (result.completion && result.completion !== text) {
             setCompletionSuggestion(result.completion);
           } else {
@@ -112,12 +114,10 @@ export function useChatController() {
     setMessages(prev => [...prev, aiPlaceholderMessage]);
 
     try {
-      const responseInput: MessageCompletionInput = { messageFragment: `User: ${text}\nAI:` };
-      const aiResponse = await completeMessage(responseInput); 
+      const responseInput: MessageCompletionInput = { userInputText: text };
+      const aiResponse = await completeMessage(responseInput);
       
-      const refinedAiText = aiResponse.completion.startsWith(`User: ${text}\nAI:`) 
-        ? aiResponse.completion.substring(`User: ${text}\nAI:`.length).trim()
-        : aiResponse.completion;
+      const refinedAiText = aiResponse.completion.trim();
 
       const finalAiMessage: ChatMessage = {
         ...aiPlaceholderMessage,
