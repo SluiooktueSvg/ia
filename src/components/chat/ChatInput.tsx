@@ -93,7 +93,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           value={currentMessage}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          placeholder={currentMessage ? "" : " "} // Use a space to ensure ::placeholder pseudo-element exists for styling if needed, but hide native one when animated placeholder is active
+          placeholder={currentMessage ? "" : undefined}
           className={cn(
             "flex-grow resize-none overflow-y-auto rounded-3xl bg-card p-5 pr-20 shadow-sm max-h-60 text-base", // Increased padding and rounded corners
             "input-animated-focus"

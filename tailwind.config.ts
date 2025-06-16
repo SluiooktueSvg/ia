@@ -116,7 +116,7 @@ export default {
         'message-in': 'message-in 0.3s ease-out forwards',
         'animated-border-glow': 'animated-border-glow 4s linear infinite',
         'gradient-text-flow': 'animated-gradient-text 5s ease infinite',
-        'placeholder-scroll-item': 'placeholder-scroll-item 3s ease-in-out forwards', // Changed to forwards
+        'placeholder-scroll-item': 'placeholder-scroll-item 3s ease-in-out',
       },
     },
   },
