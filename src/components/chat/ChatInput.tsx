@@ -24,9 +24,12 @@ const ChatInput: React.FC<ChatInputProps> = ({
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      // Only adjust scrollHeight if not centered, to avoid jumpiness with text-center
+      if (!isCentered || currentMessage) {
+        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      }
     }
-  }, [currentMessage]);
+  }, [currentMessage, isCentered]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCurrentMessage(e.target.value);
@@ -62,7 +65,10 @@ const ChatInput: React.FC<ChatInputProps> = ({
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           placeholder="Type your message..."
-          className="flex-grow resize-none overflow-y-auto rounded-lg border-input bg-card p-3 pr-20 shadow-sm focus:ring-accent max-h-40"
+          className={cn(
+            "flex-grow resize-none overflow-y-auto rounded-lg border-input bg-card p-3 pr-20 shadow-sm focus:ring-accent max-h-40",
+            isCentered && "text-center" // Center text when isCentered is true
+          )}
           rows={1}
           aria-label="Chat message input"
         />
