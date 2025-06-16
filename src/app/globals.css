@@ -108,7 +108,7 @@ body {
 
   .text-gradient-animated {
     @apply bg-clip-text text-transparent animate-gradient-text-flow;
-    background-image: linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--secondary)), hsl(var(--primary)));
-    background-size: 200% auto; /* Increased size for smoother animation */
+    background-image: linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--secondary)), hsl(var(--accent)), hsl(var(--primary)), hsl(var(--secondary)), hsl(var(--primary)));
+    background-size: 400% auto; 
   }
 }
