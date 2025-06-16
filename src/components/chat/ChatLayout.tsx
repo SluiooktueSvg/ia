@@ -1,11 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ChatHeader from './ChatHeader';
 import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import { useChatController } from '@/hooks/useChatController';
 import { SidebarInset } from '@/components/ui/sidebar';
+import AuraChatLogo from '@/components/AuraChatLogo';
 
 const ChatLayout: React.FC = () => {
   const {
@@ -14,11 +15,26 @@ const ChatLayout: React.FC = () => {
     setCurrentInput,
     hasSentFirstMessage,
     sendMessage,
-    handleInputChange, // Keep for setting currentInput
     clearChat,
     saveChat,
     loadChat,
   } = useChatController();
+
+  const [greeting, setGreeting] = useState('');
+
+  useEffect(() => {
+    const getCurrentGreeting = () => {
+      const currentHour = new Date().getHours();
+      if (currentHour < 12) {
+        return 'Buenos días';
+      } else if (currentHour < 18) {
+        return 'Buenas tardes';
+      } else {
+        return 'Buenas noches';
+      }
+    };
+    setGreeting(getCurrentGreeting());
+  }, []);
 
   return (
     <SidebarInset className="flex h-screen flex-col bg-background md:m-0 md:rounded-none md:shadow-none">
@@ -39,6 +55,13 @@ const ChatLayout: React.FC = () => {
         </>
       ) : (
         <div className="flex flex-grow flex-col items-center justify-center p-4">
+          <div className="text-center mb-8">
+            <div className="flex justify-center mb-4">
+              <AuraChatLogo />
+            </div>
+            {greeting && <p className="text-xl text-foreground">{greeting}</p>}
+            <p className="text-muted-foreground">¿Cómo puedo ayudarte hoy?</p>
+          </div>
           <div className="w-full max-w-xl">
             <ChatInput
               currentMessage={currentInput}
