@@ -54,20 +54,22 @@ const ChatLayout: React.FC = () => {
           />
         </>
       ) : (
-        <div className="flex flex-grow flex-col items-center justify-center p-4">
-          <div className="text-center mb-8">
-            {greeting && <p className="text-4xl mt-4 font-semibold text-gradient-animated">{greeting}</p>}
-            <p className="text-muted-foreground mt-2">¿Cómo puedo ayudarte hoy?</p>
+        <div className="flex flex-grow flex-col justify-between p-4">
+          <div className="flex flex-grow flex-col items-center justify-center">
+            <div className="text-center mb-8">
+              {greeting && <p className="text-4xl mt-4 font-semibold text-gradient-animated">{greeting}</p>}
+              <p className="text-muted-foreground mt-2">¿Cómo puedo ayudarte hoy?</p>
+            </div>
+            <div className="w-full max-w-xl">
+              <ChatInput
+                currentMessage={currentInput}
+                setCurrentMessage={setCurrentInput}
+                onSendMessage={sendMessage}
+                isCentered={true}
+              />
+            </div>
           </div>
-          <div className="w-full max-w-xl">
-            <ChatInput
-              currentMessage={currentInput}
-              setCurrentMessage={setCurrentInput}
-              onSendMessage={sendMessage}
-              isCentered={true}
-            />
-          </div>
-          <footer className="mt-16 text-center text-sm text-muted-foreground">
+          <footer className="text-center text-sm text-muted-foreground py-4">
             <p>&copy; {new Date().getFullYear()} LSAIG. All rights reserved.</p>
             <p>Sluiooktue Inc. Luis M.</p>
           </footer>
