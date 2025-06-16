@@ -24,6 +24,8 @@ const placeholderTexts = [
   "Explica cómo funciona un motor de combustión",
 ];
 
+const ANIMATION_DURATION_MS = 3000; // Must match animation duration in tailwind.config.ts
+
 const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,
   currentMessage,
@@ -31,12 +33,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   isCentered = false,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  const [animatedPlaceholder, setAnimatedPlaceholder] = useState("");
-  const [phraseIndex, setPhraseIndex] = useState(0);
-  const [charIndex, setCharIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
+  const [currentPlaceholderIndex, setCurrentPlaceholderIndex] = useState(0);
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -44,76 +41,19 @@ const ChatInput: React.FC<ChatInputProps> = ({
       if (currentMessage) {
         textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
       } else {
-        textareaRef.current.style.height = 'auto';
+        textareaRef.current.style.height = 'auto'; // Default height for one row
       }
     }
   }, [currentMessage]);
 
   useEffect(() => {
-    if (currentMessage || isPaused) {
-      // Si el usuario está escribiendo o la animación está pausada, no hacer nada.
-      return;
-    }
+    // Only run animation if the input is empty
+    if (!currentMessage) {
+      const intervalId = setInterval(() => {
+        setCurrentPlaceholderIndex(prevIndex => (prevIndex + 1) % placeholderTexts.length);
+      }, ANIMATION_DURATION_MS);
 
-    const typeSpeed = 120; // Milisegundos por caracter al escribir
-    const deleteSpeed = 70; // Milisegundos por caracter al borrar
-    const pauseAfterTyping = 2000; // Pausa después de escribir una frase completa
-    const pauseAfterDeleting = 500; // Pausa después de borrar una frase, antes de la siguiente
-
-    let timeoutId: NodeJS.Timeout;
-
-    const handleAnimation = () => {
-      const currentFullPhrase = placeholderTexts[phraseIndex];
-      if (isDeleting) {
-        // Modo Borrado
-        if (charIndex > 0) {
-          setAnimatedPlaceholder(currentFullPhrase.substring(0, charIndex - 1));
-          setCharIndex(prev => prev - 1);
-          timeoutId = setTimeout(handleAnimation, deleteSpeed);
-        } else {
-          // Terminado de borrar
-          setIsDeleting(false);
-          setPhraseIndex(prev => (prev + 1) % placeholderTexts.length); // Pasar a la siguiente frase
-          // charIndex ya es 0
-          setIsPaused(true);
-          timeoutId = setTimeout(() => setIsPaused(false), pauseAfterDeleting);
-        }
-      } else {
-        // Modo Escritura
-        if (charIndex < currentFullPhrase.length) {
-          setAnimatedPlaceholder(currentFullPhrase.substring(0, charIndex + 1));
-          setCharIndex(prev => prev + 1);
-          timeoutId = setTimeout(handleAnimation, typeSpeed);
-        } else {
-          // Terminado de escribir
-          setIsDeleting(true);
-          // charIndex está en currentFullPhrase.length
-          setIsPaused(true);
-          timeoutId = setTimeout(() => setIsPaused(false), pauseAfterTyping);
-        }
-      }
-    };
-
-    // Iniciar la animación
-    // Si animatedPlaceholder está vacío (al inicio o después de reset), comenzar inmediatamente.
-    // Sino, continuar con la velocidad actual.
-    const initialDelay = animatedPlaceholder === "" ? typeSpeed : (isDeleting ? deleteSpeed : typeSpeed);
-    timeoutId = setTimeout(handleAnimation, initialDelay);
-
-    return () => clearTimeout(timeoutId);
-  }, [animatedPlaceholder, phraseIndex, charIndex, isDeleting, isPaused, currentMessage]);
-
-  useEffect(() => {
-    if (currentMessage) {
-      // Si el usuario escribe, la animación se detiene por la condición en el useEffect principal.
-      // El placeholder del Textarea se ocultará nativamente.
-    } else {
-      // Si el usuario borra todo el texto, reiniciar la animación.
-      setPhraseIndex(0); // Volver a la primera frase
-      setCharIndex(0);   // Empezar desde el primer carácter
-      setIsDeleting(false); // Asegurarse de que esté en modo escritura
-      setIsPaused(false);   // Asegurarse de que no esté pausado
-      setAnimatedPlaceholder(""); // Esto provocará que la animación comience a escribir la primera frase
+      return () => clearInterval(intervalId);
     }
   }, [currentMessage]);
 
@@ -127,6 +67,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
     if (currentMessage.trim()) {
       onSendMessage(currentMessage.trim());
       setCurrentMessage('');
+      // Reset placeholder to the first one after sending a message for a fresh start
+      setCurrentPlaceholderIndex(0);
     }
   };
 
@@ -151,22 +93,37 @@ const ChatInput: React.FC<ChatInputProps> = ({
           value={currentMessage}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          placeholder={animatedPlaceholder || placeholderTexts[0]} // Fallback al primer placeholder
+          placeholder={currentMessage ? "" : " "} // Use a space to ensure ::placeholder pseudo-element exists for styling if needed, but hide native one when animated placeholder is active
           className={cn(
-            "flex-grow resize-none overflow-y-auto rounded-2xl bg-card p-4 pr-20 shadow-sm max-h-52 text-base",
+            "flex-grow resize-none overflow-y-auto rounded-3xl bg-card p-5 pr-20 shadow-sm max-h-60 text-base", // Increased padding and rounded corners
             "input-animated-focus"
           )}
           rows={1}
           aria-label="Chat message input"
         />
+        {!currentMessage && (
+          <div
+            className="absolute top-0 left-0 flex items-center h-full pl-5 pr-20 pointer-events-none" // Adjusted padding to match Textarea's p-5
+            aria-hidden="true"
+          >
+            <div className="relative h-6 overflow-hidden w-full"> {/* Adjust height (h-6) to match line height of textarea */}
+              <span
+                key={currentPlaceholderIndex}
+                className="absolute w-full text-muted-foreground animate-placeholder-scroll-item"
+              >
+                {placeholderTexts[currentPlaceholderIndex]}
+              </span>
+            </div>
+          </div>
+        )}
         <Button
           type="submit"
           size="icon"
-          className="absolute bottom-3.5 right-3.5 h-12 w-12 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-accent"
+          className="absolute bottom-[18px] right-[18px] h-14 w-14 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-accent" // Adjusted size and position
           aria-label="Send message"
           disabled={!currentMessage.trim()}
         >
-          <SendHorizontal className="h-5 w-5" />
+          <SendHorizontal className="h-6 w-6" /> {/* Slightly larger icon */}
         </Button>
       </div>
     </form>
