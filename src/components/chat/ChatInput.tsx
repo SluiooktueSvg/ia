@@ -24,7 +24,9 @@ const placeholderTexts = [
   "Explica cómo funciona un motor de combustión",
 ];
 
-const ANIMATION_DURATION_MS = 3000; // Must match animation duration in tailwind.config.ts
+const TYPING_SPEED = 100; // milliseconds
+const DELETING_SPEED = 50; // milliseconds
+const PAUSE_DURATION = 1500; // milliseconds
 
 const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,
@@ -33,7 +35,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
   isCentered = false,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [currentPlaceholderIndex, setCurrentPlaceholderIndex] = useState(0);
+  const [currentPlaceholder, setCurrentPlaceholder] = useState('');
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -41,19 +47,63 @@ const ChatInput: React.FC<ChatInputProps> = ({
       if (currentMessage) {
         textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
       } else {
-        textareaRef.current.style.height = 'auto'; // Default height for one row
+        textareaRef.current.style.height = 'auto';
       }
     }
   }, [currentMessage]);
 
   useEffect(() => {
-    // Only run animation if the input is empty
-    if (!currentMessage) {
-      const intervalId = setInterval(() => {
-        setCurrentPlaceholderIndex(prevIndex => (prevIndex + 1) % placeholderTexts.length);
-      }, ANIMATION_DURATION_MS);
+    if (currentMessage) {
+      setCurrentPlaceholder(''); // Stop animation if user is typing
+      return;
+    }
 
-      return () => clearInterval(intervalId);
+    if (isPaused) return;
+
+    const currentPhrase = placeholderTexts[phraseIndex];
+    let timeoutId: NodeJS.Timeout;
+
+    if (!isDeleting) { // Typing
+      if (charIndex < currentPhrase.length) {
+        timeoutId = setTimeout(() => {
+          setCurrentPlaceholder((prev) => prev + currentPhrase[charIndex]);
+          setCharIndex((prev) => prev + 1);
+        }, TYPING_SPEED);
+      } else { // Finished typing
+        setIsPaused(true);
+        timeoutId = setTimeout(() => {
+          setIsDeleting(true);
+          setIsPaused(false);
+        }, PAUSE_DURATION);
+      }
+    } else { // Deleting
+      if (charIndex > 0) {
+        timeoutId = setTimeout(() => {
+          setCurrentPlaceholder((prev) => prev.substring(0, prev.length - 1));
+          setCharIndex((prev) => prev - 1);
+        }, DELETING_SPEED);
+      } else { // Finished deleting
+        setIsPaused(true);
+        timeoutId = setTimeout(() => {
+          setIsDeleting(false);
+          setPhraseIndex((prev) => (prev + 1) % placeholderTexts.length);
+          setIsPaused(false);
+        }, PAUSE_DURATION / 2);
+      }
+    }
+
+    return () => clearTimeout(timeoutId);
+  }, [charIndex, isDeleting, phraseIndex, isPaused, currentMessage]);
+
+  useEffect(() => {
+    // Reset animation if currentMessage becomes empty after being non-empty
+    // to ensure it starts fresh from the beginning of a phrase.
+    if (!currentMessage) {
+      setCurrentPlaceholder('');
+      setCharIndex(0);
+      setIsDeleting(false);
+      // setPhraseIndex(0); // Optionally reset to the first phrase always
+      setIsPaused(false); // Ensure animation can restart
     }
   }, [currentMessage]);
 
@@ -67,8 +117,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
     if (currentMessage.trim()) {
       onSendMessage(currentMessage.trim());
       setCurrentMessage('');
-      // Reset placeholder to the first one after sending a message for a fresh start
-      setCurrentPlaceholderIndex(0);
     }
   };
 
@@ -93,37 +141,22 @@ const ChatInput: React.FC<ChatInputProps> = ({
           value={currentMessage}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          placeholder={currentMessage ? "" : undefined}
+          placeholder={currentMessage ? "" : currentPlaceholder}
           className={cn(
-            "flex-grow resize-none overflow-y-auto rounded-3xl bg-card p-5 pr-20 shadow-sm max-h-60 text-base", // Increased padding and rounded corners
+            "flex-grow resize-none overflow-y-auto rounded-3xl bg-card p-5 pr-20 shadow-sm max-h-60 text-base",
             "input-animated-focus"
           )}
           rows={1}
           aria-label="Chat message input"
         />
-        {!currentMessage && (
-          <div
-            className="absolute top-0 left-0 flex items-center h-full pl-5 pr-20 pointer-events-none" // Adjusted padding to match Textarea's p-5
-            aria-hidden="true"
-          >
-            <div className="relative h-6 overflow-hidden w-full"> {/* Adjust height (h-6) to match line height of textarea */}
-              <span
-                key={currentPlaceholderIndex}
-                className="absolute w-full text-muted-foreground animate-placeholder-scroll-item"
-              >
-                {placeholderTexts[currentPlaceholderIndex]}
-              </span>
-            </div>
-          </div>
-        )}
         <Button
           type="submit"
           size="icon"
-          className="absolute bottom-[18px] right-[18px] h-14 w-14 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-accent" // Adjusted size and position
+          className="absolute bottom-[18px] right-[18px] h-14 w-14 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-accent"
           aria-label="Send message"
           disabled={!currentMessage.trim()}
         >
-          <SendHorizontal className="h-6 w-6" /> {/* Slightly larger icon */}
+          <SendHorizontal className="h-6 w-6" />
         </Button>
       </div>
     </form>

@@ -104,11 +104,6 @@ export default {
           '50%': { 'background-position': '100% 50%' },
           '100%': { 'background-position': '0% 50%' },
         },
-        'placeholder-scroll-item': {
-          '0%': { opacity: '0', transform: 'translateY(100%)' },
-          '15%, 85%': { opacity: '1', transform: 'translateY(0)' },
-          '100%': { opacity: '0', transform: 'translateY(-100%)' },
-        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -116,7 +111,6 @@ export default {
         'message-in': 'message-in 0.3s ease-out forwards',
         'animated-border-glow': 'animated-border-glow 4s linear infinite',
         'gradient-text-flow': 'animated-gradient-text 5s ease infinite',
-        'placeholder-scroll-item': 'placeholder-scroll-item 3s ease-in-out',
       },
     },
   },
