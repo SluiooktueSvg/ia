@@ -1,22 +1,17 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { ChatMessage } from '@/types/chat';
 import { loadChatFromLocalStorage, saveChatToLocalStorage, clearChatFromLocalStorage } from '@/lib/localStorage';
 import { completeMessage, MessageCompletionInput } from '@/ai/flows/message-completion';
 import { analyzeSentiment, SentimentAnalysisInput } from '@/ai/flows/sentiment-analysis';
 import { useToast } from "@/hooks/use-toast";
 
-const DEBOUNCE_DELAY = 500; // milliseconds for autocomplete debounce
-
 export function useChatController() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentInput, setCurrentInput] = useState('');
-  const [isLoadingCompletion, setIsLoadingCompletion] = useState(false);
-  const [completionSuggestion, setCompletionSuggestion] = useState<string | null>(null);
   const [hasSentFirstMessage, setHasSentFirstMessage] = useState(false);
   const { toast } = useToast();
-  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const loadedMessages = loadChatFromLocalStorage();
@@ -40,31 +35,6 @@ export function useChatController() {
 
   const handleInputChange = useCallback((text: string) => {
     setCurrentInput(text);
-    if (debounceTimeoutRef.current) {
-      clearTimeout(debounceTimeoutRef.current);
-    }
-    if (text.trim().length > 2) { // Only fetch completion if there's enough text
-      debounceTimeoutRef.current = setTimeout(async () => {
-        setIsLoadingCompletion(true);
-        try {
-          const suggestionInput: MessageCompletionInput = { userInputText: text, isSuggestion: true };
-          const result = await completeMessage(suggestionInput);
-          if (result.completion && result.completion !== text) {
-            setCompletionSuggestion(result.completion);
-          } else {
-            setCompletionSuggestion(null);
-          }
-        } catch (error) {
-          console.error('Error fetching message completion:', error);
-          setCompletionSuggestion(null);
-          // Do not toast for autocomplete errors to avoid being too noisy
-        } finally {
-          setIsLoadingCompletion(false);
-        }
-      }, DEBOUNCE_DELAY);
-    } else {
-      setCompletionSuggestion(null); // Clear suggestion if input is short
-    }
   }, []);
 
   const fetchSentimentForMessage = async (messageId: string, text: string) => {
@@ -99,7 +69,6 @@ export function useChatController() {
     };
     setMessages(prev => [...prev, userMessage]);
     setCurrentInput('');
-    setCompletionSuggestion(null);
 
     const aiMessageId = Date.now().toString() + '-ai';
     const aiPlaceholderMessage: ChatMessage = {
@@ -112,7 +81,7 @@ export function useChatController() {
     setMessages(prev => [...prev, aiPlaceholderMessage]);
 
     try {
-      const responseInput: MessageCompletionInput = { userInputText: text, isSuggestion: false };
+      const responseInput: MessageCompletionInput = { userInputText: text };
       const aiResponse = await completeMessage(responseInput);
       
       const refinedAiText = aiResponse.completion.trim();
@@ -183,11 +152,9 @@ export function useChatController() {
     messages,
     currentInput,
     setCurrentInput,
-    isLoadingCompletion,
-    completionSuggestion,
-    hasSentFirstMessage, // Expose new state
+    hasSentFirstMessage,
     sendMessage,
-    handleInputChange,
+    handleInputChange, // Keep this for setting currentInput
     clearChat,
     saveChat,
     loadChat,

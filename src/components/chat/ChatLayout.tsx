@@ -12,11 +12,9 @@ const ChatLayout: React.FC = () => {
     messages,
     currentInput,
     setCurrentInput,
-    isLoadingCompletion,
-    completionSuggestion,
-    hasSentFirstMessage, // Get the new state
+    hasSentFirstMessage,
     sendMessage,
-    handleInputChange,
+    handleInputChange, // Keep for setting currentInput
     clearChat,
     saveChat,
     loadChat,
@@ -36,9 +34,6 @@ const ChatLayout: React.FC = () => {
             currentMessage={currentInput}
             setCurrentMessage={setCurrentInput}
             onSendMessage={sendMessage}
-            onInputChange={handleInputChange}
-            isLoadingCompletion={isLoadingCompletion}
-            completionSuggestion={completionSuggestion}
             isCentered={false}
           />
         </>
@@ -49,9 +44,6 @@ const ChatLayout: React.FC = () => {
               currentMessage={currentInput}
               setCurrentMessage={setCurrentInput}
               onSendMessage={sendMessage}
-              onInputChange={handleInputChange}
-              isLoadingCompletion={isLoadingCompletion}
-              completionSuggestion={completionSuggestion}
               isCentered={true}
             />
           </div>
