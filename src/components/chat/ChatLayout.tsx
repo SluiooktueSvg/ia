@@ -56,10 +56,8 @@ const ChatLayout: React.FC = () => {
       ) : (
         <div className="flex flex-grow flex-col items-center justify-center p-4">
           <div className="text-center mb-8">
-            <div className="flex justify-center mb-4">
-              <AuraChatLogo />
-            </div>
-            {greeting && <p className="text-xl text-foreground">{greeting}</p>}
+            {/* AuraChatLogo removed from here */}
+            {greeting && <p className="text-xl text-foreground mt-4">{greeting}</p>}
             <p className="text-muted-foreground">¿Cómo puedo ayudarte hoy?</p>
           </div>
           <div className="w-full max-w-xl">
