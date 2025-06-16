@@ -13,6 +13,7 @@ interface ChatInputProps {
   completionSuggestion: string | null;
   currentMessage: string;
   setCurrentMessage: (message: string) => void;
+  isCentered?: boolean; // New prop
 }
 
 const ChatInput: React.FC<ChatInputProps> = ({
@@ -22,6 +23,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   completionSuggestion,
   currentMessage,
   setCurrentMessage,
+  isCentered = false, // Default to false
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [showSuggestion, setShowSuggestion] = useState(false);
@@ -78,7 +80,13 @@ const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="relative border-t border-border bg-background p-3 md:p-4">
+    <form 
+      onSubmit={handleSubmit} 
+      className={cn(
+        "relative bg-background p-3 md:p-4",
+        !isCentered && "border-t border-border" // Conditional top border
+      )}
+    >
       <div className="relative flex items-end gap-2">
         <Textarea
           ref={textareaRef}

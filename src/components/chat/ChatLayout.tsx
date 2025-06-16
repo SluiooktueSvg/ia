@@ -14,6 +14,7 @@ const ChatLayout: React.FC = () => {
     setCurrentInput,
     isLoadingCompletion,
     completionSuggestion,
+    hasSentFirstMessage, // Get the new state
     sendMessage,
     handleInputChange,
     clearChat,
@@ -28,15 +29,34 @@ const ChatLayout: React.FC = () => {
         onLoadChat={loadChat}
         onClearChat={clearChat}
       />
-      <MessageList messages={messages} />
-      <ChatInput
-        currentMessage={currentInput}
-        setCurrentMessage={setCurrentInput}
-        onSendMessage={sendMessage}
-        onInputChange={handleInputChange}
-        isLoadingCompletion={isLoadingCompletion}
-        completionSuggestion={completionSuggestion}
-      />
+      {hasSentFirstMessage ? (
+        <>
+          <MessageList messages={messages} />
+          <ChatInput
+            currentMessage={currentInput}
+            setCurrentMessage={setCurrentInput}
+            onSendMessage={sendMessage}
+            onInputChange={handleInputChange}
+            isLoadingCompletion={isLoadingCompletion}
+            completionSuggestion={completionSuggestion}
+            isCentered={false}
+          />
+        </>
+      ) : (
+        <div className="flex flex-grow flex-col items-center justify-center p-4">
+          <div className="w-full max-w-xl">
+            <ChatInput
+              currentMessage={currentInput}
+              setCurrentMessage={setCurrentInput}
+              onSendMessage={sendMessage}
+              onInputChange={handleInputChange}
+              isLoadingCompletion={isLoadingCompletion}
+              completionSuggestion={completionSuggestion}
+              isCentered={true}
+            />
+          </div>
+        </div>
+      )}
     </SidebarInset>
   );
 };

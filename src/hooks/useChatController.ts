@@ -14,12 +14,16 @@ export function useChatController() {
   const [currentInput, setCurrentInput] = useState('');
   const [isLoadingCompletion, setIsLoadingCompletion] = useState(false);
   const [completionSuggestion, setCompletionSuggestion] = useState<string | null>(null);
+  const [hasSentFirstMessage, setHasSentFirstMessage] = useState(false);
   const { toast } = useToast();
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const loadedMessages = loadChatFromLocalStorage();
     setMessages(loadedMessages);
+    if (loadedMessages.length > 0) {
+      setHasSentFirstMessage(true);
+    }
     // Analyze sentiment for AI messages loaded from history
     loadedMessages.forEach(msg => {
       if (msg.sender === 'ai' && !msg.sentiment && !msg.sentimentLoading) {
@@ -83,6 +87,10 @@ export function useChatController() {
   const sendMessage = async (text: string) => {
     if (!text.trim()) return;
 
+    if (!hasSentFirstMessage) {
+      setHasSentFirstMessage(true);
+    }
+
     const userMessage: ChatMessage = {
       id: Date.now().toString() + '-user',
       text,
@@ -93,8 +101,6 @@ export function useChatController() {
     setCurrentInput('');
     setCompletionSuggestion(null);
 
-    // Simulate AI response and sentiment analysis
-    // In a real app, this would be an API call to an AI model
     const aiMessageId = Date.now().toString() + '-ai';
     const aiPlaceholderMessage: ChatMessage = {
       id: aiMessageId,
@@ -105,11 +111,9 @@ export function useChatController() {
     };
     setMessages(prev => [...prev, aiPlaceholderMessage]);
 
-    // For demonstration, let's use the completeMessage for AI response.
-    // Replace with your actual AI logic for chat response.
     try {
       const responseInput: MessageCompletionInput = { messageFragment: `User: ${text}\nAI:` };
-      const aiResponse = await completeMessage(responseInput); // This is a placeholder for actual chat response generation
+      const aiResponse = await completeMessage(responseInput); 
       
       const refinedAiText = aiResponse.completion.startsWith(`User: ${text}\nAI:`) 
         ? aiResponse.completion.substring(`User: ${text}\nAI:`.length).trim()
@@ -117,7 +121,7 @@ export function useChatController() {
 
       const finalAiMessage: ChatMessage = {
         ...aiPlaceholderMessage,
-        text: refinedAiText || "I'm not sure how to respond to that.", // Fallback response
+        text: refinedAiText || "I'm not sure how to respond to that.",
       };
       setMessages(prev => prev.map(m => m.id === aiMessageId ? finalAiMessage : m));
       fetchSentimentForMessage(aiMessageId, finalAiMessage.text);
@@ -142,6 +146,7 @@ export function useChatController() {
   const clearChat = () => {
     setMessages([]);
     clearChatFromLocalStorage();
+    setHasSentFirstMessage(false); 
     toast({
         title: "Chat Cleared",
         description: "Your chat history has been cleared.",
@@ -159,6 +164,11 @@ export function useChatController() {
   const loadChat = () => {
     const loadedMessages = loadChatFromLocalStorage();
     setMessages(loadedMessages);
+    if (loadedMessages.length > 0) {
+      setHasSentFirstMessage(true);
+    } else {
+      setHasSentFirstMessage(false);
+    }
     loadedMessages.forEach(msg => {
       if (msg.sender === 'ai' && !msg.sentiment && !msg.sentimentLoading) {
         fetchSentimentForMessage(msg.id, msg.text);
@@ -174,11 +184,12 @@ export function useChatController() {
   return {
     messages,
     currentInput,
-    setCurrentInput, // Expose for ChatInput to directly manage its state
+    setCurrentInput,
     isLoadingCompletion,
     completionSuggestion,
+    hasSentFirstMessage, // Expose new state
     sendMessage,
-    handleInputChange, // Expose for ChatInput
+    handleInputChange,
     clearChat,
     saveChat,
     loadChat,
