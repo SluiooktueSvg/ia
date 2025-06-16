@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -66,6 +67,10 @@ const ChatLayout: React.FC = () => {
               isCentered={true}
             />
           </div>
+          <footer className="mt-16 text-center text-sm text-muted-foreground">
+            <p>&copy; {new Date().getFullYear()} LSAIG. All rights reserved.</p>
+            <p>Sluiooktue Inc. Luis M.</p>
+          </footer>
         </div>
       )}
     </SidebarInset>
