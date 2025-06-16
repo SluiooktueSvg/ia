@@ -97,12 +97,18 @@ export default {
           '50%': { 'background-position': '100% 50%' },
           '100%': { 'background-position': '0% 50%' },
         },
+        'animated-gradient-text': {
+          '0%': { 'background-position': '0% 50%' },
+          '50%': { 'background-position': '100% 50%' },
+          '100%': { 'background-position': '0% 50%' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'message-in': 'message-in 0.3s ease-out forwards',
         'animated-border-glow': 'animated-border-glow 4s linear infinite',
+        'gradient-text-flow': 'animated-gradient-text 5s ease infinite',
       },
     },
   },
