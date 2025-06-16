@@ -24,12 +24,10 @@ const ChatInput: React.FC<ChatInputProps> = ({
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-      // Adjust scrollHeight to fit content, reset to 1 row if empty
-      // to prevent it from staying tall after sending a multiline message.
       if (currentMessage) {
         textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
       } else {
-        textareaRef.current.style.height = 'auto'; // Or specific initial height like '40px'
+        textareaRef.current.style.height = 'auto'; 
       }
     }
   }, [currentMessage]);
@@ -69,8 +67,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
           onKeyDown={handleKeyDown}
           placeholder="Escribe tu mensaje..."
           className={cn(
-            "flex-grow resize-none overflow-y-auto rounded-lg border-input bg-card p-3 pr-20 shadow-sm focus:ring-accent max-h-40"
-            // No text-center here, default left alignment will apply
+            "flex-grow resize-none overflow-y-auto rounded-lg bg-card p-3 pr-20 shadow-sm max-h-40",
+            "input-animated-focus" // Apply new class for animated border
+            // Removed: focus:ring-accent
           )}
           rows={1}
           aria-label="Chat message input"
