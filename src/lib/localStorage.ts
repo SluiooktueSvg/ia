@@ -1,6 +1,6 @@
 import type { ChatMessage } from '@/types/chat';
 
-const CHAT_STORAGE_KEY = 'auraChatSession';
+const CHAT_STORAGE_KEY = 'lsaigChatSession';
 
 export const saveChatToLocalStorage = (messages: ChatMessage[]): void => {
   try {

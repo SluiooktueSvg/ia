@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { SidebarProvider } from '@/components/ui/sidebar';
 
 export const metadata: Metadata = {
-  title: 'AuraChat',
+  title: 'LSAIG',
   description: 'AI-powered chat application',
 };
 

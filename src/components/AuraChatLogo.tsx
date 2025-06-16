@@ -1,6 +1,6 @@
 import React from 'react';
 
-const AuraChatLogo: React.FC = () => {
+const LSAIGLogo: React.FC = () => {
   return (
     <div className="flex items-center gap-2">
       <svg
@@ -18,9 +18,9 @@ const AuraChatLogo: React.FC = () => {
         <path d="M12 16.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5z" />
         <path d="M12 12m-2 0a2 2 0 104 0 2 2 0 10-4 0" />
       </svg>
-      <h1 className="text-2xl font-semibold text-primary font-headline">AuraChat</h1>
+      <h1 className="text-2xl font-semibold text-primary font-headline">LSAIG</h1>
     </div>
   );
 };
 
-export default AuraChatLogo;
+export default LSAIGLogo;
