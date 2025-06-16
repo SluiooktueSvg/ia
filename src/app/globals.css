@@ -105,4 +105,16 @@ body {
   .input-animated-focus:focus::before {
     @apply opacity-100 animate-animated-border-glow;
   }
+
+  .text-gradient-animated {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--secondary)), hsl(var(--primary)));
+    background-size: 200% auto;
+    background-position: 0% 50%;
+    transition: background-position 0.8s ease-in-out;
+  }
+  .text-gradient-animated:hover {
+    background-position: 100% 50%;
+  }
 }
+
