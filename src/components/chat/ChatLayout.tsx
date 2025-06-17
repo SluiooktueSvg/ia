@@ -2,11 +2,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import ChatHeader from './ChatHeader';
 import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import { useChatController } from '@/hooks/useChatController';
-import { SidebarInset } from '@/components/ui/sidebar';
+import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'; // Added SidebarTrigger
+import LSAIGLogo from '@/components/AuraChatLogo';
+import { Button } from '@/components/ui/button';
+import { Save, FolderOpen, Trash2 } from 'lucide-react';
 
 const ChatLayout: React.FC = () => {
   const {
@@ -38,11 +40,24 @@ const ChatLayout: React.FC = () => {
 
   return (
     <SidebarInset className="flex h-screen flex-col bg-background md:m-0 md:rounded-none md:shadow-none">
-      <ChatHeader 
-        onSaveChat={saveChat}
-        onLoadChat={loadChat}
-        onClearChat={clearChat}
-      />
+      <div className="flex items-center justify-between border-b border-border bg-card p-3 md:p-4 shadow-sm">
+        <div className="flex items-center gap-2">
+          <SidebarTrigger className="md:hidden" />
+          <LSAIGLogo />
+        </div>
+        <div className="flex items-center gap-1 rounded-full bg-card p-1.5 shadow-md">
+          <Button variant="ghost" size="icon" onClick={saveChat} aria-label="Save chat">
+            <Save className="h-5 w-5" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={loadChat} aria-label="Load chat">
+            <FolderOpen className="h-5 w-5" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={clearChat} aria-label="Clear chat" className="text-destructive hover:text-destructive hover:bg-destructive/10">
+            <Trash2 className="h-5 w-5" />
+          </Button>
+        </div>
+      </div>
+
       {hasSentFirstMessage ? (
         <>
           <MessageList messages={messages} />
@@ -54,8 +69,8 @@ const ChatLayout: React.FC = () => {
           />
         </>
       ) : (
-        <div className="flex flex-grow flex-col justify-between"> {/* Container for initial screen, no padding here */}
-          <div className="flex flex-grow flex-col items-center justify-center p-4"> {/* Content area with padding */}
+        <div className="flex flex-grow flex-col justify-between">
+          <div className="flex flex-grow flex-col items-center justify-center p-4">
             <div className="text-center mb-8">
               {greeting && <p className="text-4xl mt-4 font-greeting font-semibold text-gradient-animated">{greeting}</p>}
               <p className="text-muted-foreground mt-2">¿Cómo puedo ayudarte hoy?</p>
@@ -69,14 +84,13 @@ const ChatLayout: React.FC = () => {
               />
             </div>
           </div>
-          <footer className="text-center text-sm text-muted-foreground py-4 px-4"> {/* Footer with its own padding */}
+          <footer className="text-center text-sm text-muted-foreground py-4 px-4">
             <p>&copy; {new Date().getFullYear()} LSAIG. All rights reserved.</p>
             <p>Sluiooktue Inc. Luis M.</p>
           </footer>
         </div>
       )}
     </SidebarInset>
-    
   );
 };
 
