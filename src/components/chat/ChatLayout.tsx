@@ -8,7 +8,8 @@ import { useChatController } from '@/hooks/useChatController';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import LSAIGLogo from '@/components/AuraChatLogo';
 import { Button } from '@/components/ui/button';
-import { Save, FolderOpen, Trash2 } from 'lucide-react';
+import { Save, FolderOpen } from 'lucide-react';
+import AnimatedTrashIcon from './AnimatedTrashIcon'; // Importamos el nuevo componente
 
 const ChatLayout: React.FC = () => {
   const {
@@ -52,9 +53,7 @@ const ChatLayout: React.FC = () => {
           <Button variant="ghost" size="icon" onClick={loadChat} aria-label="Load chat" className="rounded-full hover:scale-110 transition-transform duration-150">
             <FolderOpen className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={clearChat} aria-label="Clear chat" className="text-destructive hover:text-destructive hover:bg-destructive/10 rounded-full hover:animate-shake">
-            <Trash2 className="h-5 w-5" />
-          </Button>
+          <AnimatedTrashIcon onClear={clearChat} ariaLabel="Clear chat" />
         </div>
       </div>
 
