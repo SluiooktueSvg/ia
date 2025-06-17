@@ -94,7 +94,53 @@ body {
 @layer components {
   .text-gradient-animated {
     @apply bg-clip-text text-transparent animate-gradient-text-flow;
-    background-image: linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--secondary)), hsl(var(--accent)), hsl(var(--primary)), hsl(var(--secondary)), hsl(var(--primary)));
+    background-image: linear-gradient(to right, 
+      hsl(var(--primary)), 
+      hsl(var(--accent)), 
+      hsl(var(--chart-1)), 
+      hsl(var(--secondary)), 
+      hsl(var(--chart-2)), 
+      hsl(var(--chart-3)),
+      hsl(var(--primary)),
+      hsl(var(--chart-4)),
+      hsl(var(--accent)),
+      hsl(var(--chart-5)),
+      hsl(var(--secondary)),
+      hsl(var(--primary)) /* Repeat first color for smooth loop */
+    );
+    background-size: 800% auto; /* Increased size for more colors */
+  }
+
+  .input-animated-focus {
+    @apply relative border-2 border-transparent bg-card rounded-3xl;
+    background-clip: padding-box;
+    -webkit-background-clip: padding-box;
+  }
+
+  .input-animated-focus::before {
+    content: '';
+    position: absolute;
+    top: -2px; 
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    z-index: -1;
+    border-radius: 1.5rem; /* Matches rounded-3xl */
+    background: linear-gradient(
+      to right,
+      hsl(var(--primary)),
+      hsl(var(--accent)),
+      hsl(var(--secondary)),
+      hsl(var(--accent)),
+      hsl(var(--primary))
+    );
     background-size: 400% auto;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  .input-animated-focus:focus::before {
+    opacity: 1;
+    animation: animated-border-glow 3s linear infinite;
   }
 }
