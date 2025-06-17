@@ -20,10 +20,10 @@ const LSAIGLogo: React.FC = () => {
               transform-origin: 14px 14px; /* Center of the 28x28 viewBox */
               stroke-linecap: round; /* Makes the ends of the dashes rounded */
               /* Approximate perimeter for rx=12, ry=5 is ~56.
-                 A dash of 10px and a gap of 46px (total 56px pattern)
-                 will show a 10px line segment moving.
+                 A dash of 15px and a gap of 41px (total 56px pattern)
+                 will show a 15px line segment moving.
               */
-              stroke-dasharray: 10 46;
+              stroke-dasharray: 15 41; /* MODIFIED: Longer visible dash */
             }
             .nucleus-lsaig {
               fill: currentColor;
