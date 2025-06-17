@@ -19,11 +19,7 @@ const LSAIGLogo: React.FC = () => {
               fill: none;
               transform-origin: 14px 14px; /* Center of the 28x28 viewBox */
               stroke-linecap: round; /* Makes the ends of the dashes rounded */
-              /* Approximate perimeter for rx=12, ry=5 is ~56.
-                 A dash of 15px and a gap of 41px (total 56px pattern)
-                 will show a 15px line segment moving.
-              */
-              stroke-dasharray: 15 41; /* MODIFIED: Longer visible dash */
+              stroke-dasharray: 15 41; /* Length of visible dash and gap */
             }
             .nucleus-lsaig {
               fill: currentColor;
@@ -44,22 +40,22 @@ const LSAIGLogo: React.FC = () => {
             .orbit-1-lsaig {
               /* Rotates around the SVG center + draws its line segment */
               animation:
-                rotateOrbitMasterLsaig 10s linear infinite,
-                drawLineLsaig 1.5s linear infinite;
+                rotateOrbitMasterLsaig 12s linear infinite, /* Slower rotation */
+                drawLineLsaig 2s linear infinite; /* Consistent, slightly slower draw speed */
             }
             .orbit-2-lsaig {
               transform: rotate(60deg); /* Initial static rotation offset */
-              /* Rotates around the SVG center (respecting initial transform) + draws its line segment */
+              /* Rotates around the SVG center + draws its line segment */
               animation:
-                rotateOrbitMasterLsaig 8s linear infinite reverse, /* Different speed/direction */
-                drawLineLsaig 1.2s linear infinite 0.2s; /* Different speed/delay for drawing */
+                rotateOrbitMasterLsaig 10s linear infinite, /* Different speed, same direction */
+                drawLineLsaig 2s linear infinite 0.3s; /* Consistent draw speed, slightly delayed */
             }
             .orbit-3-lsaig {
               transform: rotate(120deg); /* Initial static rotation offset */
-              /* Rotates around the SVG center (respecting initial transform) + draws its line segment */
+              /* Rotates around the SVG center + draws its line segment */
               animation:
-                rotateOrbitMasterLsaig 12s linear infinite, /* Different speed */
-                drawLineLsaig 1.8s linear infinite 0.4s; /* Different speed/delay for drawing */
+                rotateOrbitMasterLsaig 15s linear infinite, /* Different speed, same direction */
+                drawLineLsaig 2s linear infinite 0.6s; /* Consistent draw speed, more delayed */
             }
           `}
         </style>
