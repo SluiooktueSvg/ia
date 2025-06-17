@@ -1,15 +1,16 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, MouseEvent } from 'react';
 import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import { useChatController } from '@/hooks/useChatController';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import LSAIGLogo from '@/components/AuraChatLogo';
 import { Button } from '@/components/ui/button';
-import { Save, FolderOpen, Trash2 } from 'lucide-react';
+import { Save, FolderOpen, Trash2, Heart } from 'lucide-react'; // Added Heart
 import { useToast } from "@/hooks/use-toast";
+import { cn } from '@/lib/utils';
 
 const helpMessages = [
   "¿En qué puedo asistirte hoy?",
@@ -27,8 +28,24 @@ const helpMessages = [
   "Tu asistente virtual a la orden. ¿Qué puedo hacer por ti?",
   "¿Listo para una charla productiva y amena?",
   "Cuéntame, ¿qué proyecto o pregunta traes entre manos?",
-  "La curiosidad es el primer paso al conocimiento. ¿Qué te intriga hoy?"
+  "La curiosidad es el primer paso al conocimiento. ¿Qué te intriga hoy?",
+  "¿Necesitas inspiración o información? Estoy a un clic.",
+  "¿En qué puedo ayudarte a pensar o resolver?",
+  "Conversemos un rato, ¿qué te apetece explorar?",
+  "Estoy lista para procesar tus ideas y preguntas.",
+  "La IA está aquí para ti. ¿Cómo empezamos?",
+  "Pregunta, crea, descubre. ¡Estoy para asistirte!",
 ];
+
+interface ActiveHeart {
+  id: string;
+  x: number;
+  y: number;
+}
+
+const CLICK_THRESHOLD = 3; // Number of clicks to trigger hearts (e.g., 4th click)
+const CLICK_TIMEOUT_MS = 500; // Max time between clicks to be considered "rapid"
+const HEART_ANIMATION_DURATION_MS = 2000;
 
 const ChatLayout: React.FC = () => {
   const {
@@ -46,6 +63,11 @@ const ChatLayout: React.FC = () => {
   const [dynamicHelpText, setDynamicHelpText] = useState('');
   const { toast } = useToast();
 
+  // State for heart Easter egg
+  const [clickCount, setClickCount] = useState(0);
+  const [lastClickTime, setLastClickTime] = useState(0);
+  const [activeHearts, setActiveHearts] = useState<ActiveHeart[]>([]);
+
   useEffect(() => {
     const getCurrentGreeting = () => {
       const currentHour = new Date().getHours();
@@ -58,13 +80,46 @@ const ChatLayout: React.FC = () => {
       }
     };
     setGreeting(getCurrentGreeting());
-
-    // Select a random help message on initial load
     setDynamicHelpText(helpMessages[Math.floor(Math.random() * helpMessages.length)]);
   }, []);
 
+  const handlePageClick = (event: MouseEvent<HTMLDivElement>) => {
+    // Ignore clicks on the chat input form or its children
+    if ((event.target as HTMLElement).closest('#chat-input-form')) {
+      return;
+    }
+
+    const currentTime = Date.now();
+    let newClickCount;
+
+    if (currentTime - lastClickTime > CLICK_TIMEOUT_MS) {
+      newClickCount = 1;
+    } else {
+      newClickCount = clickCount + 1;
+    }
+
+    setClickCount(newClickCount);
+    setLastClickTime(currentTime);
+
+    if (newClickCount > CLICK_THRESHOLD) {
+      const newHeartId = `heart-${currentTime}-${Math.random()}`;
+      setActiveHearts(prevHearts => [
+        ...prevHearts,
+        { id: newHeartId, x: event.clientX, y: event.clientY },
+      ]);
+      setClickCount(0); // Reset for next sequence
+
+      setTimeout(() => {
+        setActiveHearts(prevHearts => prevHearts.filter(h => h.id !== newHeartId));
+      }, HEART_ANIMATION_DURATION_MS);
+    }
+  };
+
   return (
-    <SidebarInset className="flex h-screen flex-col bg-background md:m-0 md:rounded-none md:shadow-none">
+    <SidebarInset
+      className="flex h-screen flex-col bg-background md:m-0 md:rounded-none md:shadow-none"
+      onClick={handlePageClick} // Attach click listener here
+    >
       <div className="flex items-center justify-between p-3 md:p-4">
         <div className="flex items-center gap-2">
           <SidebarTrigger className="md:hidden" />
@@ -123,6 +178,23 @@ const ChatLayout: React.FC = () => {
           </footer>
         </div>
       )}
+
+      {/* Render active hearts */}
+      {activeHearts.map(heart => (
+        <Heart
+          key={heart.id}
+          className="absolute text-red-500 animate-float-fade"
+          style={{
+            left: `${heart.x}px`,
+            top: `${heart.y}px`,
+            transform: 'translate(-50%, -50%)', // Center icon on click
+            pointerEvents: 'none', // Hearts should not be interactive
+            zIndex: 9999, // Ensure hearts are on top
+          }}
+          size={24} // Adjust size as needed
+          fill="currentColor" // Makes the heart solid
+        />
+      ))}
     </SidebarInset>
   );
 };

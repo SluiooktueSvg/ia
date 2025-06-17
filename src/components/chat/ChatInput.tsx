@@ -145,6 +145,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   return (
     <form
+      id="chat-input-form" // Added ID here
       onSubmit={handleSubmit}
       className={cn(
         "relative bg-background p-3 md:p-4",

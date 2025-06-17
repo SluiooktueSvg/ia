@@ -110,7 +110,12 @@ export default {
         'pulse-custom': {
           '0%, 100%': { transform: 'scale(1)' },
           '50%': { transform: 'scale(1.15)' },
-        }
+        },
+        'float-fade': { // New keyframes for hearts
+          '0%': { opacity: '1', transform: 'translateY(0px) scale(0.5)' },
+          '50%': { opacity: '0.8', transform: 'translateY(-40px) scale(1.2)' },
+          '100%': { opacity: '0', transform: 'translateY(-100px) scale(0.5)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -119,6 +124,7 @@ export default {
         'gradient-text-flow': 'animated-gradient-text 8s ease infinite',
         'shake': 'shake 0.4s ease-in-out',
         'pulse-custom': 'pulse-custom 0.4s ease-in-out',
+        'float-fade': 'float-fade 2s ease-out forwards', // New animation class
       },
     },
   },
