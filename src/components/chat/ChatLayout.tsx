@@ -20,6 +20,14 @@ const helpMessages = [
   "Pregúntame lo que sea, ¡estoy para ayudarte!",
   "¿Qué curiosidad podemos resolver hoy?",
   "Dime, ¿qué necesitas descubrir o crear?",
+  "¡Hola! ¿Qué aventura iniciamos hoy?",
+  "Estoy lista para tus preguntas. ¿Por dónde empezamos?",
+  "¿Tienes alguna duda o idea? ¡Compártela conmigo!",
+  "Exploremos juntos. ¿Qué tema te interesa?",
+  "Tu asistente virtual a la orden. ¿Qué puedo hacer por ti?",
+  "¿Listo para una charla productiva y amena?",
+  "Cuéntame, ¿qué proyecto o pregunta traes entre manos?",
+  "La curiosidad es el primer paso al conocimiento. ¿Qué te intriga hoy?"
 ];
 
 const ChatLayout: React.FC = () => {
