@@ -125,7 +125,7 @@ body {
 
   .input-animated-focus:focus::before {
     opacity: 1;
-    animation: animated-border-glow 3s linear infinite; /* Changed from @apply */
+    animation: animated-border-glow 3s linear infinite;
   }
 
   .text-gradient-animated {
