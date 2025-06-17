@@ -40,20 +40,19 @@ const ChatLayout: React.FC = () => {
 
   return (
     <SidebarInset className="flex h-screen flex-col bg-background md:m-0 md:rounded-none md:shadow-none">
-      {/* Contenedor superior sin estilos de barra, pero mantiene la disposición flex */}
       <div className="flex items-center justify-between p-3 md:p-4">
         <div className="flex items-center gap-2">
           <SidebarTrigger className="md:hidden" />
           <LSAIGLogo />
         </div>
         <div className="flex items-center gap-1 rounded-full bg-card p-1.5 shadow-md">
-          <Button variant="ghost" size="icon" onClick={saveChat} aria-label="Save chat" className="rounded-full">
+          <Button variant="ghost" size="icon" onClick={saveChat} aria-label="Save chat" className="rounded-full hover:animate-pulse-custom">
             <Save className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={loadChat} aria-label="Load chat" className="rounded-full">
+          <Button variant="ghost" size="icon" onClick={loadChat} aria-label="Load chat" className="rounded-full hover:scale-110 transition-transform duration-150">
             <FolderOpen className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={clearChat} aria-label="Clear chat" className="text-destructive hover:text-destructive hover:bg-destructive/10 rounded-full">
+          <Button variant="ghost" size="icon" onClick={clearChat} aria-label="Clear chat" className="text-destructive hover:text-destructive hover:bg-destructive/10 rounded-full hover:animate-shake">
             <Trash2 className="h-5 w-5" />
           </Button>
         </div>

@@ -100,12 +100,25 @@ export default {
           '50%': { 'background-position': '100% 50%' },
           '100%': { 'background-position': '0% 50%' },
         },
+        shake: {
+          '0%, 100%': { transform: 'rotate(0deg)' },
+          '20%': { transform: 'rotate(-8deg)' },
+          '40%': { transform: 'rotate(8deg)' },
+          '60%': { transform: 'rotate(-8deg)' },
+          '80%': { transform: 'rotate(8deg)' },
+        },
+        'pulse-custom': {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.15)' },
+        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'message-in': 'message-in 0.3s ease-out forwards',
-        'gradient-text-flow': 'animated-gradient-text 5s ease infinite',
+        'gradient-text-flow': 'animated-gradient-text 8s ease infinite',
+        'shake': 'shake 0.4s ease-in-out',
+        'pulse-custom': 'pulse-custom 0.4s ease-in-out',
       },
     },
   },
