@@ -57,7 +57,7 @@ const ChatLayout: React.FC = () => {
         <div className="flex flex-grow flex-col justify-between"> {/* Container for initial screen, no padding here */}
           <div className="flex flex-grow flex-col items-center justify-center p-4"> {/* Content area with padding */}
             <div className="text-center mb-8">
-              {greeting && <p className="text-4xl mt-4 font-black text-gradient-animated">{greeting}</p>}
+              {greeting && <p className="text-4xl mt-4 font-headline font-black text-gradient-animated">{greeting}</p>}
               <p className="text-muted-foreground mt-2">¿Cómo puedo ayudarte hoy?</p>
             </div>
             <div className="w-full max-w-xl">
