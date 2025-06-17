@@ -92,42 +92,6 @@ body {
 }
 
 @layer components {
-  .input-animated-focus {
-    @apply relative border-2 border-transparent;
-    background-color: hsl(var(--card)); /* Fondo del input */
-    background-clip: padding-box; /* Esencial para que el fondo no cubra el borde */
-    /* El border-radius vendrá de la clase rounded-3xl del Textarea */
-  }
-
-  .input-animated-focus::before {
-    content: '';
-    position: absolute;
-    top: -2px; /* Alineado con el borde transparente de 2px */
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    z-index: -1;
-    border-radius: 1.5rem; /* Coincide con rounded-3xl del Textarea */
-    background: linear-gradient(
-      90deg,
-      hsl(var(--primary)),
-      hsl(var(--accent)),
-      hsl(var(--secondary)),
-      hsl(var(--accent)),
-      hsl(var(--primary)),
-      hsl(var(--secondary)),
-      hsl(var(--primary))
-    );
-    background-size: 250% 100%; /* Ajustado para un movimiento claro */
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
-  }
-
-  .input-animated-focus:focus::before {
-    opacity: 1;
-    animation: animated-border-glow 3s linear infinite;
-  }
-
   .text-gradient-animated {
     @apply bg-clip-text text-transparent animate-gradient-text-flow;
     background-image: linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--secondary)), hsl(var(--accent)), hsl(var(--primary)), hsl(var(--secondary)), hsl(var(--primary)));

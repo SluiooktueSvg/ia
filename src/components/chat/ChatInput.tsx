@@ -159,8 +159,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           onKeyDown={handleKeyDown}
           placeholder={displayPlaceholder}
           className={cn(
-            "flex-grow resize-none overflow-y-auto rounded-3xl bg-card p-4 pr-16 shadow-sm max-h-60 text-base",
-            "input-animated-focus focus-visible:ring-0 focus-visible:ring-offset-0" 
+            "flex-grow resize-none overflow-y-auto rounded-3xl bg-card p-4 pr-16 shadow-sm max-h-60 text-base"
           )}
           rows={1}
           aria-label="Chat message input"
