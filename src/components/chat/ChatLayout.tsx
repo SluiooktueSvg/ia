@@ -47,13 +47,13 @@ const ChatLayout: React.FC = () => {
           <LSAIGLogo />
         </div>
         <div className="flex items-center gap-1 rounded-full bg-card p-1.5 shadow-md">
-          <Button variant="ghost" size="icon" onClick={saveChat} aria-label="Save chat">
+          <Button variant="ghost" size="icon" onClick={saveChat} aria-label="Save chat" className="rounded-full">
             <Save className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={loadChat} aria-label="Load chat">
+          <Button variant="ghost" size="icon" onClick={loadChat} aria-label="Load chat" className="rounded-full">
             <FolderOpen className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={clearChat} aria-label="Clear chat" className="text-destructive hover:text-destructive hover:bg-destructive/10">
+          <Button variant="ghost" size="icon" onClick={clearChat} aria-label="Clear chat" className="text-destructive hover:text-destructive hover:bg-destructive/10 rounded-full">
             <Trash2 className="h-5 w-5" />
           </Button>
         </div>
