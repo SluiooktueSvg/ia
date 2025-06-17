@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import { useChatController } from '@/hooks/useChatController';
-import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'; // Added SidebarTrigger
+import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import LSAIGLogo from '@/components/AuraChatLogo';
 import { Button } from '@/components/ui/button';
 import { Save, FolderOpen, Trash2 } from 'lucide-react';
@@ -40,7 +40,8 @@ const ChatLayout: React.FC = () => {
 
   return (
     <SidebarInset className="flex h-screen flex-col bg-background md:m-0 md:rounded-none md:shadow-none">
-      <div className="flex items-center justify-between border-b border-border bg-card p-3 md:p-4 shadow-sm">
+      {/* Contenedor superior sin estilos de barra, pero mantiene la disposición flex */}
+      <div className="flex items-center justify-between p-3 md:p-4">
         <div className="flex items-center gap-2">
           <SidebarTrigger className="md:hidden" />
           <LSAIGLogo />
