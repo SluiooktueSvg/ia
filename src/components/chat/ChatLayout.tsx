@@ -8,8 +8,19 @@ import { useChatController } from '@/hooks/useChatController';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import LSAIGLogo from '@/components/AuraChatLogo';
 import { Button } from '@/components/ui/button';
-import { Save, FolderOpen, Trash2 } from 'lucide-react'; // Import Trash2
+import { Save, FolderOpen, Trash2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+
+const helpMessages = [
+  "¿En qué puedo asistirte hoy?",
+  "¿Listo para explorar algunas ideas?",
+  "¿Sobre qué te gustaría conversar?",
+  "Estoy aquí para ayudarte. ¿Qué tienes en mente?",
+  "¿Cómo puedo hacer tu día un poco mejor?",
+  "Pregúntame lo que sea, ¡estoy para ayudarte!",
+  "¿Qué curiosidad podemos resolver hoy?",
+  "Dime, ¿qué necesitas descubrir o crear?",
+];
 
 const ChatLayout: React.FC = () => {
   const {
@@ -24,7 +35,8 @@ const ChatLayout: React.FC = () => {
   } = useChatController();
 
   const [greeting, setGreeting] = useState('');
-  const { toast } = useToast(); // toast was already here from useChatController, but good to have if direct calls are made
+  const [dynamicHelpText, setDynamicHelpText] = useState('');
+  const { toast } = useToast();
 
   useEffect(() => {
     const getCurrentGreeting = () => {
@@ -38,6 +50,9 @@ const ChatLayout: React.FC = () => {
       }
     };
     setGreeting(getCurrentGreeting());
+
+    // Select a random help message on initial load
+    setDynamicHelpText(helpMessages[Math.floor(Math.random() * helpMessages.length)]);
   }, []);
 
   return (
@@ -58,7 +73,7 @@ const ChatLayout: React.FC = () => {
             variant="ghost"
             size="icon"
             onClick={() => {
-              clearChat(); // Directly call clearChat which handles toast
+              clearChat();
             }}
             aria-label="Clear chat"
             className="rounded-full text-destructive hover:text-destructive hover:bg-destructive/10 hover:animate-shake"
@@ -83,7 +98,7 @@ const ChatLayout: React.FC = () => {
           <div className="flex flex-grow flex-col items-center justify-center p-4">
             <div className="text-center mb-8">
               {greeting && <p className="text-4xl mt-4 font-greeting font-semibold text-gradient-animated">{greeting}</p>}
-              <p className="text-muted-foreground mt-2">¿Cómo puedo ayudarte hoy?</p>
+              {dynamicHelpText && <p className="text-muted-foreground mt-2">{dynamicHelpText}</p>}
             </div>
             <div className="w-full max-w-xl">
               <ChatInput
