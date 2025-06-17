@@ -94,10 +94,10 @@ export default {
           '0%': { opacity: '0', transform: 'translateY(10px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
-        'animated-border-glow': {
-          '0%': { 'background-position': '0% 50%' },
-          '50%': { 'background-position': '100% 50%' },
-          '100%': { 'background-position': '0% 50%' },
+        'animated-border-glow': { /* Renamed from 'border-glow' to match usage */
+          '0%': { 'background-position': '0% center' },
+          '50%': { 'background-position': '250% center' }, /* Match background-size */
+          '100%': { 'background-position': '0% center' },
         },
         'animated-gradient-text': {
           '0%': { 'background-position': '0% 50%' },
@@ -109,7 +109,7 @@ export default {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'message-in': 'message-in 0.3s ease-out forwards',
-        'animated-border-glow': 'animated-border-glow 4s linear infinite',
+        'animated-border-glow': 'animated-border-glow 3s linear infinite', /* Renamed and duration adjusted */
         'gradient-text-flow': 'animated-gradient-text 5s ease infinite',
       },
     },
