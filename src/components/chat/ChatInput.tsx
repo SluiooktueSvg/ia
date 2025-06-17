@@ -69,9 +69,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   useEffect(() => {
     if (currentMessage) {
-      // If user starts typing, ensure animated placeholder is cleared
-      // although the Textarea's native placeholder behavior might handle this.
-      // We also stop the animation by returning.
       setAnimatedPlaceholder(''); 
       return;
     }
@@ -105,7 +102,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
         timeoutId = setTimeout(() => {
           setIsDeleting(false);
           setPhraseIndex((prev) => (prev + 1) % placeholderTexts.length);
-          // setAnimatedPlaceholder(''); // Clear before starting next phrase if needed, or let it be overwritten
           setIsPaused(false);
         }, PAUSE_DURATION / 2);
       }
@@ -115,15 +111,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
   }, [charIndex, isDeleting, phraseIndex, isPaused, currentMessage]);
 
   useEffect(() => {
-    // Reset animation if currentMessage becomes empty after being non-empty
-    // to ensure it starts fresh from the beginning of a phrase.
     if (!currentMessage) {
-      // Reset state for the animation to restart correctly
       setAnimatedPlaceholder('');
       setCharIndex(0);
       setIsDeleting(false);
-      // setPhraseIndex(0); // Optionally reset to the first phrase always
-      setIsPaused(false); // Ensure animation can restart
+      setIsPaused(false); 
     }
   }, [currentMessage]);
 
@@ -168,7 +160,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           placeholder={displayPlaceholder}
           className={cn(
             "flex-grow resize-none overflow-y-auto rounded-3xl bg-card p-4 pr-16 shadow-sm max-h-60 text-base",
-            "input-animated-focus" 
+            "input-animated-focus focus-visible:ring-0 focus-visible:ring-offset-0" 
           )}
           rows={1}
           aria-label="Chat message input"
