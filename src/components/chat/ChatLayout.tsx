@@ -46,6 +46,7 @@ interface ActiveHeart {
 const CLICK_THRESHOLD = 3; // Number of clicks to trigger hearts (e.g., 4th click)
 const CLICK_TIMEOUT_MS = 500; // Max time between clicks to be considered "rapid"
 const HEART_ANIMATION_DURATION_MS = 2000;
+const HEARTS_PER_BURST = 5; // Number of hearts to generate per click burst
 
 const ChatLayout: React.FC = () => {
   const {
@@ -102,16 +103,17 @@ const ChatLayout: React.FC = () => {
     setLastClickTime(currentTime);
 
     if (newClickCount > CLICK_THRESHOLD) {
-      const newHeartId = `heart-${currentTime}-${Math.random()}`;
-      setActiveHearts(prevHearts => [
-        ...prevHearts,
-        { id: newHeartId, x: event.clientX, y: event.clientY },
-      ]);
+      const heartsToSpawn: ActiveHeart[] = [];
+      for (let i = 0; i < HEARTS_PER_BURST; i++) {
+        const newHeartId = `heart-${currentTime}-${Math.random()}-${i}`;
+        heartsToSpawn.push({ id: newHeartId, x: event.clientX, y: event.clientY });
+        
+        setTimeout(() => {
+          setActiveHearts(prevHearts => prevHearts.filter(h => h.id !== newHeartId));
+        }, HEART_ANIMATION_DURATION_MS);
+      }
+      setActiveHearts(prevHearts => [...prevHearts, ...heartsToSpawn]);
       setClickCount(0); // Reset for next sequence
-
-      setTimeout(() => {
-        setActiveHearts(prevHearts => prevHearts.filter(h => h.id !== newHeartId));
-      }, HEART_ANIMATION_DURATION_MS);
     }
   };
 
