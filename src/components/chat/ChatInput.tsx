@@ -67,7 +67,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
     if (isPaused) {
       // Si está en pausa, no hacer nada más en este ciclo del efecto.
-      // El timeout que causó la pausa se encargará de reanudar.
       return;
     }
 
@@ -95,17 +94,17 @@ const ChatInput: React.FC<ChatInputProps> = ({
       } else { // Terminado de borrar la frase actual (animatedPlaceholder está vacío)
         setIsPaused(true);
         timeoutId = setTimeout(() => {
+          setAnimatedPlaceholder(''); // Asegurar que está vacío
           setPhraseIndex(prev => (prev + 1) % placeholderPhrases.length); // Mover a la siguiente frase
           setCharIndex(0); // Reiniciar índice de caracteres para la nueva frase
           setIsTyping(true); // Cambiar a modo escritura para la nueva frase
-          // setAnimatedPlaceholder(''); // Ya está vacío, no es necesario
           setIsPaused(false); // Reanudar
         }, PAUSE_DURATION / 2);
       }
     }
 
     return () => clearTimeout(timeoutId);
-  }, [charIndex, isTyping, phraseIndex, isPaused, currentMessage, animatedPlaceholder]); // Incluir animatedPlaceholder para reaccionar si se limpia externamente
+  }, [charIndex, isTyping, phraseIndex, isPaused, currentMessage]); // animatedPlaceholder eliminado de las dependencias
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCurrentMessage(e.target.value);
@@ -118,10 +117,10 @@ const ChatInput: React.FC<ChatInputProps> = ({
       setCurrentMessage('');
       // Reiniciar animación del placeholder desde el principio si el usuario envía un mensaje.
       setAnimatedPlaceholder('');
+      // setPhraseIndex(0); // Opcional: para volver siempre a la primera frase.
       setCharIndex(0);
       setIsTyping(true);
       setIsPaused(false);
-      // Opcional: setPhraseIndex(0) para volver siempre a la primera frase.
     }
   };
 
