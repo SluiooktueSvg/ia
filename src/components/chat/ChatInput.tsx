@@ -45,6 +45,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
       textareaRef.current.style.height = 'auto'; // Reset height
       if (currentMessage) {
         textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      } else {
+        // Ensure textarea is at its minimum height when placeholder is active and message is empty
+        textareaRef.current.style.height = 'auto'; 
       }
     }
   }, [currentMessage]);
@@ -59,8 +62,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   useEffect(() => {
     if (currentMessage) {
-      // If user is typing, hide animated placeholder
+      // If user is typing, hide animated placeholder and ensure no animation runs
       setAnimatedPlaceholder('');
+      // Optionally reset animation state if desired when user clears input, though current logic handles restart
       return;
     }
 
@@ -78,7 +82,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
         setIsPaused(true);
         timeoutId = setTimeout(() => {
           setIsPaused(false);
-          setIsTyping(false);
+          setIsTyping(false); // Switch to deleting mode
         }, PAUSE_DURATION);
       }
     } else { // Deleting
@@ -91,8 +95,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
         setIsPaused(true);
         timeoutId = setTimeout(() => {
           setIsPaused(false);
-          setIsTyping(true);
-          setPhraseIndex(prev => (prev + 1) % placeholderPhrases.length);
+          setIsTyping(true); // Switch to typing mode
+          setCharIndex(0); // Reset charIndex for the new phrase
+          setPhraseIndex(prev => (prev + 1) % placeholderPhrases.length); // Move to next phrase
         }, PAUSE_DURATION / 2);
       }
     }
@@ -110,6 +115,12 @@ const ChatInput: React.FC<ChatInputProps> = ({
     if (currentMessage.trim()) {
       onSendMessage(currentMessage.trim());
       setCurrentMessage('');
+      // After sending, ensure animation state is ready to restart if input is empty
+      setAnimatedPlaceholder('');
+      setCharIndex(0);
+      // phraseIndex can remain, or be reset if preferred: setPhraseIndex(0);
+      setIsTyping(true);
+      setIsPaused(false);
     }
   };
 
@@ -120,7 +131,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
     }
   };
   
-  const displayPlaceholder = currentMessage ? "" : (animatedPlaceholder + (showCursor && !isPaused ? '|' : ''));
+  const displayPlaceholder = currentMessage ? "" : (animatedPlaceholder + (showCursor && !isPaused && animatedPlaceholder.length < placeholderPhrases[phraseIndex].length ? '|' : (animatedPlaceholder.length === placeholderPhrases[phraseIndex].length && showCursor && isTyping ? '|' : '')));
+
 
   return (
     <form
@@ -140,7 +152,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           placeholder={displayPlaceholder}
           className={cn(
             "flex-grow resize-none overflow-y-auto rounded-3xl bg-card p-4 pr-16 shadow-sm max-h-60 text-base",
-            !currentMessage && "placeholder-muted-foreground/70" // Style for animated placeholder
+            !currentMessage && "placeholder-muted-foreground/70" 
           )}
           rows={1}
           aria-label="Chat message input"
@@ -160,3 +172,4 @@ const ChatInput: React.FC<ChatInputProps> = ({
 };
 
 export default ChatInput;
+
