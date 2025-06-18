@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect, MouseEvent } from 'react';
+import React, { useState, useEffect, MouseEvent, useRef } from 'react';
 import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import { useChatController } from '@/hooks/useChatController';
@@ -35,6 +35,15 @@ const helpMessages = [
   "Estoy lista para procesar tus ideas y preguntas.",
   "La IA está aquí para ti. ¿Cómo empezamos?",
   "Pregunta, crea, descubre. ¡Estoy para asistirte!",
+  "¿Qué misterios resolveremos hoy?",
+  "Tu socio de ideas está listo. ¿Comenzamos?",
+  "¿Hay algo nuevo que quieras aprender o discutir?",
+  "Siempre es un buen momento para una nueva pregunta.",
+  "¿Cómo puedo ser de utilidad en este momento?",
+  "Estoy escuchando. ¿Qué se te ocurre?",
+  "La inteligencia artificial a tu servicio. ¿Qué exploramos?",
+  "¿Tienes un desafío? ¡Vamos a enfrentarlo juntos!",
+  "Conversemos sobre lo que más te interese.",
 ];
 
 interface ActiveHeart {
@@ -48,8 +57,22 @@ const CLICK_TIMEOUT_MS = 500;
 const HEART_ANIMATION_DURATION_MS = 2000;
 const HEARTS_PER_BURST = 5;
 
-const GREETING_PREFIX = "Buenos ";
 const ANIMATION_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789*&%$#@!";
+const GREETING_ANIMATION_INTERVAL_MS = 60; 
+const GREETING_REVEAL_SPEED_FACTOR = 3; 
+const GREETING_TIME_CHECK_INTERVAL_MS = 60000; // Check time every 1 minute
+
+const getGreetingInfo = () => {
+  const currentHour = new Date().getHours();
+  if (currentHour < 12) {
+    return { prefix: 'Buenos ', dynamicPart: 'días' };
+  } else if (currentHour < 18) {
+    return { prefix: 'Buenas ', dynamicPart: 'tardes' };
+  } else {
+    return { prefix: 'Buenas ', dynamicPart: 'noches' };
+  }
+};
+
 
 const ChatLayout: React.FC = () => {
   const {
@@ -63,67 +86,104 @@ const ChatLayout: React.FC = () => {
     loadChat,
   } = useChatController();
 
-  const [animatedGreeting, setAnimatedGreeting] = useState('');
+  const [greetingPrefix, setGreetingPrefix] = useState('');
+  const [targetDynamicGreetingPart, setTargetDynamicGreetingPart] = useState('');
+  const [animatedGreetingDisplay, setAnimatedGreetingDisplay] = useState('');
   const [dynamicHelpText, setDynamicHelpText] = useState('');
   const { toast } = useToast();
 
   const [clickCount, setClickCount] = useState(0);
   const [lastClickTime, setLastClickTime] = useState(0);
   const [activeHearts, setActiveHearts] = useState<ActiveHeart[]>([]);
+  const currentGreetingInfoRef = useRef<{prefix: string, dynamicPart: string} | null>(null);
 
+  // Effect to update target greeting based on time of day
   useEffect(() => {
-    // Greeting animation logic
-    const getDynamicPartOfGreeting = () => {
-      const currentHour = new Date().getHours();
-      if (currentHour < 12) {
-        return 'días';
-      } else if (currentHour < 18) {
-        return 'tardes';
+    const updateAndAnimateGreetingIfNeeded = () => {
+      const { prefix, dynamicPart } = getGreetingInfo();
+      if (
+        !currentGreetingInfoRef.current ||
+        prefix !== currentGreetingInfoRef.current.prefix ||
+        dynamicPart !== currentGreetingInfoRef.current.dynamicPart
+      ) {
+        setGreetingPrefix(prefix);
+        setTargetDynamicGreetingPart(dynamicPart); // This will trigger the animation effect below
+        currentGreetingInfoRef.current = { prefix, dynamicPart };
       } else {
-        return 'noches';
+        // If no change, ensure the display is correct (e.g., after a re-render without time change)
+        // and animation isn't running. This check might be subtle.
+        // A simpler approach is to let the animation effect handle its own completion state.
+        if (animatedGreetingDisplay !== prefix + dynamicPart) {
+           // If it's already correctly set, this won't cause extra renders much
+           // setAnimatedGreetingDisplay(prefix + dynamicPart); // Potentially skip if animation is smart
+        }
       }
     };
-    const targetDynamicPart = getDynamicPartOfGreeting();
 
-    let initialScrambledDynamicPart = "";
-    for (let i = 0; i < targetDynamicPart.length; i++) {
-        initialScrambledDynamicPart += ANIMATION_CHARS[Math.floor(Math.random() * ANIMATION_CHARS.length)];
+    updateAndAnimateGreetingIfNeeded(); // Initial determination
+
+    const timeCheckIntervalId = setInterval(updateAndAnimateGreetingIfNeeded, GREETING_TIME_CHECK_INTERVAL_MS);
+    return () => clearInterval(timeCheckIntervalId);
+  }, []); // Runs once on mount
+
+
+  // Effect to run scramble animation when targetDynamicGreetingPart or greetingPrefix changes
+  useEffect(() => {
+    if (!targetDynamicGreetingPart || !greetingPrefix) {
+      setAnimatedGreetingDisplay(''); // Clear if no target
+      return;
     }
-    setAnimatedGreeting(GREETING_PREFIX + initialScrambledDynamicPart);
+    
+    // If current display already matches the target, no need to re-animate.
+    // This helps prevent re-animation on simple re-renders if target hasn't changed.
+    if (animatedGreetingDisplay === greetingPrefix + targetDynamicGreetingPart) {
+        return;
+    }
+
+    let animationTimeoutId: NodeJS.Timeout;
+    let currentScrambledVisualPart = "";
+    for (let i = 0; i < targetDynamicGreetingPart.length; i++) {
+      currentScrambledVisualPart += ANIMATION_CHARS[Math.floor(Math.random() * ANIMATION_CHARS.length)];
+    }
+    // Set initial scrambled display for the animation
+    setAnimatedGreetingDisplay(greetingPrefix + currentScrambledVisualPart);
 
     let animationProgressCount = 0;
-    const revealSpeedFactor = 3; 
     let charactersRevealed = 0;
-    const scrambleIntervalTime = 60; 
-
-    const intervalId = setInterval(() => {
-        if (charactersRevealed >= targetDynamicPart.length) {
-            setAnimatedGreeting(GREETING_PREFIX + targetDynamicPart);
-            clearInterval(intervalId);
-            return;
-        }
-
-        animationProgressCount++;
-        
-        let currentAnimatingDynamicPart = "";
-        for (let i = 0; i < targetDynamicPart.length; i++) {
-            if (i < charactersRevealed) {
-                currentAnimatingDynamicPart += targetDynamicPart[i];
-            } else {
-                currentAnimatingDynamicPart += ANIMATION_CHARS[Math.floor(Math.random() * ANIMATION_CHARS.length)];
-            }
-        }
-        setAnimatedGreeting(GREETING_PREFIX + currentAnimatingDynamicPart);
-
-        if (animationProgressCount % revealSpeedFactor === 0) {
-            charactersRevealed++;
-        }
-    }, scrambleIntervalTime);
-
-    // Dynamic help text logic
-    setDynamicHelpText(helpMessages[Math.floor(Math.random() * helpMessages.length)]);
     
-    return () => clearInterval(intervalId);
+    const animate = () => {
+      if (charactersRevealed >= targetDynamicGreetingPart.length) {
+        setAnimatedGreetingDisplay(greetingPrefix + targetDynamicGreetingPart); // Final correct greeting
+        return; // Animation complete
+      }
+
+      animationProgressCount++;
+      
+      let nextScrambledVisualPart = "";
+      for (let i = 0; i < targetDynamicGreetingPart.length; i++) {
+        if (i < charactersRevealed) {
+          nextScrambledVisualPart += targetDynamicGreetingPart[i];
+        } else {
+          nextScrambledVisualPart += ANIMATION_CHARS[Math.floor(Math.random() * ANIMATION_CHARS.length)];
+        }
+      }
+      setAnimatedGreetingDisplay(greetingPrefix + nextScrambledVisualPart);
+
+      if (animationProgressCount % GREETING_REVEAL_SPEED_FACTOR === 0 && charactersRevealed < targetDynamicGreetingPart.length) {
+        charactersRevealed++;
+      }
+      animationTimeoutId = setTimeout(animate, GREETING_ANIMATION_INTERVAL_MS);
+    };
+
+    animate(); // Start the animation
+    
+    return () => {
+      clearTimeout(animationTimeoutId); // Cleanup on unmount or if dependencies change
+    };
+  }, [targetDynamicGreetingPart, greetingPrefix]); // Re-run animation if target part or prefix changes
+
+  useEffect(() => {
+    setDynamicHelpText(helpMessages[Math.floor(Math.random() * helpMessages.length)]);
   }, []);
 
 
@@ -141,7 +201,7 @@ const ChatLayout: React.FC = () => {
     setClickCount(newClickCount);
     setLastClickTime(currentTime);
 
-    if (newClickCount > CLICK_THRESHOLD) {
+    if (newClickCount >= CLICK_THRESHOLD) { // Changed to >= for clarity, makes it fire on 3rd quick click
       const heartsToSpawn: ActiveHeart[] = [];
       for (let i = 0; i < HEARTS_PER_BURST; i++) {
         const newHeartId = `heart-${currentTime}-${Math.random()}-${i}`;
@@ -152,7 +212,7 @@ const ChatLayout: React.FC = () => {
         }, HEART_ANIMATION_DURATION_MS);
       }
       setActiveHearts(prevHearts => [...prevHearts, ...heartsToSpawn]);
-      setClickCount(0);
+      setClickCount(0); // Reset click count after burst
     }
   };
 
@@ -201,7 +261,7 @@ const ChatLayout: React.FC = () => {
         <div className="flex flex-grow flex-col justify-between">
           <div className="flex flex-grow flex-col items-center justify-center p-4">
             <div className="text-center mb-8">
-              {animatedGreeting && <p className="text-4xl mt-4 font-greeting font-semibold text-gradient-animated">{animatedGreeting}</p>}
+              {animatedGreetingDisplay && <p className="text-4xl mt-4 font-greeting font-semibold text-gradient-animated">{animatedGreetingDisplay}</p>}
               {dynamicHelpText && <p className="text-muted-foreground mt-2">{dynamicHelpText}</p>}
             </div>
             <div className="w-full max-w-xl">
@@ -240,3 +300,5 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
+
+    
