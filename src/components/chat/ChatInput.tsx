@@ -60,13 +60,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   useEffect(() => { // Lógica de animación del placeholder
     if (currentMessage) {
-      // Si el usuario está escribiendo, limpiar el placeholder animado y detener la animación.
       if (animatedPlaceholder !== '') setAnimatedPlaceholder('');
       return;
     }
 
     if (isPaused) {
-      // Si está en pausa, no hacer nada más en este ciclo del efecto.
       return;
     }
 
@@ -82,7 +80,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
         setIsPaused(true);
         timeoutId = setTimeout(() => {
           setIsPaused(false);
-          setIsTyping(false); // Cambiar a modo borrado
+          setIsTyping(false); 
         }, PAUSE_DURATION);
       }
     } else { // Modo borrado
@@ -94,17 +92,18 @@ const ChatInput: React.FC<ChatInputProps> = ({
       } else { // Terminado de borrar la frase actual (animatedPlaceholder está vacío)
         setIsPaused(true);
         timeoutId = setTimeout(() => {
-          setAnimatedPlaceholder(''); // Asegurar que está vacío
-          setPhraseIndex(prev => (prev + 1) % placeholderPhrases.length); // Mover a la siguiente frase
-          setCharIndex(0); // Reiniciar índice de caracteres para la nueva frase
-          setIsTyping(true); // Cambiar a modo escritura para la nueva frase
-          setIsPaused(false); // Reanudar
+          setPhraseIndex(prev => (prev + 1) % placeholderPhrases.length);
+          // setAnimatedPlaceholder(''); // No es necesario, charIndex = 0 ya lo maneja
+          // setCharIndex(0); // Ya es 0
+          setIsTyping(true);
+          setIsPaused(false);
         }, PAUSE_DURATION / 2);
       }
     }
 
     return () => clearTimeout(timeoutId);
-  }, [charIndex, isTyping, phraseIndex, isPaused, currentMessage]); // animatedPlaceholder eliminado de las dependencias
+  }, [charIndex, isTyping, phraseIndex, isPaused, currentMessage]);
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCurrentMessage(e.target.value);
@@ -132,7 +131,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
   };
   
   const placeholderTextToShow = currentMessage ? "" : animatedPlaceholder;
-  // El cursor parpadea si el usuario no está escribiendo y showCursor es true
   const displayBlinkingCursor = !currentMessage && showCursor;
 
   return (
@@ -150,7 +148,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           value={currentMessage}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          placeholder={placeholderTextToShow + (displayBlinkingCursor ? '|' : '')}
+          placeholder={placeholderTextToShow + (displayBlinkingCursor ? '▋' : '')}
           className={cn(
             "flex-grow resize-none overflow-y-auto rounded-3xl bg-card p-4 pr-16 shadow-sm max-h-60 text-base",
             !currentMessage && "placeholder-muted-foreground/70" 
