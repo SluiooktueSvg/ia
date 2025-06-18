@@ -8,7 +8,7 @@ import { useChatController } from '@/hooks/useChatController';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import LSAIGLogo from '@/components/AuraChatLogo';
 import { Button } from '@/components/ui/button';
-import { Save, FolderOpen, Trash2, Heart } from 'lucide-react'; // Added Heart
+import { Save, FolderOpen, Trash2, Heart } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
 
@@ -43,10 +43,13 @@ interface ActiveHeart {
   y: number;
 }
 
-const CLICK_THRESHOLD = 3; // Number of clicks to trigger hearts (e.g., 4th click)
-const CLICK_TIMEOUT_MS = 500; // Max time between clicks to be considered "rapid"
+const CLICK_THRESHOLD = 3;
+const CLICK_TIMEOUT_MS = 500;
 const HEART_ANIMATION_DURATION_MS = 2000;
-const HEARTS_PER_BURST = 5; // Number of hearts to generate per click burst
+const HEARTS_PER_BURST = 5;
+
+const GREETING_PREFIX = "Buenos ";
+const ANIMATION_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789*&%$#@!";
 
 const ChatLayout: React.FC = () => {
   const {
@@ -60,45 +63,81 @@ const ChatLayout: React.FC = () => {
     loadChat,
   } = useChatController();
 
-  const [greeting, setGreeting] = useState('');
+  const [animatedGreeting, setAnimatedGreeting] = useState('');
   const [dynamicHelpText, setDynamicHelpText] = useState('');
   const { toast } = useToast();
 
-  // State for heart Easter egg
   const [clickCount, setClickCount] = useState(0);
   const [lastClickTime, setLastClickTime] = useState(0);
   const [activeHearts, setActiveHearts] = useState<ActiveHeart[]>([]);
 
   useEffect(() => {
-    const getCurrentGreeting = () => {
+    // Greeting animation logic
+    const getDynamicPartOfGreeting = () => {
       const currentHour = new Date().getHours();
       if (currentHour < 12) {
-        return 'Buenos días';
+        return 'días';
       } else if (currentHour < 18) {
-        return 'Buenas tardes';
+        return 'tardes';
       } else {
-        return 'Buenas noches';
+        return 'noches';
       }
     };
-    setGreeting(getCurrentGreeting());
+    const targetDynamicPart = getDynamicPartOfGreeting();
+
+    let initialScrambledDynamicPart = "";
+    for (let i = 0; i < targetDynamicPart.length; i++) {
+        initialScrambledDynamicPart += ANIMATION_CHARS[Math.floor(Math.random() * ANIMATION_CHARS.length)];
+    }
+    setAnimatedGreeting(GREETING_PREFIX + initialScrambledDynamicPart);
+
+    let animationProgressCount = 0;
+    const revealSpeedFactor = 3; 
+    let charactersRevealed = 0;
+    const scrambleIntervalTime = 60; 
+
+    const intervalId = setInterval(() => {
+        if (charactersRevealed >= targetDynamicPart.length) {
+            setAnimatedGreeting(GREETING_PREFIX + targetDynamicPart);
+            clearInterval(intervalId);
+            return;
+        }
+
+        animationProgressCount++;
+        
+        let currentAnimatingDynamicPart = "";
+        for (let i = 0; i < targetDynamicPart.length; i++) {
+            if (i < charactersRevealed) {
+                currentAnimatingDynamicPart += targetDynamicPart[i];
+            } else {
+                currentAnimatingDynamicPart += ANIMATION_CHARS[Math.floor(Math.random() * ANIMATION_CHARS.length)];
+            }
+        }
+        setAnimatedGreeting(GREETING_PREFIX + currentAnimatingDynamicPart);
+
+        if (animationProgressCount % revealSpeedFactor === 0) {
+            charactersRevealed++;
+        }
+    }, scrambleIntervalTime);
+
+    // Dynamic help text logic
     setDynamicHelpText(helpMessages[Math.floor(Math.random() * helpMessages.length)]);
+    
+    return () => clearInterval(intervalId);
   }, []);
 
+
   const handlePageClick = (event: MouseEvent<HTMLDivElement>) => {
-    // Ignore clicks on the chat input form or its children
     if ((event.target as HTMLElement).closest('#chat-input-form')) {
       return;
     }
-
     const currentTime = Date.now();
     let newClickCount;
-
     if (currentTime - lastClickTime > CLICK_TIMEOUT_MS) {
       newClickCount = 1;
     } else {
       newClickCount = clickCount + 1;
     }
-
     setClickCount(newClickCount);
     setLastClickTime(currentTime);
 
@@ -113,14 +152,14 @@ const ChatLayout: React.FC = () => {
         }, HEART_ANIMATION_DURATION_MS);
       }
       setActiveHearts(prevHearts => [...prevHearts, ...heartsToSpawn]);
-      setClickCount(0); // Reset for next sequence
+      setClickCount(0);
     }
   };
 
   return (
     <SidebarInset
       className="flex h-screen flex-col bg-background md:m-0 md:rounded-none md:shadow-none"
-      onClick={handlePageClick} // Attach click listener here
+      onClick={handlePageClick}
     >
       <div className="flex items-center justify-between p-3 md:p-4">
         <div className="flex items-center gap-2">
@@ -162,7 +201,7 @@ const ChatLayout: React.FC = () => {
         <div className="flex flex-grow flex-col justify-between">
           <div className="flex flex-grow flex-col items-center justify-center p-4">
             <div className="text-center mb-8">
-              {greeting && <p className="text-4xl mt-4 font-greeting font-semibold text-gradient-animated">{greeting}</p>}
+              {animatedGreeting && <p className="text-4xl mt-4 font-greeting font-semibold text-gradient-animated">{animatedGreeting}</p>}
               {dynamicHelpText && <p className="text-muted-foreground mt-2">{dynamicHelpText}</p>}
             </div>
             <div className="w-full max-w-xl">
@@ -181,7 +220,6 @@ const ChatLayout: React.FC = () => {
         </div>
       )}
 
-      {/* Render active hearts */}
       {activeHearts.map(heart => (
         <Heart
           key={heart.id}
@@ -189,12 +227,12 @@ const ChatLayout: React.FC = () => {
           style={{
             left: `${heart.x}px`,
             top: `${heart.y}px`,
-            transform: 'translate(-50%, -50%)', // Center icon on click
-            pointerEvents: 'none', // Hearts should not be interactive
-            zIndex: 9999, // Ensure hearts are on top
+            transform: 'translate(-50%, -50%)',
+            pointerEvents: 'none',
+            zIndex: 9999,
           }}
-          size={24} // Adjust size as needed
-          fill="currentColor" // Makes the heart solid
+          size={24}
+          fill="currentColor"
         />
       ))}
     </SidebarInset>
