@@ -70,10 +70,16 @@ const ChatInput: React.FC<ChatInputProps> = ({
   useEffect(() => {
     if (currentMessage) {
       // If user starts typing, ensure animated placeholder is cleared
-      // and reset animation state if necessary (though the condition below handles most of it)
       setAnimatedPlaceholder(''); 
-      return;
+      return; // Stop the animation effect
     }
+
+    // Resume animation if input is cleared and was previously paused by typing
+    if (!currentMessage && animatedPlaceholder === '' && charIndex === 0 && !isPaused) {
+        // This condition helps restart if it was completely cleared by typing.
+        // It might need more robust logic if issues persist with restarting after clearing.
+    }
+
 
     if (isPaused) return;
 
@@ -83,8 +89,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
     if (!isDeleting) { // Typing
       if (charIndex < currentPhrase.length) {
         timeoutId = setTimeout(() => {
-          setAnimatedPlaceholder((prev) => currentPhrase.substring(0, charIndex + 1));
-          setCharIndex((prev) => prev + 1);
+          setAnimatedPlaceholder(currentPhrase.substring(0, charIndex + 1));
+          setCharIndex(prev => prev + 1);
         }, TYPING_SPEED);
       } else { // Finished typing
         setIsPaused(true);
@@ -96,35 +102,22 @@ const ChatInput: React.FC<ChatInputProps> = ({
     } else { // Deleting
       if (charIndex > 0) {
         timeoutId = setTimeout(() => {
-          setAnimatedPlaceholder((prev) => currentPhrase.substring(0, charIndex -1));
-          setCharIndex((prev) => prev - 1);
+          setAnimatedPlaceholder(currentPhrase.substring(0, charIndex -1));
+          setCharIndex(prev => prev - 1);
         }, DELETING_SPEED);
       } else { // Finished deleting
         setIsPaused(true);
         timeoutId = setTimeout(() => {
           setIsDeleting(false);
-          setPhraseIndex((prev) => (prev + 1) % placeholderTexts.length);
+          setPhraseIndex(prev => (prev + 1) % placeholderTexts.length);
+          // charIndex is already 0, setAnimatedPlaceholder will be handled by the typing part
           setIsPaused(false);
-          // No need to reset charIndex here as it's already 0
         }, PAUSE_DURATION / 2); // Shorter pause after deleting
       }
     }
 
     return () => clearTimeout(timeoutId);
   }, [charIndex, isDeleting, phraseIndex, isPaused, currentMessage]);
-
-  // Effect to reset animation when user clears input after typing
-  useEffect(() => {
-    if (!currentMessage) {
-      // Restart animation from a clean slate if input becomes empty
-      // This ensures if user types then clears, animation restarts correctly
-      setAnimatedPlaceholder(''); // Clear any remnants
-      setCharIndex(0); // Start typing from beginning of current/next phrase
-      setIsDeleting(false); // Ensure it starts by typing
-      setIsPaused(false); // Ensure it's not paused
-      // phraseIndex will continue from where it left off or was set by deleting phase
-    }
-  }, [currentMessage]);
 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -167,8 +160,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           onKeyDown={handleKeyDown}
           placeholder={displayPlaceholder}
           className={cn(
-            "flex-grow resize-none overflow-y-auto rounded-3xl bg-card p-4 pr-16 shadow-sm max-h-60 text-base",
-            // Removed input-animated-focus class as it might conflict with placeholder logic or not be desired here
+            "flex-grow resize-none overflow-y-auto rounded-3xl bg-card p-4 pr-16 shadow-sm max-h-60 text-base"
           )}
           rows={1}
           aria-label="Chat message input"
