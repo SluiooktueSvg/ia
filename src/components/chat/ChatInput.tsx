@@ -14,7 +14,14 @@ interface ChatInputProps {
   isCentered?: boolean;
 }
 
-const staticPlaceholderPhrase = "Escribe tu mensaje...";
+const placeholderPhrases = [
+  "Escribe tu mensaje...",
+  "¿En qué puedo ayudarte hoy?",
+  "Pregúntame lo que quieras...",
+  "¿Tienes alguna duda?",
+  "Cuéntame una idea...",
+  "Exploremos juntos...",
+];
 const TYPING_SPEED = 100;
 const DELETING_SPEED = 50;
 const PAUSE_DURATION = 1500;
@@ -27,8 +34,10 @@ const ChatInput: React.FC<ChatInputProps> = ({
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [animatedPlaceholder, setAnimatedPlaceholder] = useState('');
-  const [isTyping, setIsTyping] = useState(true);
+  const [phraseIndex, setPhraseIndex] = useState(0);
   const [charIndex, setCharIndex] = useState(0);
+  const [isTyping, setIsTyping] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
   const [showCursor, setShowCursor] = useState(true);
 
   useEffect(() => {
@@ -55,16 +64,22 @@ const ChatInput: React.FC<ChatInputProps> = ({
       return;
     }
 
+    if (isPaused) return;
+
     let timeoutId: NodeJS.Timeout;
 
     if (isTyping) {
-      if (charIndex < staticPlaceholderPhrase.length) {
+      if (charIndex < placeholderPhrases[phraseIndex].length) {
         timeoutId = setTimeout(() => {
-          setAnimatedPlaceholder(prev => prev + staticPlaceholderPhrase[charIndex]);
+          setAnimatedPlaceholder(prev => prev + placeholderPhrases[phraseIndex][charIndex]);
           setCharIndex(prev => prev + 1);
         }, TYPING_SPEED);
-      } else {
-        timeoutId = setTimeout(() => setIsTyping(false), PAUSE_DURATION);
+      } else { // Finished typing current phrase
+        setIsPaused(true);
+        timeoutId = setTimeout(() => {
+          setIsPaused(false);
+          setIsTyping(false);
+        }, PAUSE_DURATION);
       }
     } else { // Deleting
       if (charIndex > 0) {
@@ -72,15 +87,18 @@ const ChatInput: React.FC<ChatInputProps> = ({
           setAnimatedPlaceholder(prev => prev.substring(0, prev.length - 1));
           setCharIndex(prev => prev - 1);
         }, DELETING_SPEED);
-      } else {
+      } else { // Finished deleting current phrase
+        setIsPaused(true);
         timeoutId = setTimeout(() => {
+          setIsPaused(false);
           setIsTyping(true);
+          setPhraseIndex(prev => (prev + 1) % placeholderPhrases.length);
         }, PAUSE_DURATION / 2);
       }
     }
 
     return () => clearTimeout(timeoutId);
-  }, [charIndex, isTyping, currentMessage]);
+  }, [charIndex, isTyping, phraseIndex, isPaused, currentMessage]);
 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -102,7 +120,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
     }
   };
   
-  const displayPlaceholder = currentMessage ? "" : (animatedPlaceholder + (showCursor ? '|' : ''));
+  const displayPlaceholder = currentMessage ? "" : (animatedPlaceholder + (showCursor && !isPaused ? '|' : ''));
 
   return (
     <form
