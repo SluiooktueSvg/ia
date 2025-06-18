@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { format } from 'date-fns';
 import type { ChatMessage } from '@/types/chat';
@@ -10,11 +11,32 @@ interface MessageBubbleProps {
   message: ChatMessage;
 }
 
+const formatMarkdownToHtml = (text: string): string => {
+  let html = text;
+
+  // Negrita: **texto** o __texto__
+  // Se procesan primero para evitar conflictos con la cursiva simple.
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
+
+  // Cursiva: *texto* o _texto_
+  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  html = html.replace(/_(.*?)_/g, '<em>$1</em>');
+  
+  // Convertir saltos de línea a <br> para HTML, ya que whitespace-pre-wrap no se aplicará con dangerouslySetInnerHTML
+  // de la misma manera que con contenido de texto directo.
+  html = html.replace(/\n/g, '<br />');
+
+  return html;
+};
+
 const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
   const isUser = message.sender === 'user';
   const avatarLabel = isUser ? 'U' : 'AI';
   const avatarColor = isUser ? 'bg-primary text-primary-foreground' : 'bg-accent text-accent-foreground';
   
+  const formattedText = message.sender === 'ai' ? formatMarkdownToHtml(message.text) : message.text;
+
   return (
     <div
       className={cn(
@@ -37,7 +59,15 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
           isUser ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card text-card-foreground rounded-bl-none'
         )}
       >
-        <p id={`message-text-${message.id}`} className="text-sm whitespace-pre-wrap break-words">{message.text}</p>
+        {message.sender === 'ai' ? (
+          <p 
+            id={`message-text-${message.id}`} 
+            className="text-sm break-words" // whitespace-pre-wrap puede no ser necesario o tener efectos no deseados con <br />
+            dangerouslySetInnerHTML={{ __html: formattedText }}
+          />
+        ) : (
+          <p id={`message-text-${message.id}`} className="text-sm whitespace-pre-wrap break-words">{message.text}</p>
+        )}
         <div id={`message-meta-${message.id}`} className={cn("mt-1.5 flex items-center gap-2 text-xs", isUser ? "text-primary-foreground/70" : "text-muted-foreground")}>
           <span>{format(new Date(message.timestamp), 'p')}</span>
           {!isUser && <SentimentIndicator sentiment={message.sentiment} isLoading={message.sentimentLoading} />}
