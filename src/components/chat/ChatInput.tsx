@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { SendHorizontal } from 'lucide-react';
@@ -14,21 +14,6 @@ interface ChatInputProps {
   isCentered?: boolean;
 }
 
-const placeholderTexts = [
-  "Escribe tu mensaje...",
-  "Dame una receta de pastel de chocolate",
-  "¿Cuáles son los 5 mejores tips para viajar barato?",
-  "¿Qué hora es en Nueva Delhi, India?",
-  "Escríbeme un poema sobre la luna",
-  "Cuéntame un chiste corto",
-  "Explica cómo funciona un motor de combustión",
-];
-
-const TYPING_SPEED = 100; // milliseconds
-const DELETING_SPEED = 50; // milliseconds
-const PAUSE_DURATION = 1500; // milliseconds
-const CURSOR_BLINK_RATE = 530; // milliseconds
-
 const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,
   currentMessage,
@@ -36,89 +21,15 @@ const ChatInput: React.FC<ChatInputProps> = ({
   isCentered = false,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [animatedPlaceholder, setAnimatedPlaceholder] = useState('');
-  const [phraseIndex, setPhraseIndex] = useState(0);
-  const [charIndex, setCharIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const [placeholderCursor, setPlaceholderCursor] = useState('▋');
 
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      if (currentMessage) {
+      textareaRef.current.style.height = 'auto'; // Reset height
+      if (currentMessage) { // Only adjust if there's content
         textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-      } else {
-        textareaRef.current.style.height = 'auto'; // Reset to single line if currentMessage is cleared
       }
     }
   }, [currentMessage]);
-
-  useEffect(() => {
-    // Blinking cursor effect for the placeholder
-    if (!currentMessage) { // Only blink if user hasn't typed
-      const cursorInterval = setInterval(() => {
-        setPlaceholderCursor(prev => (prev === '▋' ? '\u00A0' : '▋')); // Use non-breaking space to prevent collapse
-      }, CURSOR_BLINK_RATE);
-      return () => clearInterval(cursorInterval);
-    } else {
-      setPlaceholderCursor(''); // No cursor if user is typing
-    }
-  }, [currentMessage]);
-
-
-  useEffect(() => {
-    if (currentMessage) {
-      // If user starts typing, ensure animated placeholder is cleared
-      setAnimatedPlaceholder(''); 
-      return; // Stop the animation effect
-    }
-
-    // Resume animation if input is cleared and was previously paused by typing
-    if (!currentMessage && animatedPlaceholder === '' && charIndex === 0 && !isPaused) {
-        // This condition helps restart if it was completely cleared by typing.
-        // It might need more robust logic if issues persist with restarting after clearing.
-    }
-
-
-    if (isPaused) return;
-
-    const currentPhrase = placeholderTexts[phraseIndex];
-    let timeoutId: NodeJS.Timeout;
-
-    if (!isDeleting) { // Typing
-      if (charIndex < currentPhrase.length) {
-        timeoutId = setTimeout(() => {
-          setAnimatedPlaceholder(currentPhrase.substring(0, charIndex + 1));
-          setCharIndex(prev => prev + 1);
-        }, TYPING_SPEED);
-      } else { // Finished typing
-        setIsPaused(true);
-        timeoutId = setTimeout(() => {
-          setIsDeleting(true);
-          setIsPaused(false);
-        }, PAUSE_DURATION);
-      }
-    } else { // Deleting
-      if (charIndex > 0) {
-        timeoutId = setTimeout(() => {
-          setAnimatedPlaceholder(currentPhrase.substring(0, charIndex -1));
-          setCharIndex(prev => prev - 1);
-        }, DELETING_SPEED);
-      } else { // Finished deleting
-        setIsPaused(true);
-        timeoutId = setTimeout(() => {
-          setIsDeleting(false);
-          setPhraseIndex(prev => (prev + 1) % placeholderTexts.length);
-          // charIndex is already 0, setAnimatedPlaceholder will be handled by the typing part
-          setIsPaused(false);
-        }, PAUSE_DURATION / 2); // Shorter pause after deleting
-      }
-    }
-
-    return () => clearTimeout(timeoutId);
-  }, [charIndex, isDeleting, phraseIndex, isPaused, currentMessage]);
-
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCurrentMessage(e.target.value);
@@ -139,10 +50,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
     }
   };
   
-  const displayPlaceholder = currentMessage 
-    ? "" 
-    : `${animatedPlaceholder}${placeholderCursor}`;
-
   return (
     <form
       id="chat-input-form" 
@@ -158,7 +65,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           value={currentMessage}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          placeholder={displayPlaceholder}
+          placeholder="Escribe tu mensaje..."
           className={cn(
             "flex-grow resize-none overflow-y-auto rounded-3xl bg-card p-4 pr-16 shadow-sm max-h-60 text-base"
           )}
