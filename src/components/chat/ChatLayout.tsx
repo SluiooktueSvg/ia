@@ -107,16 +107,8 @@ const ChatLayout: React.FC = () => {
         dynamicPart !== currentGreetingInfoRef.current.dynamicPart
       ) {
         setGreetingPrefix(prefix);
-        setTargetDynamicGreetingPart(dynamicPart); // This will trigger the animation effect below
+        setTargetDynamicGreetingPart(dynamicPart); 
         currentGreetingInfoRef.current = { prefix, dynamicPart };
-      } else {
-        // If no change, ensure the display is correct (e.g., after a re-render without time change)
-        // and animation isn't running. This check might be subtle.
-        // A simpler approach is to let the animation effect handle its own completion state.
-        if (animatedGreetingDisplay !== prefix + dynamicPart) {
-           // If it's already correctly set, this won't cause extra renders much
-           // setAnimatedGreetingDisplay(prefix + dynamicPart); // Potentially skip if animation is smart
-        }
       }
     };
 
@@ -124,7 +116,7 @@ const ChatLayout: React.FC = () => {
 
     const timeCheckIntervalId = setInterval(updateAndAnimateGreetingIfNeeded, GREETING_TIME_CHECK_INTERVAL_MS);
     return () => clearInterval(timeCheckIntervalId);
-  }, []); // Runs once on mount
+  }, []); 
 
 
   // Effect to run scramble animation when targetDynamicGreetingPart or greetingPrefix changes
@@ -134,9 +126,7 @@ const ChatLayout: React.FC = () => {
       return;
     }
     
-    // If current display already matches the target, no need to re-animate.
-    // This helps prevent re-animation on simple re-renders if target hasn't changed.
-    if (animatedGreetingDisplay === greetingPrefix + targetDynamicGreetingPart) {
+    if (animatedGreetingDisplay === greetingPrefix + targetDynamicGreetingPart && animatedGreetingDisplay !== greetingPrefix) {
         return;
     }
 
@@ -145,7 +135,6 @@ const ChatLayout: React.FC = () => {
     for (let i = 0; i < targetDynamicGreetingPart.length; i++) {
       currentScrambledVisualPart += ANIMATION_CHARS[Math.floor(Math.random() * ANIMATION_CHARS.length)];
     }
-    // Set initial scrambled display for the animation
     setAnimatedGreetingDisplay(greetingPrefix + currentScrambledVisualPart);
 
     let animationProgressCount = 0;
@@ -201,7 +190,7 @@ const ChatLayout: React.FC = () => {
     setClickCount(newClickCount);
     setLastClickTime(currentTime);
 
-    if (newClickCount >= CLICK_THRESHOLD) { // Changed to >= for clarity, makes it fire on 3rd quick click
+    if (newClickCount >= CLICK_THRESHOLD) { 
       const heartsToSpawn: ActiveHeart[] = [];
       for (let i = 0; i < HEARTS_PER_BURST; i++) {
         const newHeartId = `heart-${currentTime}-${Math.random()}-${i}`;
