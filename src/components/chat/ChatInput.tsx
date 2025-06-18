@@ -69,6 +69,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   useEffect(() => {
     if (currentMessage) {
+      // If user starts typing, ensure animated placeholder is cleared
+      // and reset animation state if necessary (though the condition below handles most of it)
       setAnimatedPlaceholder(''); 
       return;
     }
@@ -103,19 +105,24 @@ const ChatInput: React.FC<ChatInputProps> = ({
           setIsDeleting(false);
           setPhraseIndex((prev) => (prev + 1) % placeholderTexts.length);
           setIsPaused(false);
-        }, PAUSE_DURATION / 2);
+          // No need to reset charIndex here as it's already 0
+        }, PAUSE_DURATION / 2); // Shorter pause after deleting
       }
     }
 
     return () => clearTimeout(timeoutId);
   }, [charIndex, isDeleting, phraseIndex, isPaused, currentMessage]);
 
+  // Effect to reset animation when user clears input after typing
   useEffect(() => {
     if (!currentMessage) {
-      setAnimatedPlaceholder('');
-      setCharIndex(0);
-      setIsDeleting(false);
-      setIsPaused(false); 
+      // Restart animation from a clean slate if input becomes empty
+      // This ensures if user types then clears, animation restarts correctly
+      setAnimatedPlaceholder(''); // Clear any remnants
+      setCharIndex(0); // Start typing from beginning of current/next phrase
+      setIsDeleting(false); // Ensure it starts by typing
+      setIsPaused(false); // Ensure it's not paused
+      // phraseIndex will continue from where it left off or was set by deleting phase
     }
   }, [currentMessage]);
 
@@ -145,7 +152,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   return (
     <form
-      id="chat-input-form" // Added ID here
+      id="chat-input-form" 
       onSubmit={handleSubmit}
       className={cn(
         "relative bg-background p-3 md:p-4",
@@ -160,7 +167,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
           onKeyDown={handleKeyDown}
           placeholder={displayPlaceholder}
           className={cn(
-            "flex-grow resize-none overflow-y-auto rounded-3xl bg-card p-4 pr-16 shadow-sm max-h-60 text-base"
+            "flex-grow resize-none overflow-y-auto rounded-3xl bg-card p-4 pr-16 shadow-sm max-h-60 text-base",
+            // Removed input-animated-focus class as it might conflict with placeholder logic or not be desired here
           )}
           rows={1}
           aria-label="Chat message input"
