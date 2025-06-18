@@ -126,6 +126,7 @@ const ChatLayout: React.FC = () => {
       return;
     }
     
+    // Prevent re-animation if the display already matches the target
     if (animatedGreetingDisplay === greetingPrefix + targetDynamicGreetingPart && animatedGreetingDisplay !== greetingPrefix) {
         return;
     }
@@ -289,5 +290,7 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
+
+    
 
     
