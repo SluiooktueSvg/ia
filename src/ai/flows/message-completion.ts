@@ -46,10 +46,10 @@ Engage in a natural, conversational manner. Remember to be a good listener and r
 
 **Conversation History:**
 {{#each history}}
-  {{#if (eq sender "user")}}
-    User: {{{text}}}
+  {{#if (this.sender === "user")}}
+    User: {{{this.text}}}
   {{else}}
-    LSAIG: {{{text}}}
+    LSAIG: {{{this.text}}}
   {{/if}}
 {{/each}}
 
@@ -68,9 +68,6 @@ For all other questions or topics not covered by the specific instructions above
 **New Message from User:**
 User: {{{userInputText}}}
 LSAIG:`,
-  // This is where custom helpers like 'eq' would be defined if needed,
-  // but it's better to use built-in Handlebars logic if possible.
-  // For this fix, we are changing the template itself.
 });
 
 const completeMessageFlow = ai.defineFlow(
@@ -80,9 +77,6 @@ const completeMessageFlow = ai.defineFlow(
     outputSchema: MessageCompletionOutputSchema,
   },
   async (input: MessageCompletionInput) => {
-    // To use a custom helper, you would register it with Handlebars,
-    // but Genkit's prompt definition doesn't expose that directly.
-    // The correct fix is to adjust the prompt template.
     const {output} = await chatResponsePrompt(input);
     return output!;
   }

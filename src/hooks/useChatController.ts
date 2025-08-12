@@ -68,13 +68,15 @@ export function useChatController() {
       timestamp: Date.now(),
     };
     
-    // Create the history before setting the new state
-    const historyForAI = [...messages, userMessage].map(m => ({
+    const newMessages = [...messages, userMessage];
+
+    // Create the history for the AI call *before* updating state
+    const historyForAI = newMessages.map(m => ({
         sender: m.sender,
         text: m.text,
     }));
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages(newMessages);
     setCurrentInput('');
 
     const aiMessageId = Date.now().toString() + '-ai';
@@ -90,7 +92,7 @@ export function useChatController() {
     try {
       const responseInput: MessageCompletionInput = { 
         userInputText: text,
-        history: historyForAI,
+        history: historyForAI.slice(0, -1), // Send history *excluding* the latest user message which is the main input
        };
       const aiResponse = await completeMessage(responseInput);
       
