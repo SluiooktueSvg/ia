@@ -125,6 +125,7 @@ export default {
         'shake': 'shake 0.4s ease-in-out',
         'pulse-custom': 'pulse-custom 0.4s ease-in-out',
         'float-fade': 'float-fade 2s ease-out forwards', // New animation class
+        'animated-border-glow': 'animated-gradient-text 3s linear infinite', // New animation for border
       },
     },
   },

@@ -139,8 +139,8 @@ body {
     transition: opacity 0.3s ease-in-out;
   }
   
-  .input-animated-focus:focus::before {
+  .input-animated-focus:focus-within::before {
     opacity: 1;
-    animation: animated-border-glow 3s linear infinite;
+    animation: animated-gradient-text 3s linear infinite;
   }
 }
