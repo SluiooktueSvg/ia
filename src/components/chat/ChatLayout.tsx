@@ -250,7 +250,7 @@ const ChatLayout: React.FC = () => {
       ) : (
         <div className="flex flex-grow flex-col justify-between">
           <div className="flex flex-grow flex-col items-center justify-center p-4">
-            <div className="text-center mb-8">
+            <div className="text-center mb-4">
               {animatedGreetingDisplay && <p className="text-3xl md:text-4xl mt-4 font-greeting font-semibold text-gradient-animated">{animatedGreetingDisplay}</p>}
               {dynamicHelpText && <p className="text-muted-foreground mt-2">{dynamicHelpText}</p>}
             </div>
@@ -290,3 +290,5 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
+
+    
