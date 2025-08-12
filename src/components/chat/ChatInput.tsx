@@ -107,9 +107,16 @@ const ChatInput: React.FC<ChatInputProps> = ({
   // --- Autoresize Textarea ---
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto'; // Reset height
-      if (currentMessage) {
-        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      textareaRef.current.style.height = 'auto'; // Reset height to recalculate
+      const scrollHeight = textareaRef.current.scrollHeight;
+      // Set a max-height to prevent it from growing indefinitely
+      const maxHeight = 128; // 8rem or 128px
+      if (scrollHeight > maxHeight) {
+          textareaRef.current.style.height = `${maxHeight}px`;
+          textareaRef.current.style.overflowY = 'auto';
+      } else {
+          textareaRef.current.style.height = `${scrollHeight}px`;
+          textareaRef.current.style.overflowY = 'hidden';
       }
     }
   }, [currentMessage]);
@@ -145,7 +152,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
         !isCentered && "border-t border-border"
       )}
     >
-      <div className="relative flex items-end gap-2">
+      <div className="relative flex w-full items-end">
         <Textarea
           ref={textareaRef}
           value={currentMessage}
@@ -153,7 +160,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           onKeyDown={handleKeyDown}
           placeholder={placeholderTextToShow + (displayBlinkingCursor ? '▋' : '')}
           className={cn(
-            "flex-grow resize-none overflow-y-auto rounded-full bg-card p-3 pl-4 pr-12 shadow-sm max-h-48 text-base",
+            "flex-grow resize-none overflow-y-hidden rounded-full bg-card py-2 pl-4 pr-12 shadow-sm text-base min-h-[40px] max-h-32",
             !currentMessage && "placeholder-muted-foreground/70" 
           )}
           rows={1}
@@ -162,11 +169,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
         <Button
           type="submit"
           size="icon"
-          className="absolute bottom-1.5 right-1.5 h-9 w-9 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-accent"
+          className="absolute right-1.5 bottom-1.5 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-accent"
           aria-label="Send message"
           disabled={!currentMessage.trim()}
         >
-          <SendHorizontal className="h-5 w-5" />
+          <SendHorizontal className="h-4 w-4" />
         </Button>
       </div>
     </form>
