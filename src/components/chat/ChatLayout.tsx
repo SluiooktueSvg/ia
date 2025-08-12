@@ -251,7 +251,7 @@ const ChatLayout: React.FC = () => {
         <div className="flex flex-grow flex-col justify-between">
           <div className="flex flex-grow flex-col items-center justify-center p-4">
             <div className="text-center mb-8">
-              {animatedGreetingDisplay && <p className="text-4xl mt-4 font-greeting font-semibold text-gradient-animated">{animatedGreetingDisplay}</p>}
+              {animatedGreetingDisplay && <p className="text-3xl md:text-4xl mt-4 font-greeting font-semibold text-gradient-animated">{animatedGreetingDisplay}</p>}
               {dynamicHelpText && <p className="text-muted-foreground mt-2">{dynamicHelpText}</p>}
             </div>
             <div className="w-full max-w-xl">
@@ -263,7 +263,7 @@ const ChatLayout: React.FC = () => {
               />
             </div>
           </div>
-          <footer className="text-center text-sm text-muted-foreground py-4 px-4">
+          <footer className="text-center text-xs md:text-sm text-muted-foreground py-4 px-4">
             <p>&copy; {new Date().getFullYear()} LSAIG. All rights reserved.</p>
             <p>Sluiooktue Inc. Luis M.</p>
           </footer>
@@ -290,7 +290,3 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
-
-    
-
-    
