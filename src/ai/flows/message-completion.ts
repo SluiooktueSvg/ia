@@ -46,7 +46,7 @@ Engage in a natural, conversational manner. Remember to be a good listener and r
 
 **Conversation History:**
 {{#each history}}
-  {{#if (this.sender === "user")}}
+  {{#if (eq this.sender "user")}}
     User: {{{this.text}}}
   {{else}}
     LSAIG: {{{this.text}}}
