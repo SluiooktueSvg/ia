@@ -153,8 +153,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
       )}
     >
       <div className={cn(
-        "relative flex w-full items-center",
-        "input-animated-focus" // Apply the new wrapper class here
+        "relative flex w-full items-center bg-card rounded-full transition-shadow duration-200",
+        "focus-within:ring-2 focus-within:ring-green-400"
       )}>
         <Textarea
           ref={textareaRef}
@@ -163,7 +163,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
           onKeyDown={handleKeyDown}
           placeholder={placeholderTextToShow + (displayBlinkingCursor ? '▋' : '')}
           className={cn(
-            // Remove focus styling from textarea, it is now handled by the parent div
             "flex-grow resize-none overflow-y-hidden bg-transparent py-3 pl-5 pr-14 text-base min-h-[48px] max-h-32 shadow-none border-none focus-visible:ring-0",
             !currentMessage && "placeholder-muted-foreground/70" 
           )}
