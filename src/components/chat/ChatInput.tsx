@@ -155,7 +155,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
       )}
     >
       <div className={cn(
-        "relative flex w-full items-center bg-card transition-all duration-200",
+        "relative flex w-full items-center border bg-card transition-all duration-200",
         "focus-within:ring-2 focus-within:ring-green-400",
         isMultiline ? "rounded-2xl" : "rounded-full"
       )}>
