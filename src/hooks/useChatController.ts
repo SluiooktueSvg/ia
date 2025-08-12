@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -28,10 +29,10 @@ export function useChatController() {
   }, []);
 
   useEffect(() => {
-    if (messages.length > 0) {
+    if (hasSentFirstMessage) { // Only save if a message has been sent
       saveChatToLocalStorage(messages);
     }
-  }, [messages]);
+  }, [messages, hasSentFirstMessage]);
 
   const handleInputChange = useCallback((text: string) => {
     setCurrentInput(text);
@@ -68,16 +69,18 @@ export function useChatController() {
       timestamp: Date.now(),
     };
     
-    const newMessages = [...messages, userMessage];
+    // Add user message to state immediately for a responsive UI
+    setMessages(prev => [...prev, userMessage]);
+    setCurrentInput('');
 
-    // Create the history for the AI call *before* updating state
-    const historyForAI = newMessages.map(m => ({
-        sender: m.sender,
+    // Prepare data for the AI call *after* updating the state
+    const messagesForAI = [...messages, userMessage];
+
+    // Create the history for the AI call
+    const historyForAI = messagesForAI.map(m => ({
+        isUser: m.sender === 'user',
         text: m.text,
     }));
-
-    setMessages(newMessages);
-    setCurrentInput('');
 
     const aiMessageId = Date.now().toString() + '-ai';
     const aiPlaceholderMessage: ChatMessage = {
@@ -101,6 +104,7 @@ export function useChatController() {
       const finalAiMessage: ChatMessage = {
         ...aiPlaceholderMessage,
         text: refinedAiText || "I'm not sure how to respond to that.",
+        sentimentLoading: false, // Initial state, sentiment will be fetched next
       };
       setMessages(prev => prev.map(m => m.id === aiMessageId ? finalAiMessage : m));
       fetchSentimentForMessage(aiMessageId, finalAiMessage.text);

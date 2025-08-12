@@ -12,7 +12,7 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const HistoryMessageSchema = z.object({
-  sender: z.enum(['user', 'ai']),
+  isUser: z.boolean(),
   text: z.string(),
 });
 
@@ -46,7 +46,7 @@ Engage in a natural, conversational manner. Remember to be a good listener and r
 
 **Conversation History:**
 {{#each history}}
-  {{#if (eq this.sender "user")}}
+  {{#if this.isUser}}
     User: {{{this.text}}}
   {{else}}
     LSAIG: {{{this.text}}}
