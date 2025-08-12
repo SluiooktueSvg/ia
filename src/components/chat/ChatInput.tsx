@@ -152,7 +152,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
         !isCentered && "border-t border-border"
       )}
     >
-      <div className="relative flex w-full items-end">
+      <div className="relative flex w-full items-center">
         <Textarea
           ref={textareaRef}
           value={currentMessage}
@@ -160,7 +160,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           onKeyDown={handleKeyDown}
           placeholder={placeholderTextToShow + (displayBlinkingCursor ? '▋' : '')}
           className={cn(
-            "flex-grow resize-none overflow-y-hidden rounded-full bg-card py-2 pl-4 pr-12 shadow-sm text-base min-h-[40px] max-h-32",
+            "flex-grow resize-none overflow-y-hidden rounded-full bg-card py-3 pl-5 pr-14 shadow-sm text-base min-h-[48px] max-h-32",
             !currentMessage && "placeholder-muted-foreground/70" 
           )}
           rows={1}
@@ -169,7 +169,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
         <Button
           type="submit"
           size="icon"
-          className="absolute right-1.5 bottom-1.5 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-accent"
+          className="absolute right-2 flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-accent"
           aria-label="Send message"
           disabled={!currentMessage.trim()}
         >
