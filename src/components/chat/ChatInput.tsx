@@ -113,11 +113,10 @@ const ChatInput: React.FC<ChatInputProps> = ({
       const maxHeight = 128; // 8rem or 128px
       if (scrollHeight > maxHeight) {
           textareaRef.current.style.height = `${maxHeight}px`;
-          textareaRef.current.style.overflowY = 'auto';
       } else {
           textareaRef.current.style.height = `${scrollHeight}px`;
-          textareaRef.current.style.overflowY = 'hidden';
       }
+      textareaRef.current.style.overflowY = 'hidden';
     }
   }, [currentMessage]);
 
