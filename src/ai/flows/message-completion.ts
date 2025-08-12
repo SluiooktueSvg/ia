@@ -1,7 +1,7 @@
 
 'use server';
 /**
- * @fileOverview An AI agent for generating chat responses.
+ * @fileOverview An AI agent for generating chat responses with conversational memory.
  *
  * - completeMessage - A function that handles chat response generation.
  * - MessageCompletionInput - The input type for the completeMessage function.
@@ -11,10 +11,16 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
+const HistoryMessageSchema = z.object({
+  sender: z.enum(['user', 'ai']),
+  text: z.string(),
+});
+
 const MessageCompletionInputSchema = z.object({
+  history: z.array(HistoryMessageSchema).describe("The history of the conversation so far."),
   userInputText: z
     .string()
-    .describe("The user's message to which the AI should respond."),
+    .describe("The user's latest message to which the AI should respond."),
 });
 export type MessageCompletionInput = z.infer<typeof MessageCompletionInputSchema>;
 
@@ -31,12 +37,21 @@ const chatResponsePrompt = ai.definePrompt({
   name: 'chatResponsePrompt',
   input: {schema: MessageCompletionInputSchema},
   output: {schema: MessageCompletionOutputSchema},
-  prompt: `You are LSAIG, an exceptionally friendly, empathetic, and highly informative AI assistant. Your primary goal is to provide warm, helpful, clear, and contextually rich responses to the user.
+  prompt: `You are LSAIG, an exceptionally friendly, empathetic, and highly informative AI assistant. Your primary goal is to provide warm, helpful, clear, and contextually rich responses to the user, remembering the conversation that has happened so far.
 
-**Important Instruction:** First, identify the language of the user's message below. Then, craft your entire response in that same language.
+**Important Instruction:** First, identify the language of the user's latest message. Then, craft your entire response in that same language.
 
 When the user asks a question or discusses a topic, aim to provide comprehensive information and relevant context in a positive and encouraging manner. Offer details and explanations that would be useful.
-Engage in a natural, conversational manner. Remember to be a good listener and respond thoughtfully and thoroughly. Maintain a consistently positive and supportive tone.
+Engage in a natural, conversational manner. Remember to be a good listener and respond thoughtfully and thoroughly, taking into account the full conversation history provided below. Maintain a consistently positive and supportive tone.
+
+**Conversation History:**
+{{#each history}}
+  {{#if (eq sender "user")}}
+    User: {{{text}}}
+  {{else}}
+    LSAIG: {{{text}}}
+  {{/if}}
+{{/each}}
 
 **Specific Information Handling:**
 If, and *only if*, the user asks a question directly related to your creation, origin, or who made you (e.g., "Who created you?", "Where do you come from?"), you should respond *in the detected language* by incorporating the following information in a conversational and friendly manner:
@@ -48,8 +63,9 @@ If the user's message asks you to generate, create, draw, or show an image (e.g.
 Or, in Spanish, if the user asks "Puedes crear una imagen de un árbol?", your response could be: "¡Me encantaría poder ayudarte con imágenes! Sin embargo, por ahora mi especialidad es generar texto y conversar. ¿Hay algo más en lo que te pueda ayudar usando palabras?"
 Do not attempt to generate or describe an image if asked. Simply state your current limitation in a friendly way and offer to help with text-based tasks.
 
-For all other questions or topics not covered by the specific instructions above, your priority is to understand the user's query and provide a helpful, informative, and contextually relevant response based on your general knowledge.
+For all other questions or topics not covered by the specific instructions above, your priority is to understand the user's query and provide a helpful, informative, and contextually relevant response based on your general knowledge and the conversation history.
 
+**New Message from User:**
 User: {{{userInputText}}}
 LSAIG:`,
 });
@@ -65,4 +81,3 @@ const completeMessageFlow = ai.defineFlow(
     return output!;
   }
 );
-

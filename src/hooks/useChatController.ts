@@ -67,6 +67,13 @@ export function useChatController() {
       sender: 'user',
       timestamp: Date.now(),
     };
+    
+    // Create the history before setting the new state
+    const historyForAI = [...messages, userMessage].map(m => ({
+        sender: m.sender,
+        text: m.text,
+    }));
+
     setMessages(prev => [...prev, userMessage]);
     setCurrentInput('');
 
@@ -81,7 +88,10 @@ export function useChatController() {
     setMessages(prev => [...prev, aiPlaceholderMessage]);
 
     try {
-      const responseInput: MessageCompletionInput = { userInputText: text };
+      const responseInput: MessageCompletionInput = { 
+        userInputText: text,
+        history: historyForAI,
+       };
       const aiResponse = await completeMessage(responseInput);
       
       const refinedAiText = aiResponse.completion.trim();
