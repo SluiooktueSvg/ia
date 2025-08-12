@@ -35,6 +35,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [animatedPlaceholder, setAnimatedPlaceholder] = useState('');
   const [showCursor, setShowCursor] = useState(true);
+  const [isMultiline, setIsMultiline] = useState(false);
 
   // --- Cursor Blinking Effect ---
   useEffect(() => {
@@ -109,8 +110,16 @@ const ChatInput: React.FC<ChatInputProps> = ({
     if (textareaRef.current) {
       // Reset height to recalculate based on content
       textareaRef.current.style.height = 'auto';
+      
+      const scrollHeight = textareaRef.current.scrollHeight;
+      
+      // A simple way to check for multiline is to see if the scrollHeight is larger than
+      // the height of a single line. We can approximate a single line height.
+      // 48px is the min-h we've set, so anything larger is multiline.
+      setIsMultiline(scrollHeight > 48);
+
       // Set the height to the scroll height to fit the content
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      textareaRef.current.style.height = `${scrollHeight}px`;
     }
   }, [currentMessage]);
 
@@ -146,8 +155,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
       )}
     >
       <div className={cn(
-        "relative flex w-full items-center bg-card rounded-full transition-shadow duration-200",
-        "focus-within:ring-2 focus-within:ring-green-400"
+        "relative flex w-full items-center bg-card transition-all duration-200",
+        "focus-within:ring-2 focus-within:ring-green-400",
+        isMultiline ? "rounded-2xl" : "rounded-full"
       )}>
         <Textarea
           ref={textareaRef}
