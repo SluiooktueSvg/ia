@@ -107,16 +107,10 @@ const ChatInput: React.FC<ChatInputProps> = ({
   // --- Autoresize Textarea ---
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto'; // Reset height to recalculate
-      const scrollHeight = textareaRef.current.scrollHeight;
-      // Set a max-height to prevent it from growing indefinitely
-      const maxHeight = 128; // 8rem or 128px
-      if (scrollHeight > maxHeight) {
-          textareaRef.current.style.height = `${maxHeight}px`;
-      } else {
-          textareaRef.current.style.height = `${scrollHeight}px`;
-      }
-      textareaRef.current.style.overflowY = 'hidden';
+      // Reset height to recalculate based on content
+      textareaRef.current.style.height = 'auto';
+      // Set the height to the scroll height to fit the content
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   }, [currentMessage]);
 
