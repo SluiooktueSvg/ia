@@ -147,8 +147,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
       )}
     >
       <div className={cn(
-        "relative flex w-full items-center rounded-3xl border bg-card transition-all duration-300",
-        "focus-within:ring-2 focus-within:ring-green-400"
+        "relative flex w-full items-center"
       )}>
         <Textarea
           ref={textareaRef}
@@ -157,7 +156,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
           onKeyDown={handleKeyDown}
           placeholder={placeholderTextToShow + (displayBlinkingCursor ? '▋' : '')}
           className={cn(
-            "flex-grow resize-none overflow-y-hidden bg-transparent py-3 pl-5 pr-14 text-base min-h-[48px] max-h-32 shadow-none border-none focus-visible:ring-0",
+            "flex-grow resize-none overflow-y-hidden bg-card rounded-3xl py-3 pl-5 pr-14 text-base min-h-[48px] max-h-32 shadow-none border transition-colors duration-200",
+            "focus:border-green-400 focus:ring-0",
             !currentMessage && "placeholder-muted-foreground/70" 
           )}
           rows={1}
