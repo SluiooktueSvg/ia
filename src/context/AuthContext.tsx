@@ -32,14 +32,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const signInWithGoogle = async () => {
-    setLoading(true);
+    // No longer setting loading to true here to prevent re-renders.
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      // onAuthStateChanged will handle the user state update
+      // onAuthStateChanged will handle the user state update and loading will become false.
     } catch (error) {
       console.error("Error signing in with Google: ", error);
-      // Let the user stay on the login page if they close the popup
+      // If the user closes the popup, ensure loading is false so the UI is responsive.
       setLoading(false); 
     }
   };

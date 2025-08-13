@@ -13,6 +13,8 @@ export default function LoginPage() {
   const router = useRouter();
 
   useEffect(() => {
+    // This effect will run when the component mounts and whenever user or loading changes.
+    // It will redirect if the user is already logged in and the initial auth check is complete.
     if (!loading && user) {
       router.push('/chat');
     }
@@ -21,18 +23,19 @@ export default function LoginPage() {
   const handleSignIn = async () => {
     try {
       await signInWithGoogle();
-      // After the popup is successful, the `useEffect` above will catch the user change and redirect.
+      // After a successful sign-in, the useEffect above will catch the user change and redirect.
     } catch (error) {
-      console.error("Sign-in process was interrupted or failed:", error);
+      // The error is already logged in the context, no need to log it again here.
+      // The page will remain as is, allowing the user to try again.
     }
   };
   
-  // While the initial user state is loading, show a loading screen.
+  // Show a loading screen only during the initial authentication check on page load.
   if (loading && !user) {
     return <LoadingScreen />;
   }
 
-  // If a user is logged in, we are about to redirect via the useEffect, so show a loading screen.
+  // If a user is already logged in, we are about to redirect via useEffect, so showing a loading screen is appropriate.
   if (user) {
     return <LoadingScreen />;
   }
