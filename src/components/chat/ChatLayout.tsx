@@ -223,17 +223,17 @@ const ChatLayout: React.FC = () => {
           <SidebarTrigger className="md:hidden" />
           <LSAIGLogo />
         </div>
-        <div className="flex items-center gap-1 rounded-full bg-card p-1.5 shadow-md">
-          <Button asChild variant="ghost" size="icon" className="rounded-full hover:scale-110 transition-transform duration-150" aria-label="Voice chat">
+        <div className="flex items-center gap-1 rounded-full bg-card p-1 shadow-md">
+          <Button asChild variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9" aria-label="Voice chat">
             <Link href="/voice">
-              <AudioLines className="h-5 w-5" />
+              <AudioLines className="h-4 w-4 md:h-5 md:w-5" />
             </Link>
           </Button>
-          <Button variant="ghost" size="icon" onClick={saveChat} aria-label="Save chat" className="rounded-full hover:animate-pulse-custom">
-            <Save className="h-5 w-5" />
+          <Button variant="ghost" size="icon" onClick={saveChat} aria-label="Save chat" className="h-8 w-8 rounded-full hover:animate-pulse-custom md:h-9 md:w-9">
+            <Save className="h-4 w-4 md:h-5 md:w-5" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={loadChat} aria-label="Load chat" className="rounded-full hover:scale-110 transition-transform duration-150">
-            <FolderOpen className="h-5 w-5" />
+          <Button variant="ghost" size="icon" onClick={loadChat} aria-label="Load chat" className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9">
+            <FolderOpen className="h-4 w-4 md:h-5 md:w-5" />
           </Button>
           <Button
             variant="ghost"
@@ -242,12 +242,12 @@ const ChatLayout: React.FC = () => {
               clearChat();
             }}
             aria-label="Clear chat"
-            className="rounded-full text-destructive hover:text-destructive hover:bg-destructive/10 hover:animate-shake"
+            className="h-8 w-8 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10 hover:animate-shake md:h-9 md:w-9"
           >
-            <Trash2 className="h-5 w-5" />
+            <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={logout} aria-label="Log out" className="rounded-full hover:scale-110 transition-transform duration-150">
-            <LogOut className="h-5 w-5" />
+          <Button variant="ghost" size="icon" onClick={logout} aria-label="Log out" className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9">
+            <LogOut className="h-4 w-4 md:h-5 md:w-5" />
           </Button>
         </div>
       </div>
@@ -273,7 +273,7 @@ const ChatLayout: React.FC = () => {
           <div className="flex flex-grow flex-col items-center justify-center p-4">
             <div className="text-center mb-4">
               {animatedGreetingDisplay && <p className="text-3xl md:text-4xl mt-4 font-greeting font-semibold text-gradient-animated">{animatedGreetingDisplay}</p>}
-              {dynamicHelpText && <p className="text-muted-foreground mt-2">{dynamicHelpText}</p>}
+              {dynamicHelpText && <p className="text-muted-foreground mt-2 text-sm md:text-base">{dynamicHelpText}</p>}
             </div>
             <div className="w-full max-w-xl">
               <ChatInput
@@ -284,7 +284,7 @@ const ChatLayout: React.FC = () => {
               />
             </div>
           </div>
-          <footer className="text-center text-xs md:text-sm text-muted-foreground py-4 px-4">
+          <footer className="text-center text-xs text-muted-foreground py-4 px-4">
             <p>&copy; {new Date().getFullYear()} LSAIG. All rights reserved.</p>
             <p>Sluiooktue Inc. Luis M.</p>
           </footer>
