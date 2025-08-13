@@ -32,15 +32,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const signInWithGoogle = async () => {
-    // No longer setting loading to true here to prevent re-renders.
     const provider = new GoogleAuthProvider();
+    // This custom parameter forces the Google account chooser to always appear.
+    provider.setCustomParameters({ prompt: 'select_account' });
     try {
       await signInWithPopup(auth, provider);
       // onAuthStateChanged will handle the user state update and loading will become false.
     } catch (error) {
       console.error("Error signing in with Google: ", error);
       // If the user closes the popup, ensure loading is false so the UI is responsive.
-      setLoading(false); 
+      if (!user) { // Only set loading to false if there's no user, otherwise a flash might occur
+        setLoading(false);
+      }
     }
   };
 
