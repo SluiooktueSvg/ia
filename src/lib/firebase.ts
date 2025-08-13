@@ -6,12 +6,12 @@ import { getAuth, Auth } from "firebase/auth";
 // This object is automatically generated and updated by the assistant.
 // Do not change this object manually.
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "lsaig-5o4m2.firebaseapp.com",
-  projectId: "lsaig-5o4m2",
-  storageBucket: "lsaig-5o4m2.appspot.com",
-  messagingSenderId: "108399583152",
-  appId: "1:108399583152:web:78c751221b065181716943",
+  "projectId": "lsaig-5o4m2",
+  "appId": "1:485861325401:web:d4b9c71fdd86b494e94f48",
+  "storageBucket": "lsaig-5o4m2.appspot.com",
+  "apiKey": "AIzaSyDFVqQ2lAbTHfxnOs1VT1yJQKRAkWJDf48",
+  "authDomain": "lsaig-5o4m2.firebaseapp.com",
+  "messagingSenderId": "485861325401"
 };
 
 // Initialize Firebase

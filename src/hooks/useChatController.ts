@@ -100,7 +100,7 @@ export function useChatController() {
 
 
   const sendMessage = async (text: string) => {
-    if (!text.trim() || !user) return; // Ensure user is available
+    if (!text.trim() || !user) return;
 
     if (!hasSentFirstMessage) {
       setHasSentFirstMessage(true);
@@ -114,18 +114,15 @@ export function useChatController() {
       avatarUrl: user.photoURL,
     };
     
-    // Add user message to state immediately for a responsive UI
-    setMessages(prev => [...prev, userMessage]);
-    setCurrentInput('');
-
-    // Prepare data for the AI call *after* updating the state
-    const messagesForAI = [...messages, userMessage];
-
     // Create the history for the AI call
-    const historyForAI = messagesForAI.map(m => ({
+    const historyForAI = [...messages, userMessage].map(m => ({
         isUser: m.sender === 'user',
         text: m.text,
     }));
+
+    // Add user message to state immediately for a responsive UI
+    setMessages(prev => [...prev, userMessage]);
+    setCurrentInput('');
 
     const aiMessageId = Date.now().toString() + '-ai';
     const aiPlaceholderMessage: ChatMessage = {
