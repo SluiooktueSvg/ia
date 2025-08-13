@@ -35,7 +35,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ message }) => {
         />
       </div>
       <p className="mt-4 text-sm text-muted-foreground animate-pulse">
-        {isMounted ? (message || 'Un momento, por favor...') : <>&nbsp;</>}
+        {isMounted ? (message || <>&nbsp;</>) : <>&nbsp;</>}
       </p>
     </div>
   );
