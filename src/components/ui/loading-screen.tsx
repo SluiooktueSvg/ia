@@ -2,7 +2,11 @@
 import React from 'react';
 import { Cog } from 'lucide-react';
 
-const LoadingScreen: React.FC = () => {
+interface LoadingScreenProps {
+  message?: string;
+}
+
+const LoadingScreen: React.FC<LoadingScreenProps> = ({ message }) => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
       <div className="relative h-24 w-24 flex items-center justify-center">
@@ -22,7 +26,9 @@ const LoadingScreen: React.FC = () => {
           strokeWidth={2}
         />
       </div>
-      <p className="mt-4 text-sm text-muted-foreground animate-pulse">Cerrando sesión...</p>
+      <p className="mt-4 text-sm text-muted-foreground animate-pulse">
+        {message || 'Un momento, por favor...'}
+      </p>
     </div>
   );
 };

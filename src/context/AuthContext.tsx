@@ -82,7 +82,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
   
   if (logoutStep === 'signingOut') {
-    return <LoadingScreen />;
+    return <LoadingScreen message="Cerrando sesión..." />;
   }
 
 
