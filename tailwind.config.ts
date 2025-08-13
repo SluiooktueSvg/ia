@@ -137,6 +137,10 @@ export default {
           '0%, 100%': { boxShadow: '0 0 10px -5px currentColor', transform: 'scale(1)' },
           '50%': { boxShadow: '0 0 20px 5px currentColor', transform: 'scale(1.02)' },
         },
+        'ripple-effect': {
+          '0%': { width: '0px', height: '0px', opacity: '1' },
+          '100%': { width: '100px', height: '100px', opacity: '0' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -154,6 +158,7 @@ export default {
         'pulse-voice-speaking': 'pulse-voice-speaking 1.5s ease-in-out infinite',
         'wave': 'wave 4s linear infinite',
         'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+        'ripple-effect': 'ripple-effect 1s linear forwards',
       },
     },
   },

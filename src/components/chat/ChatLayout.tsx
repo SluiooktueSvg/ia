@@ -54,10 +54,18 @@ interface ActiveHeart {
   y: number;
 }
 
+interface ActiveRipple {
+  id: string;
+  x: number;
+  y: number;
+}
+
+
 const CLICK_THRESHOLD = 3;
 const CLICK_TIMEOUT_MS = 500;
 const HEART_ANIMATION_DURATION_MS = 2000;
 const HEARTS_PER_BURST = 5;
+const RIPPLE_ANIMATION_DURATION_MS = 1000;
 
 const ANIMATION_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789*&%$#@!";
 const GREETING_ANIMATION_INTERVAL_MS = 60; 
@@ -90,6 +98,7 @@ const ChatLayout: React.FC = () => {
   const [clickCount, setClickCount] = useState(0);
   const [lastClickTime, setLastClickTime] = useState(0);
   const [activeHearts, setActiveHearts] = useState<ActiveHeart[]>([]);
+  const [activeRipples, setActiveRipples] = useState<ActiveRipple[]>([]);
   const currentGreetingInfoRef = useRef<{prefix: string, dynamicPart: string} | null>(null);
 
   const getGreetingInfo = (userName?: string | null) => {
@@ -185,6 +194,19 @@ const ChatLayout: React.FC = () => {
 
 
   const handlePageClick = (event: MouseEvent<HTMLDivElement>) => {
+    // --- Ripple Effect ---
+    const newRippleId = `ripple-${Date.now()}-${Math.random()}`;
+    const newRipple: ActiveRipple = {
+      id: newRippleId,
+      x: event.clientX,
+      y: event.clientY,
+    };
+    setActiveRipples(prevRipples => [...prevRipples, newRipple]);
+    setTimeout(() => {
+      setActiveRipples(prev => prev.filter(r => r.id !== newRippleId));
+    }, RIPPLE_ANIMATION_DURATION_MS);
+
+    // --- Heart Burst Effect ---
     if ((event.target as HTMLElement).closest('#chat-input-form')) {
       return;
     }
@@ -292,7 +314,24 @@ const ChatLayout: React.FC = () => {
           </div>
         )}
       </div>
-
+      
+      {/* Ripple Effect Renderer */}
+      {activeRipples.map(ripple => (
+        <div
+          key={ripple.id}
+          className="absolute rounded-full animate-ripple-effect"
+          style={{
+            left: ripple.x,
+            top: ripple.y,
+            transform: 'translate(-50%, -50%)',
+            pointerEvents: 'none',
+            zIndex: 9998,
+            border: '2px solid hsl(var(--primary))'
+          }}
+        />
+      ))}
+      
+      {/* Heart Burst Effect Renderer */}
       {activeHearts.map(heart => (
         <Heart
           key={heart.id}
