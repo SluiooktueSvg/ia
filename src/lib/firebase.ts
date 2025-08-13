@@ -7,11 +7,11 @@ import { getAuth, Auth } from "firebase/auth";
 // Do not change this object manually.
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  authDomain: "lsaig-5o4m2.firebaseapp.com",
+  projectId: "lsaig-5o4m2",
+  storageBucket: "lsaig-5o4m2.appspot.com",
+  messagingSenderId: "108399583152",
+  appId: "1:108399583152:web:78c751221b065181716943",
 };
 
 // Initialize Firebase
