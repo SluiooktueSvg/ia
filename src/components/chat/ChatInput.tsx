@@ -41,7 +41,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const [showCursor, setShowCursor] = useState(true);
   const [isListening, setIsListening] = useState(false);
   const [isSpeechRecognitionSupported, setIsSpeechRecognitionSupported] = useState(false);
-  const [soundPlayed, setSoundPlayed] = useState(true); // Default to true, check on mount
+  const [soundPlayed, setSoundPlayed] = useState(false); // Default to false, check on mount
   const { toast } = useToast();
 
   useEffect(() => {
@@ -300,4 +300,5 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
 export default ChatInput;
 
+    
     
