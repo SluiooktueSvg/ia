@@ -229,7 +229,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
       )}
     >
       <div className={cn(
-        "relative flex w-full items-center gap-2"
+        "relative flex w-full items-end gap-2"
       )}>
         <Textarea
           ref={textareaRef}
@@ -238,7 +238,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           onKeyDown={handleKeyDown}
           placeholder={placeholderTextToShow + (displayBlinkingCursor ? '▋' : '')}
           className={cn(
-            "flex-grow resize-none overflow-y-hidden bg-card rounded-3xl py-3 pl-5 pr-14 text-base min-h-[48px] max-h-32 shadow-none border transition-colors duration-200",
+            "flex-grow resize-none overflow-y-hidden bg-card rounded-3xl py-3 pl-5 pr-20 text-base min-h-[52px] max-h-32 shadow-none border transition-colors duration-200",
             "focus:border-green-400 focus:ring-0",
             !currentMessage && "placeholder-muted-foreground/70" 
           )}
@@ -246,14 +246,14 @@ const ChatInput: React.FC<ChatInputProps> = ({
           aria-label="Chat message input"
           disabled={isListening}
         />
-        <div className="absolute right-2 flex items-center">
+        <div className="absolute right-3 bottom-2 flex items-center gap-1">
             {isSpeechRecognitionSupported && (
               <Button
                 type="button"
                 size="icon"
                 onClick={handleMicClick}
                 className={cn(
-                    "h-9 w-9 rounded-full focus:ring-accent mr-1",
+                    "h-9 w-9 rounded-full focus:ring-accent",
                     isListening ? "bg-red-500 text-white hover:bg-red-600 animate-pulse" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                 )}
                 aria-label={isListening ? "Stop listening" : "Start listening"}
