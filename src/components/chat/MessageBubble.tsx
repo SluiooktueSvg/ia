@@ -5,7 +5,7 @@ import type { ChatMessage } from '@/types/chat';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import SentimentIndicator from './SentimentIndicator';
-import { AlertTriangle, Play, Pause, Loader2, Volume2 } from 'lucide-react';
+import { AlertTriangle, Play, Pause, Loader2, Volume2, User } from 'lucide-react';
 import { Button } from '../ui/button';
 
 interface MessageBubbleProps {
@@ -99,6 +99,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                 onPause={() => setIsPlaying(false)}
                 onEnded={handleAudioEnd}
                 preload="auto"
+                autoPlay={!message.hasPlayedAudio} // Attempt to autoplay if not played
               />
               <Button variant="ghost" size="icon" className="h-5 w-5" onClick={handlePlayPause}>
                 {isPlaying ? <Pause className="h-3 w-3"/> : <Volume2 className="h-3 w-3"/>}
@@ -121,8 +122,10 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
       </div>
       {isUser && (
         <Avatar className="h-8 w-8">
-           <AvatarImage src={`https://placehold.co/40x40/708090/FFFFFF?text=U`} alt="User Avatar" data-ai-hint="person silhouette" />
-          <AvatarFallback className={cn("text-sm", avatarColor)}>{avatarLabel}</AvatarFallback>
+           <AvatarImage src={message.avatarUrl} alt="User Avatar" />
+           <AvatarFallback className={cn("text-sm", avatarColor)}>
+             <User className="h-4 w-4" />
+           </AvatarFallback>
         </Avatar>
       )}
     </div>

@@ -8,12 +8,14 @@ import { completeMessage, MessageCompletionInput } from '@/ai/flows/message-comp
 import { analyzeSentiment, SentimentAnalysisInput } from '@/ai/flows/sentiment-analysis';
 import { textToSpeech } from '@/ai/flows/text-to-speech';
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from '@/context/AuthContext'; // Import useAuth
 
 export function useChatController() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentInput, setCurrentInput] = useState('');
   const [hasSentFirstMessage, setHasSentFirstMessage] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth(); // Get user from auth context
 
   useEffect(() => {
     const loadedMessages = loadChatFromLocalStorage();
@@ -80,7 +82,7 @@ export function useChatController() {
 
 
   const sendMessage = async (text: string) => {
-    if (!text.trim()) return;
+    if (!text.trim() || !user) return; // Ensure user is available
 
     if (!hasSentFirstMessage) {
       setHasSentFirstMessage(true);
@@ -91,6 +93,7 @@ export function useChatController() {
       text,
       sender: 'user',
       timestamp: Date.now(),
+      avatarUrl: user.photoURL || undefined, // Add user's photo URL
     };
     
     // Add user message to state immediately for a responsive UI
@@ -118,9 +121,14 @@ export function useChatController() {
     setMessages(prev => [...prev, aiPlaceholderMessage]);
 
     try {
+      // Analyze sentiment of the user's message before sending to completion
+      const sentimentResult = await analyzeSentiment({ text });
+      const userSentiment = sentimentResult.sentiment;
+
       const responseInput: MessageCompletionInput = { 
         userInputText: text,
         history: historyForAI.slice(0, -1), // Send history *excluding* the latest user message which is the main input
+        userSentiment: userSentiment, // Pass the analyzed sentiment
        };
       const aiResponse = await completeMessage(responseInput);
       
