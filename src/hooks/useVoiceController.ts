@@ -4,6 +4,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { completeMessage } from '@/ai/flows/message-completion';
 import { textToSpeech } from '@/ai/flows/text-to-speech';
+import { analyzeSentiment } from '@/ai/flows/sentiment-analysis';
 import type { ChatMessage } from '@/types/chat';
 
 type VoiceStatus = 'idle' | 'listening' | 'processing' | 'speaking';
@@ -35,6 +36,10 @@ export function useVoiceController() {
     };
 
     try {
+      // Analyze sentiment of the user's text
+      const sentimentResult = await analyzeSentiment({ text });
+      const userSentiment = sentimentResult.sentiment;
+
       const historyForAI = [...history, userMessage].map(m => ({
           isUser: m.sender === 'user',
           text: m.text,
@@ -43,6 +48,7 @@ export function useVoiceController() {
       const response = await completeMessage({
         userInputText: text,
         history: historyForAI.slice(0, -1),
+        userSentiment: userSentiment, // Pass sentiment to the message completion flow
       });
 
       const aiText = response.completion.trim();

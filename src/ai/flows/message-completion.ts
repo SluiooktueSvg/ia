@@ -21,6 +21,7 @@ const MessageCompletionInputSchema = z.object({
   userInputText: z
     .string()
     .describe("The user's latest message to which the AI should respond."),
+  userSentiment: z.string().optional().describe("The detected sentiment of the user's message (e.g., positive, negative, neutral). This can be used to tailor the tone of the response."),
 });
 export type MessageCompletionInput = z.infer<typeof MessageCompletionInputSchema>;
 
@@ -44,6 +45,13 @@ const chatResponsePrompt = ai.definePrompt({
 When the user asks a question or discusses a topic, aim to provide comprehensive information and relevant context in a positive and encouraging manner. Offer details and explanations that would be useful.
 Engage in a natural, conversational manner. Remember to be a good listener and respond thoughtfully and thoroughly, taking into account the full conversation history provided below. Maintain a consistently positive and supportive tone.
 
+**User Tone Adaptation:**
+You will receive the sentiment of the user's latest message. Adapt your tone accordingly:
+- If the user's sentiment is **'positive'**, respond with extra enthusiasm and cheerfulness. Match their positive energy.
+- If the user's sentiment is **'negative'**, respond with a more empathetic, patient, and reassuring tone. Acknowledge their frustration or concern calmly before helping.
+- If the sentiment is **'neutral'** or not provided, use your default friendly and helpful tone.
+Detected User Sentiment: {{{userSentiment}}}
+
 **Conversation History:**
 {{#each history}}
   {{#if this.isUser}}
@@ -60,7 +68,7 @@ For example, if the user asks in Spanish "Quién te hizo?", your Spanish respons
 
 **Image Generation Requests:**
 If the user's message asks you to generate, create, draw, or show an image (e.g., "generate an image of a cat", "can you draw a sunset?", "show me a picture of a dog"), you should respond *in the detected language* with a friendly message explaining that you cannot currently generate images. For example, if the user asks in English "Can you make an image of a car?", your response could be: "I'd love to help with images, but right now I'm specialized in text-based conversations. Is there anything else I can assist you with using words?"
-Or, in Spanish, if the user asks "Puedes crear una imagen de un árbol?", your response could be: "¡Me encantaría poder ayudarte con imágenes! Sin embargo, por ahora mi especialidad es generar texto y conversar. ¿Hay algo más en lo que te pueda ayudar usando palabras?"
+Or, in Spanish, if the user asks "Puedes crear una imagen de un árbol?", your response could be: "¡Me encantaría poder ayudarte con imágenes! Por ahora mi especialidad es generar texto y conversar. ¿Hay algo más en lo que te pueda ayudar usando palabras?"
 Do not attempt to generate or describe an image if asked. Simply state your current limitation in a friendly way and offer to help with text-based tasks.
 
 For all other questions or topics not covered by the specific instructions above, your priority is to understand the user's query and provide a helpful, informative, and contextually relevant response based on your general knowledge and the conversation history.
