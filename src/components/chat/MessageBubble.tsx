@@ -1,11 +1,11 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import type { ChatMessage } from '@/types/chat';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import SentimentIndicator from './SentimentIndicator';
-import { AlertTriangle, Play, Pause, Loader2 } from 'lucide-react';
+import { AlertTriangle, Play, Pause, Loader2, Volume2 } from 'lucide-react';
 import { Button } from '../ui/button';
 
 interface MessageBubbleProps {
@@ -31,6 +31,16 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+
+  // Auto-play audio when the URL is available and it hasn't been played before.
+  useEffect(() => {
+    if (message.audioUrl && !message.hasPlayedAudio && audioRef.current) {
+        audioRef.current.play().catch(e => console.error("Audio autoplay failed:", e));
+        // We need a way to mark that it has been played to avoid re-playing on re-renders.
+        // This requires a change in the state management (e.g., in useChatController).
+        // For now, this will attempt to play every time the component renders with a new URL.
+    }
+  }, [message.audioUrl, message.hasPlayedAudio]);
 
   const handlePlayPause = () => {
     if (audioRef.current) {
@@ -88,10 +98,10 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                 onPlay={() => setIsPlaying(true)}
                 onPause={() => setIsPlaying(false)}
                 onEnded={handleAudioEnd}
-                preload="none"
+                preload="auto"
               />
               <Button variant="ghost" size="icon" className="h-5 w-5" onClick={handlePlayPause}>
-                {isPlaying ? <Pause className="h-3 w-3"/> : <Play className="h-3 w-3"/>}
+                {isPlaying ? <Pause className="h-3 w-3"/> : <Volume2 className="h-3 w-3"/>}
               </Button>
             </>
           )}

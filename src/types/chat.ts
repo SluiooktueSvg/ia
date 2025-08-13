@@ -10,4 +10,5 @@ export interface ChatMessage {
   error?: string;
   audioUrl?: string;
   audioLoading?: boolean;
+  hasPlayedAudio?: boolean; // To prevent autoplay on re-renders
 }

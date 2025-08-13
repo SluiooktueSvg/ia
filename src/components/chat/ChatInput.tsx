@@ -27,9 +27,6 @@ const TYPING_SPEED = 100;
 const DELETING_SPEED = 50;
 const PAUSE_DURATION = 2000;
 
-// We will initialize recognition inside the component to ensure it only runs on the client.
-let recognition: any | null = null; 
-
 const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,
   currentMessage,
@@ -37,7 +34,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   isCentered = false,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
   const [animatedPlaceholder, setAnimatedPlaceholder] = useState('');
   const [showCursor, setShowCursor] = useState(true);
   const [isListening, setIsListening] = useState(false);
@@ -46,27 +43,73 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   useEffect(() => {
     // This effect runs only on the client, so `window` is available.
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      setIsSpeechRecognitionSupported(true);
-      const recognitionInstance = new SpeechRecognition();
-      recognitionInstance.continuous = false;
-      recognitionInstance.lang = 'es-ES'; // You can make this dynamic if needed
-      recognitionInstance.interimResults = false;
-      recognitionRef.current = recognitionInstance;
-    } else {
-      setIsSpeechRecognitionSupported(false);
+    if (typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+        setIsSpeechRecognitionSupported(true);
     }
   }, []);
 
+  const initializeRecognition = useCallback(() => {
+    if (!isSpeechRecognitionSupported) return;
+    
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognitionInstance = new SpeechRecognition();
+    recognitionInstance.continuous = false;
+    recognitionInstance.lang = 'es-ES';
+    recognitionInstance.interimResults = false;
+
+    recognitionInstance.onresult = (event: SpeechRecognitionEvent) => {
+        const transcript = event.results[0][0].transcript;
+        setCurrentMessage(transcript);
+        if (transcript.trim()) {
+            onSendMessage(transcript.trim());
+            setCurrentMessage('');
+        }
+        setIsListening(false);
+    };
+
+    recognitionInstance.onerror = (event: SpeechRecognitionErrorEvent) => {
+        let errorMessage = "Ocurrió un error con el reconocimiento de voz.";
+        if (event.error === 'no-speech') {
+            errorMessage = "No se detectó ninguna voz. Inténtalo de nuevo.";
+        } else if (event.error === 'audio-capture') {
+            errorMessage = "No se pudo acceder al micrófono. Verifica los permisos.";
+        } else if (event.error === 'not-allowed') {
+            errorMessage = "Permiso para el micrófono denegado. Habilítalo en la configuración de tu navegador.";
+        }
+        
+        toast({
+            variant: "destructive",
+            title: "Error de Voz",
+            description: errorMessage,
+        });
+        setIsListening(false);
+    };
+
+    recognitionInstance.onend = () => {
+        setIsListening(false);
+    };
+
+    recognitionRef.current = recognitionInstance;
+  }, [isSpeechRecognitionSupported, setCurrentMessage, onSendMessage, toast]);
+
 
   const handleMicClick = () => {
-    if (!isSpeechRecognitionSupported || !recognitionRef.current) {
+    if (!isSpeechRecognitionSupported) {
         toast({
             variant: "destructive",
             title: "Navegador no compatible",
             description: "Tu navegador no soporta el reconocimiento de voz.",
         });
+        return;
+    }
+
+    if (!recognitionRef.current) {
+        initializeRecognition();
+    }
+    
+    // We need to re-check after initialization attempt.
+    if (!recognitionRef.current) {
+        // This case can happen if initialization fails for some reason.
         return;
     }
 
@@ -78,50 +121,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
       setIsListening(true);
     }
   };
-
-  useEffect(() => {
-    const recognition = recognitionRef.current;
-    if (!recognition) return;
-
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      const transcript = event.results[0][0].transcript;
-      setCurrentMessage(transcript);
-      // Automatically send the message after successful transcription
-      if (transcript.trim()) {
-        onSendMessage(transcript.trim());
-        setCurrentMessage('');
-      }
-      setIsListening(false);
-    };
-
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-        let errorMessage = "Ocurrió un error con el reconocimiento de voz.";
-        if (event.error === 'no-speech') {
-            errorMessage = "No se detectó ninguna voz. Inténtalo de nuevo.";
-        } else if (event.error === 'audio-capture') {
-            errorMessage = "No se pudo acceder al micrófono. Verifica los permisos.";
-        } else if (event.error === 'not-allowed') {
-            errorMessage = "Permiso para el micrófono denegado. Habilítalo en la configuración de tu navegador.";
-        }
-      
-        toast({
-            variant: "destructive",
-            title: "Error de Voz",
-            description: errorMessage,
-        });
-      setIsListening(false);
-    };
-
-    recognition.onend = () => {
-      setIsListening(false);
-    };
-    
-    return () => {
-      if (recognition) {
-        recognition.abort();
-      }
-    };
-  }, [onSendMessage, setCurrentMessage, toast]);
 
 
   // --- Cursor Blinking Effect ---

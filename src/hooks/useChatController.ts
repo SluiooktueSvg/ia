@@ -17,7 +17,10 @@ export function useChatController() {
 
   useEffect(() => {
     const loadedMessages = loadChatFromLocalStorage();
-    setMessages(loadedMessages);
+    // Mark all loaded messages as played to prevent autoplay on load
+    const messagesMarkedAsPlayed = loadedMessages.map(m => ({ ...m, hasPlayedAudio: true }));
+    setMessages(messagesMarkedAsPlayed);
+
     if (loadedMessages.length > 0) {
       setHasSentFirstMessage(true);
     }
@@ -63,7 +66,7 @@ export function useChatController() {
     setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioLoading: true } : m));
     try {
       const { audioUrl } = await textToSpeech(text);
-      setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioUrl, audioLoading: false } : m));
+      setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioUrl, audioLoading: false, hasPlayedAudio: false } : m));
     } catch (error) {
       console.error('Error fetching audio:', error);
       setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioLoading: false, error: (m.error ? m.error + '; ' : '') + 'Failed to generate audio' } : m));
@@ -174,7 +177,9 @@ export function useChatController() {
   
   const loadChat = () => {
     const loadedMessages = loadChatFromLocalStorage();
-    setMessages(loadedMessages);
+    const messagesMarkedAsPlayed = loadedMessages.map(m => ({ ...m, hasPlayedAudio: true }));
+    setMessages(messagesMarkedAsPlayed);
+
     if (loadedMessages.length > 0) {
       setHasSentFirstMessage(true);
     } else {
