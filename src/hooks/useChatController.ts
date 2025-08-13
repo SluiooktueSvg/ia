@@ -77,20 +77,21 @@ export function useChatController() {
   }, []);
   
   const handleAudioError = useCallback((messageId: string, error: string) => {
-    setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioLoading: false, error: (m.error ? m.error + '; ' : '') + error } : m));
-    
     // Check for quota error and set global state
     if (error.includes('429') || error.toLowerCase().includes('quota')) {
       setIsTtsQuotaExceeded(true);
+      setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioLoading: false } : m));
+      // Use the default toast for quota issues, making it less alarming
       toast({
-          title: "Límite de Solicitudes Alcanzado",
-          description: "Has excedido la cuota de generación de audio por el momento.",
-          variant: "destructive",
+          title: "Límite de Solicitudes de Audio Alcanzado",
+          description: "Has excedido la cuota por el momento. Inténtalo más tarde.",
       });
     } else {
+      // Handle other potential errors during audio generation
+      setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioLoading: false, error: "Failed to generate audio." } : m));
       toast({
-          title: "Audio Generation Error",
-          description: "Could not generate audio for the message.",
+          title: "Error al Generar Audio",
+          description: "No se pudo generar el audio para el mensaje.",
           variant: "destructive",
       });
     }

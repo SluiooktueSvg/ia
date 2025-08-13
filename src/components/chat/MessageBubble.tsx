@@ -61,7 +61,6 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onAudioGenerated
     
     if (isTtsQuotaExceeded) {
       toast({
-        variant: "destructive",
         title: "Límite de Solicitudes Alcanzado",
         description: "Has excedido la cuota de generación de audio por el momento.",
       });
@@ -153,18 +152,12 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onAudioGenerated
             </>
           )}
         </div>
-        {message.error && (
-          <div className="mt-1 flex items-center text-xs text-destructive">
-            <AlertTriangle className="h-3 w-3 mr-1" />
-            <span>{message.error}</span>
-          </div>
-        )}
       </div>
       {isUser && (
          <Avatar className="h-8 w-8">
            <AvatarImage src={message.avatarUrl ?? undefined} alt="User Avatar" />
            <AvatarFallback className={cn("text-sm", avatarColor)}>
-             {isUser ? message.avatarUrl?.charAt(0).toUpperCase() || 'U' : 'AI'}
+             {message.avatarUrl?.charAt(0).toUpperCase() || 'U'}
            </AvatarFallback>
         </Avatar>
       )}
