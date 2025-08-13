@@ -1,5 +1,7 @@
 
-import React from 'react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
 import { Cog } from 'lucide-react';
 
 interface LoadingScreenProps {
@@ -7,6 +9,12 @@ interface LoadingScreenProps {
 }
 
 const LoadingScreen: React.FC<LoadingScreenProps> = ({ message }) => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
       <div className="relative h-24 w-24 flex items-center justify-center">
@@ -27,7 +35,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ message }) => {
         />
       </div>
       <p className="mt-4 text-sm text-muted-foreground animate-pulse">
-        {message || 'Un momento, por favor...'}
+        {isMounted ? (message || 'Un momento, por favor...') : <>&nbsp;</>}
       </p>
     </div>
   );
