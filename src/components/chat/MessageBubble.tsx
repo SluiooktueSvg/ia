@@ -7,9 +7,12 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import SentimentIndicator from './SentimentIndicator';
 import { AlertTriangle, Play, Pause, Loader2, Volume2, User } from 'lucide-react';
 import { Button } from '../ui/button';
+import { textToSpeech } from '@/ai/flows/text-to-speech';
 
 interface MessageBubbleProps {
   message: ChatMessage;
+  onAudioGenerated: (messageId: string, audioUrl: string) => void;
+  onAudioError: (messageId: string, error: string) => void;
 }
 
 const formatMarkdownToHtml = (text: string): string => {
@@ -22,39 +25,49 @@ const formatMarkdownToHtml = (text: string): string => {
   return html;
 };
 
-const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
+const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onAudioGenerated, onAudioError }) => {
   const isUser = message.sender === 'user';
-  const avatarLabel = isUser ? 'U' : 'AI';
+  const avatarLabel = isUser ? message.avatarUrl?.charAt(0).toUpperCase() || 'U' : 'AI';
   const avatarColor = isUser ? 'bg-primary text-primary-foreground' : 'bg-accent text-accent-foreground';
   
   const formattedText = message.sender === 'ai' ? formatMarkdownToHtml(message.text) : message.text;
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-
-  // Auto-play audio when the URL is available and it hasn't been played before.
-  useEffect(() => {
-    if (message.audioUrl && !message.hasPlayedAudio && audioRef.current) {
-        audioRef.current.play().catch(e => console.error("Audio autoplay failed:", e));
-        // We need a way to mark that it has been played to avoid re-playing on re-renders.
-        // This requires a change in the state management (e.g., in useChatController).
-        // For now, this will attempt to play every time the component renders with a new URL.
-    }
-  }, [message.audioUrl, message.hasPlayedAudio]);
-
-  const handlePlayPause = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play();
-      }
-    }
-  };
   
   const handleAudioEnd = () => {
     setIsPlaying(false);
   };
+
+  const handlePlayPause = async () => {
+    if (audioRef.current) {
+      if (message.audioUrl) {
+        if (isPlaying) {
+          audioRef.current.pause();
+        } else {
+          audioRef.current.play().catch(e => console.error("Audio playback failed", e));
+        }
+      } else if (!message.audioLoading) {
+        // Generate audio on demand
+        try {
+          const { audioUrl } = await textToSpeech(message.text);
+          onAudioGenerated(message.id, audioUrl);
+        } catch (error) {
+          console.error("On-demand audio generation failed:", error);
+          onAudioError(message.id, "Failed to generate audio.");
+        }
+      }
+    }
+  };
+
+  // Effect to play audio once the URL is set
+  useEffect(() => {
+    if (message.audioUrl && audioRef.current && !message.hasPlayedAudio) {
+      audioRef.current.play().catch(e => console.error("Audio autoplay failed:", e));
+      // This requires state change in the parent component, so a new prop is needed
+      // to inform the parent that the audio has played once.
+    }
+  }, [message.audioUrl, message.hasPlayedAudio]);
 
   return (
     <div
@@ -69,7 +82,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
       {!isUser && (
         <Avatar className="h-8 w-8">
           <AvatarImage src={`https://placehold.co/40x40/87CEEB/2101320?text=AI`} alt="AI Avatar" data-ai-hint="robot face" />
-          <AvatarFallback className={cn("text-sm", avatarColor)}>{avatarLabel}</AvatarFallback>
+          <AvatarFallback className={cn("text-sm", avatarColor)}>AI</AvatarFallback>
         </Avatar>
       )}
       <div
@@ -90,27 +103,26 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
         <div id={`message-meta-${message.id}`} className={cn("mt-1.5 flex items-center gap-2 text-xs", isUser ? "text-primary-foreground/70" : "text-muted-foreground")}>
           <span>{format(new Date(message.timestamp), 'p')}</span>
           {!isUser && <SentimentIndicator sentiment={message.sentiment} isLoading={message.sentimentLoading} />}
-          {!isUser && message.audioUrl && (
+          {!isUser && (
             <>
-              <audio 
+              {message.audioUrl && <audio 
                 ref={audioRef} 
                 src={message.audioUrl} 
                 onPlay={() => setIsPlaying(true)}
                 onPause={() => setIsPlaying(false)}
                 onEnded={handleAudioEnd}
                 preload="auto"
-                autoPlay={!message.hasPlayedAudio} // Attempt to autoplay if not played
-              />
-              <Button variant="ghost" size="icon" className="h-5 w-5" onClick={handlePlayPause}>
-                {isPlaying ? <Pause className="h-3 w-3"/> : <Volume2 className="h-3 w-3"/>}
+              />}
+              <Button variant="ghost" size="icon" className="h-5 w-5" onClick={handlePlayPause} disabled={message.audioLoading}>
+                {message.audioLoading ? (
+                  <Loader2 className="h-3 w-3 animate-spin"/>
+                ) : isPlaying ? (
+                  <Pause className="h-3 w-3"/>
+                ) : (
+                  <Volume2 className="h-3 w-3"/>
+                )}
               </Button>
             </>
-          )}
-          {!isUser && message.audioLoading && (
-              <div className="flex items-center text-xs text-muted-foreground">
-                <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                <span>Audio...</span>
-              </div>
           )}
         </div>
         {message.error && (
@@ -122,9 +134,9 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
       </div>
       {isUser && (
         <Avatar className="h-8 w-8">
-           <AvatarImage src={message.avatarUrl} alt="User Avatar" />
+           <AvatarImage src={message.avatarUrl ?? undefined} alt="User Avatar" />
            <AvatarFallback className={cn("text-sm", avatarColor)}>
-             <User className="h-4 w-4" />
+             {avatarLabel}
            </AvatarFallback>
         </Avatar>
       )}

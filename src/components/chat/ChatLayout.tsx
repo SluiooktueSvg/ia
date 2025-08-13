@@ -74,6 +74,8 @@ const ChatLayout: React.FC = () => {
     clearChat,
     saveChat,
     loadChat,
+    handleAudioGenerated,
+    handleAudioError,
   } = useChatController();
   const { user, logout } = useAuth();
 
@@ -250,7 +252,11 @@ const ChatLayout: React.FC = () => {
 
       {hasSentFirstMessage ? (
         <>
-          <MessageList messages={messages} />
+          <MessageList 
+            messages={messages} 
+            onAudioGenerated={handleAudioGenerated}
+            onAudioError={handleAudioError}
+          />
           <ChatInput
             currentMessage={currentInput}
             setCurrentMessage={setCurrentInput}
