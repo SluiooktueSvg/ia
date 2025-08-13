@@ -1,10 +1,10 @@
 
 'use client';
 
+import { Suspense, useEffect } from 'react';
 import ChatLayout from '@/components/chat/ChatLayout';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
 import LoadingScreen from '@/components/ui/loading-screen';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceStrict } from 'date-fns';
@@ -12,7 +12,7 @@ import { es } from 'date-fns/locale';
 
 export const dynamic = 'force-dynamic';
 
-export default function AuraChatPage() {
+function ChatPageClient() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -37,6 +37,7 @@ export default function AuraChatPage() {
       toast({
         title: "Sesión de Voz Terminada",
         description: `La conversación por voz duró ${duration}.`,
+        variant: 'success',
       });
 
       // Limpia los parámetros de la URL sin recargar la página
@@ -45,8 +46,16 @@ export default function AuraChatPage() {
   }, [searchParams, router, toast]);
 
   if (loading || !user) {
-    return <LoadingScreen text="Cargando tu sesión..." />;
+    return <LoadingScreen />;
   }
 
   return <ChatLayout />;
+}
+
+export default function AuraChatPage() {
+  return (
+    <Suspense fallback={<LoadingScreen />}>
+      <ChatPageClient />
+    </Suspense>
+  );
 }
