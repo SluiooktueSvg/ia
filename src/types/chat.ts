@@ -8,4 +8,6 @@ export interface ChatMessage {
   sentiment?: string;
   sentimentLoading?: boolean;
   error?: string;
+  audioUrl?: string;
+  audioLoading?: boolean;
 }

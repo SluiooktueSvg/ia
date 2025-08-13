@@ -6,6 +6,7 @@ import type { ChatMessage } from '@/types/chat';
 import { loadChatFromLocalStorage, saveChatToLocalStorage, clearChatFromLocalStorage } from '@/lib/localStorage';
 import { completeMessage, MessageCompletionInput } from '@/ai/flows/message-completion';
 import { analyzeSentiment, SentimentAnalysisInput } from '@/ai/flows/sentiment-analysis';
+import { textToSpeech } from '@/ai/flows/text-to-speech';
 import { useToast } from "@/hooks/use-toast";
 
 export function useChatController() {
@@ -24,6 +25,9 @@ export function useChatController() {
     loadedMessages.forEach(msg => {
       if (msg.sender === 'ai' && !msg.sentiment && !msg.sentimentLoading) {
         fetchSentimentForMessage(msg.id, msg.text);
+      }
+      if (msg.sender === 'ai' && msg.text && !msg.audioUrl && !msg.audioLoading) {
+        fetchAudioForMessage(msg.id, msg.text);
       }
     });
   }, []);
@@ -54,6 +58,23 @@ export function useChatController() {
       });
     }
   };
+  
+  const fetchAudioForMessage = async (messageId: string, text: string) => {
+    setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioLoading: true } : m));
+    try {
+      const { audioUrl } = await textToSpeech(text);
+      setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioUrl, audioLoading: false } : m));
+    } catch (error) {
+      console.error('Error fetching audio:', error);
+      setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioLoading: false, error: (m.error ? m.error + '; ' : '') + 'Failed to generate audio' } : m));
+      toast({
+        title: "Audio Generation Error",
+        description: "Could not generate audio for the message.",
+        variant: "destructive",
+      });
+    }
+  };
+
 
   const sendMessage = async (text: string) => {
     if (!text.trim()) return;
@@ -89,6 +110,7 @@ export function useChatController() {
       sender: 'ai',
       timestamp: Date.now(),
       sentimentLoading: true,
+      audioLoading: true,
     };
     setMessages(prev => [...prev, aiPlaceholderMessage]);
 
@@ -105,9 +127,14 @@ export function useChatController() {
         ...aiPlaceholderMessage,
         text: refinedAiText || "I'm not sure how to respond to that.",
         sentimentLoading: false, // Initial state, sentiment will be fetched next
+        audioLoading: true, // Audio is not yet loaded
       };
       setMessages(prev => prev.map(m => m.id === aiMessageId ? finalAiMessage : m));
+      
+      // Fetch sentiment and audio in parallel
       fetchSentimentForMessage(aiMessageId, finalAiMessage.text);
+      fetchAudioForMessage(aiMessageId, finalAiMessage.text);
+
 
     } catch (error) {
         console.error('Error getting AI response:', error);
@@ -116,6 +143,7 @@ export function useChatController() {
             text: "Sorry, I encountered an error.",
             error: "Failed to generate AI response",
             sentimentLoading: false,
+            audioLoading: false,
         };
         setMessages(prev => prev.map(m => m.id === aiMessageId ? errorAiMessage : m));
         toast({
@@ -155,6 +183,9 @@ export function useChatController() {
     loadedMessages.forEach(msg => {
       if (msg.sender === 'ai' && !msg.sentiment && !msg.sentimentLoading) {
         fetchSentimentForMessage(msg.id, msg.text);
+      }
+      if (msg.sender === 'ai' && msg.text && !msg.audioUrl && !msg.audioLoading) {
+        fetchAudioForMessage(msg.id, msg.text);
       }
     });
     toast({

@@ -1,11 +1,12 @@
 
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { format } from 'date-fns';
 import type { ChatMessage } from '@/types/chat';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import SentimentIndicator from './SentimentIndicator';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Play, Pause, Loader2 } from 'lucide-react';
+import { Button } from '../ui/button';
 
 interface MessageBubbleProps {
   message: ChatMessage;
@@ -13,20 +14,11 @@ interface MessageBubbleProps {
 
 const formatMarkdownToHtml = (text: string): string => {
   let html = text;
-
-  // Negrita: **texto** o __texto__
-  // Se procesan primero para evitar conflictos con la cursiva simple.
   html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
   html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
-
-  // Cursiva: *texto* o _texto_
   html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
   html = html.replace(/_(.*?)_/g, '<em>$1</em>');
-  
-  // Convertir saltos de línea a <br> para HTML, ya que whitespace-pre-wrap no se aplicará con dangerouslySetInnerHTML
-  // de la misma manera que con contenido de texto directo.
   html = html.replace(/\n/g, '<br />');
-
   return html;
 };
 
@@ -36,6 +28,23 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
   const avatarColor = isUser ? 'bg-primary text-primary-foreground' : 'bg-accent text-accent-foreground';
   
   const formattedText = message.sender === 'ai' ? formatMarkdownToHtml(message.text) : message.text;
+
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const handlePlayPause = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+    }
+  };
+  
+  const handleAudioEnd = () => {
+    setIsPlaying(false);
+  };
 
   return (
     <div
@@ -62,7 +71,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
         {message.sender === 'ai' ? (
           <p 
             id={`message-text-${message.id}`} 
-            className="text-sm break-words" // whitespace-pre-wrap puede no ser necesario o tener efectos no deseados con <br />
+            className="text-sm break-words"
             dangerouslySetInnerHTML={{ __html: formattedText }}
           />
         ) : (
@@ -71,6 +80,27 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
         <div id={`message-meta-${message.id}`} className={cn("mt-1.5 flex items-center gap-2 text-xs", isUser ? "text-primary-foreground/70" : "text-muted-foreground")}>
           <span>{format(new Date(message.timestamp), 'p')}</span>
           {!isUser && <SentimentIndicator sentiment={message.sentiment} isLoading={message.sentimentLoading} />}
+          {!isUser && message.audioUrl && (
+            <>
+              <audio 
+                ref={audioRef} 
+                src={message.audioUrl} 
+                onPlay={() => setIsPlaying(true)}
+                onPause={() => setIsPlaying(false)}
+                onEnded={handleAudioEnd}
+                preload="none"
+              />
+              <Button variant="ghost" size="icon" className="h-5 w-5" onClick={handlePlayPause}>
+                {isPlaying ? <Pause className="h-3 w-3"/> : <Play className="h-3 w-3"/>}
+              </Button>
+            </>
+          )}
+          {!isUser && message.audioLoading && (
+              <div className="flex items-center text-xs text-muted-foreground">
+                <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                <span>Audio...</span>
+              </div>
+          )}
         </div>
         {message.error && (
           <div className="mt-1 flex items-center text-xs text-destructive">
