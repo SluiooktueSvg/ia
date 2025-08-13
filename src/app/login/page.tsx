@@ -12,8 +12,8 @@ export default function LoginPage() {
   const { user, signInWithGoogle, loading } = useAuth();
   const router = useRouter();
 
-  // This effect handles the case where a user is already logged in when they visit the page.
   useEffect(() => {
+    // If loading is finished and we have a user, redirect to chat.
     if (!loading && user) {
       router.push('/chat');
     }
@@ -21,8 +21,9 @@ export default function LoginPage() {
 
   const handleSignIn = async () => {
     try {
-      // The `signInWithGoogle` function will trigger an auth state change,
-      // which the useEffect above will catch on the next render, causing a redirect.
+      // signInWithGoogle now triggers a redirect.
+      // The user will be sent to Google and then back to this page.
+      // The result is handled in the AuthProvider's useEffect.
       await signInWithGoogle();
     } catch (error) {
       console.error("Sign-in failed:", error);
@@ -30,19 +31,18 @@ export default function LoginPage() {
     }
   };
   
-  // If loading, and we don't have a user yet, show the login page.
-  // This prevents the page from unmounting the button during the sign-in process.
-  // We only show a loading screen if we are absolutely sure we're about to redirect.
+  // While the initial user state is loading, or during the redirect process,
+  // show the loading screen.
   if (loading) {
     return <LoadingScreen />;
   }
-  
-  // If we have a user, we are about to redirect, so we can return null or a loading screen.
+
+  // If a user is logged in, we are about to redirect via the useEffect, so show a loading screen.
   if (user) {
     return <LoadingScreen />;
   }
 
-  // Default view: Show the login page for non-authenticated users.
+  // Default view: Show the login page for non-authenticated, non-loading state.
   return (
     <div className="flex h-screen w-full items-center justify-center bg-background p-4">
       <div className="flex max-w-sm flex-col items-center text-center">
