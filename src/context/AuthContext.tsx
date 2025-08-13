@@ -9,12 +9,13 @@ import {
   signOut
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import LoadingScreen from '@/components/ui/loading-screen';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
-  logout: () => Promise<void>;
+  logout: () => void; // Cambiado para no ser una promesa directa
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -22,6 +23,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -33,27 +35,51 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
-    // This custom parameter forces the Google account chooser to always appear.
     provider.setCustomParameters({ prompt: 'select_account' });
     try {
       await signInWithPopup(auth, provider);
-      // onAuthStateChanged will handle the user state update and loading will become false.
     } catch (error) {
       console.error("Error signing in with Google: ", error);
-      // If the user closes the popup, ensure loading is false so the UI is responsive.
-      if (!user) { // Only set loading to false if there's no user, otherwise a flash might occur
+      if (!user) {
         setLoading(false);
       }
     }
   };
 
-  const logout = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error("Error signing out: ", error);
+  const logout = () => {
+    setIsLoggingOut(true);
+    const logoutSound = new Audio('/sounds/good-bye.mp3');
+    logoutSound.play();
+
+    logoutSound.onended = async () => {
+      try {
+        await signOut(auth);
+        // El onAuthStateChanged se encargará de actualizar el estado del usuario
+      } catch (error) {
+        console.error("Error signing out: ", error);
+      } finally {
+        // Retrasamos un poco para asegurar que el cambio de estado se propague
+        setTimeout(() => setIsLoggingOut(false), 200);
+      }
+    };
+    
+    // Fallback en caso de que el sonido no se pueda reproducir
+    logoutSound.onerror = async () => {
+      console.error("Failed to play logout sound.");
+       try {
+        await signOut(auth);
+      } catch (error) {
+        console.error("Error signing out after sound error: ", error);
+      } finally {
+        setTimeout(() => setIsLoggingOut(false), 200);
+      }
     }
   };
+
+  // Renderiza la pantalla de carga durante el cierre de sesión
+  if (isLoggingOut) {
+    return <LoadingScreen />;
+  }
 
   return (
     <AuthContext.Provider value={{ user, loading, signInWithGoogle, logout }}>
