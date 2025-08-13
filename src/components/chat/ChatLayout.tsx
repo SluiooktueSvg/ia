@@ -8,10 +8,11 @@ import { useChatController } from '@/hooks/useChatController';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import LSAIGLogo from '@/components/AuraChatLogo';
 import { Button } from '@/components/ui/button';
-import { Save, FolderOpen, Trash2, Heart, LogOut } from 'lucide-react';
+import { Save, FolderOpen, Trash2, Heart, LogOut, AudioLines } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
+import Link from 'next/link';
 
 const helpMessages = [
   "¿En qué puedo asistirte hoy?",
@@ -219,6 +220,11 @@ const ChatLayout: React.FC = () => {
           <LSAIGLogo />
         </div>
         <div className="flex items-center gap-1 rounded-full bg-card p-1.5 shadow-md">
+          <Button asChild variant="ghost" size="icon" className="rounded-full hover:scale-110 transition-transform duration-150" aria-label="Voice chat">
+            <Link href="/voice">
+              <AudioLines className="h-5 w-5" />
+            </Link>
+          </Button>
           <Button variant="ghost" size="icon" onClick={saveChat} aria-label="Save chat" className="rounded-full hover:animate-pulse-custom">
             <Save className="h-5 w-5" />
           </Button>
@@ -295,5 +301,3 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
-
-    

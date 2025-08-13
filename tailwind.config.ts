@@ -120,6 +120,14 @@ export default {
           from: { transform: 'rotate(0deg)' },
           to: { transform: 'rotate(360deg)' },
         },
+        'pulse-voice': {
+          '0%, 100%': { transform: 'scale(1)', opacity: '1' },
+          '50%': { transform: 'scale(1.05)', opacity: '0.9' },
+        },
+        'pulse-voice-speaking': {
+          '0%, 100%': { transform: 'scale(1)', boxShadow: '0 0 0px rgba(0, 255, 0, 0.4)' },
+          '50%': { transform: 'scale(1.02)', boxShadow: '0 0 20px rgba(0, 255, 0, 0.7)' },
+        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -128,11 +136,13 @@ export default {
         'gradient-text-flow': 'animated-gradient-text 8s ease infinite',
         'shake': 'shake 0.4s ease-in-out',
         'pulse-custom': 'pulse-custom 0.4s ease-in-out',
-        'float-fade': 'float-fade 2s ease-out forwards', // New animation class
-        'animated-border-glow': 'animated-gradient-text 3s linear infinite', // New animation for border
-        'spin-slow': 'spin 10s linear infinite',
+        'float-fade': 'float-fade 2s ease-out forwards',
+        'animated-border-glow': 'animated-gradient-text 3s linear infinite',
+        'spin-slow': 'spin 3s linear infinite',
         'spin-medium-reverse': 'spin 5s linear infinite reverse',
         'spin-fast': 'spin 2s linear infinite',
+        'pulse-voice': 'pulse-voice 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'pulse-voice-speaking': 'pulse-voice-speaking 1.5s ease-in-out infinite',
       },
     },
   },
