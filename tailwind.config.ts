@@ -127,7 +127,16 @@ export default {
         'pulse-voice-speaking': {
           '0%, 100%': { transform: 'scale(1)', boxShadow: '0 0 0px rgba(0, 255, 0, 0.4)' },
           '50%': { transform: 'scale(1.02)', boxShadow: '0 0 20px rgba(0, 255, 0, 0.7)' },
-        }
+        },
+        wave: {
+          '0%': { transform: 'scale(0.5)', opacity: '0' },
+          '50%': { opacity: '0.7' },
+          '100%': { transform: 'scale(1.5)', opacity: '0' },
+        },
+        'pulse-glow': {
+          '0%, 100%': { boxShadow: '0 0 10px -5px currentColor', transform: 'scale(1)' },
+          '50%': { boxShadow: '0 0 20px 5px currentColor', transform: 'scale(1.02)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -143,6 +152,8 @@ export default {
         'spin-fast': 'spin 2s linear infinite',
         'pulse-voice': 'pulse-voice 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'pulse-voice-speaking': 'pulse-voice-speaking 1.5s ease-in-out infinite',
+        'wave': 'wave 4s linear infinite',
+        'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
       },
     },
   },

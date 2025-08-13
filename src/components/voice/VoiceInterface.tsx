@@ -3,7 +3,6 @@
 
 import React from 'react';
 import { useVoiceController } from '@/hooks/useVoiceController';
-import { Mic, Loader, Bot, Ear, BrainCircuit } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import LSAIGLogo from '../AuraChatLogo';
 
@@ -20,64 +19,91 @@ const VoiceInterface: React.FC = () => {
     switch (status) {
       case 'listening':
         return {
-          icon: <Ear className="h-12 w-12 text-accent" />,
           label: 'Escuchando...',
-          color: 'border-accent/80',
-          animation: 'animate-pulse-voice',
+          outerWave: 'animate-wave',
+          innerWave: 'animate-wave animation-delay-[-2s]',
+          centerColor: 'bg-accent/80',
         };
       case 'processing':
         return {
-          icon: <BrainCircuit className="h-12 w-12 text-primary" />,
           label: 'Procesando...',
-          color: 'border-primary/80',
-          animation: 'animate-spin-slow',
+          outerWave: 'animate-pulse-glow border-primary/80',
+          innerWave: '',
+          centerColor: 'bg-primary/80',
         };
       case 'speaking':
         return {
-          icon: <Bot className="h-12 w-12 text-green-500" />,
           label: 'Hablando...',
-          color: 'border-green-500/80',
-          animation: 'animate-pulse-voice-speaking',
+          outerWave: 'animate-wave animation-delay-[-1s] border-green-500/80',
+          innerWave: 'animate-wave animation-delay-[-3s] border-green-500/80',
+          centerColor: 'bg-green-500/80',
         };
       case 'idle':
       default:
         return {
-          icon: <Mic className="h-12 w-12 text-foreground/80" />,
           label: 'Toca para hablar',
-          color: 'border-foreground/30',
-          animation: 'hover:scale-105',
+          outerWave: 'border-foreground/20',
+          innerWave: '',
+          centerColor: 'bg-foreground/20',
         };
     }
   };
 
-  const { icon, label, color, animation } = getStatusInfo();
+  const { label, outerWave, innerWave, centerColor } = getStatusInfo();
 
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-8 text-center">
+    <div className="flex h-full w-full flex-col items-center justify-center gap-8 overflow-hidden bg-background text-center">
       <div className="absolute top-16">
         <LSAIGLogo />
       </div>
 
+      {/* Main voice visualizer button */}
       <div className="flex h-64 w-64 items-center justify-center">
         <button
           onClick={startListening}
           disabled={status !== 'idle'}
           className={cn(
-            'relative flex h-52 w-52 items-center justify-center rounded-full border-4 bg-card shadow-2xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-accent/50 disabled:cursor-not-allowed',
-            color,
-            animation
+            'relative flex h-56 w-56 items-center justify-center rounded-full transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-accent/50 disabled:cursor-not-allowed',
+            status === 'idle' && 'hover:scale-105'
           )}
+          aria-label={label}
         >
-          {icon}
+          {/* Animated Waves */}
+          <div
+            className={cn(
+              'absolute h-full w-full rounded-full border-2',
+              outerWave
+            )}
+          />
+          <div
+            className={cn(
+              'absolute h-full w-full rounded-full border-2',
+              innerWave
+            )}
+          />
+
+          {/* Central Circle */}
+          <div
+            className={cn(
+              'h-32 w-32 rounded-full transition-colors duration-300',
+              centerColor
+            )}
+          />
         </button>
       </div>
 
+      {/* Status and Transcript Display */}
       <div className="h-24 w-full max-w-md px-4">
         <p className="text-xl font-medium text-muted-foreground">{label}</p>
         <p className="mt-2 min-h-[2.5em] text-lg text-foreground">
-          {status === 'listening' ? transcript : status === 'speaking' ? aiResponse : ''}
+          {status === 'listening'
+            ? transcript
+            : status === 'speaking'
+            ? aiResponse
+            : ''}
         </p>
       </div>
+
       <audio ref={audioRef} className="hidden" />
     </div>
   );
