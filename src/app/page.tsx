@@ -1,6 +1,5 @@
-
-import ChatLayout from '@/components/chat/ChatLayout';
+import { redirect } from 'next/navigation';
 
 export default function LSAIGAppPage() {
-  return <ChatLayout />;
+  redirect('/chat');
 }

@@ -8,9 +8,10 @@ import { useChatController } from '@/hooks/useChatController';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import LSAIGLogo from '@/components/AuraChatLogo';
 import { Button } from '@/components/ui/button';
-import { Save, FolderOpen, Trash2, Heart } from 'lucide-react';
+import { Save, FolderOpen, Trash2, Heart, LogOut } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/context/AuthContext';
 
 const helpMessages = [
   "¿En qué puedo asistirte hoy?",
@@ -85,6 +86,7 @@ const ChatLayout: React.FC = () => {
     saveChat,
     loadChat,
   } = useChatController();
+  const { logout } = useAuth();
 
   const [greetingPrefix, setGreetingPrefix] = useState('');
   const [targetDynamicGreetingPart, setTargetDynamicGreetingPart] = useState('');
@@ -233,6 +235,9 @@ const ChatLayout: React.FC = () => {
             className="rounded-full text-destructive hover:text-destructive hover:bg-destructive/10 hover:animate-shake"
           >
             <Trash2 className="h-5 w-5" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={logout} aria-label="Log out" className="rounded-full hover:scale-110 transition-transform duration-150">
+            <LogOut className="h-5 w-5" />
           </Button>
         </div>
       </div>
