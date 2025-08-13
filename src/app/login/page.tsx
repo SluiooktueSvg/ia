@@ -30,13 +30,8 @@ export default function LoginPage() {
     }
   };
   
-  // Show a loading screen only during the initial authentication check on page load.
-  if (loading && !user) {
-    return <LoadingScreen />;
-  }
-
-  // If a user is already logged in, we are about to redirect via useEffect, so showing a loading screen is appropriate.
-  if (user) {
+  // Show a loading screen only during the initial authentication check on page load or if a user is already logged in (and we're about to redirect).
+  if (loading || user) {
     return <LoadingScreen />;
   }
 
