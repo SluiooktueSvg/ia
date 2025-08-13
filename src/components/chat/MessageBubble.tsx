@@ -15,6 +15,7 @@ interface MessageBubbleProps {
   onAudioGenerated: (messageId: string, audioUrl: string) => void;
   onAudioError: (messageId: string, error: string) => void;
   isTtsQuotaExceeded: boolean;
+  setIsTtsQuotaExceeded: (value: boolean) => void;
 }
 
 const formatMarkdownToHtml = (text: string): string => {
@@ -27,7 +28,7 @@ const formatMarkdownToHtml = (text: string): string => {
   return html;
 };
 
-const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onAudioGenerated, onAudioError, isTtsQuotaExceeded }) => {
+const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onAudioGenerated, onAudioError, isTtsQuotaExceeded, setIsTtsQuotaExceeded }) => {
   const isUser = message.sender === 'user';
   const avatarLabel = isUser ? message.avatarUrl?.charAt(0).toUpperCase() || 'U' : 'AI';
   const avatarColor = isUser ? 'bg-primary text-primary-foreground' : 'bg-accent text-accent-foreground';
@@ -43,15 +44,13 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onAudioGenerated
   };
 
   const handlePlayPause = async () => {
-    if (audioRef.current) {
-      if (message.audioUrl) {
+    if (audioRef.current && message.audioUrl) {
         if (isPlaying) {
           audioRef.current.pause();
         } else {
           audioRef.current.play().catch(e => console.error("Audio playback failed", e));
         }
         return;
-      }
     }
 
     // From here, we handle generating audio if it doesn't exist
@@ -59,10 +58,12 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onAudioGenerated
       return; // Do nothing if audio is already being loaded
     }
     
+    // Proactive check: if quota is already known to be exceeded, don't even try.
     if (isTtsQuotaExceeded) {
       toast({
-        title: "Límite de Solicitudes Alcanzado",
-        description: "Has excedido la cuota de generación de audio por el momento.",
+        variant: "success",
+        title: "Límite de Audio Alcanzado",
+        description: "¡Has alcanzado el límite de hoy! Inténtalo de nuevo mañana.",
       });
       return;
     }

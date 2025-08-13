@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Dispatch, SetStateAction } from 'react';
 import type { ChatMessage } from '@/types/chat';
 import { loadChatFromLocalStorage, saveChatToLocalStorage, clearChatFromLocalStorage } from '@/lib/localStorage';
 import { completeMessage, MessageCompletionInput } from '@/ai/flows/message-completion';
@@ -52,7 +52,7 @@ export function useChatController() {
       setMessages(prev => prev.map(m => m.id === messageId ? { ...m, sentiment: sentimentResult.sentiment, sentimentLoading: false } : m));
     } catch (error) {
       console.error('Error fetching sentiment:', error);
-      setMessages(prev => prev.map(m => m.id === messageId ? { ...m, sentimentLoading: false, error: 'Failed to analyze sentiment' } : m));
+      setMessages(prev => prev.map(m => m.id === messageId ? { ...m, sentimentLoading: false } : m));
       toast({
         title: "Sentiment Analysis Error",
         description: "Could not analyze message sentiment.",
@@ -83,12 +83,13 @@ export function useChatController() {
       setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioLoading: false } : m));
       // Use the default toast for quota issues, making it less alarming
       toast({
-          title: "Límite de Solicitudes de Audio Alcanzado",
-          description: "Has excedido la cuota por el momento. Inténtalo más tarde.",
+          title: "Límite de Audio Alcanzado",
+          description: "¡Has alcanzado el límite de hoy! Inténtalo de nuevo mañana.",
+          variant: "success",
       });
     } else {
       // Handle other potential errors during audio generation
-      setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioLoading: false, error: "Failed to generate audio." } : m));
+      setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioLoading: false } : m));
       toast({
           title: "Error al Generar Audio",
           description: "No se pudo generar el audio para el mensaje.",
@@ -166,7 +167,6 @@ export function useChatController() {
         const errorAiMessage: ChatMessage = {
             ...aiPlaceholderMessage,
             text: "Sorry, I encountered an error.",
-            error: "Failed to generate AI response",
             sentimentLoading: false,
             audioLoading: false,
         };
@@ -227,6 +227,7 @@ export function useChatController() {
     setCurrentInput,
     hasSentFirstMessage,
     isTtsQuotaExceeded,
+    setIsTtsQuotaExceeded,
     sendMessage,
     handleInputChange, // Keep this for setting currentInput
     clearChat,

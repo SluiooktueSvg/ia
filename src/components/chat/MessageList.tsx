@@ -9,9 +9,10 @@ interface MessageListProps {
   onAudioGenerated: (messageId: string, audioUrl: string) => void;
   onAudioError: (messageId: string, error: string) => void;
   isTtsQuotaExceeded: boolean;
+  setIsTtsQuotaExceeded: (value: boolean) => void;
 }
 
-const MessageList: React.FC<MessageListProps> = ({ messages, onAudioGenerated, onAudioError, isTtsQuotaExceeded }) => {
+const MessageList: React.FC<MessageListProps> = ({ messages, onAudioGenerated, onAudioError, isTtsQuotaExceeded, setIsTtsQuotaExceeded }) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
 
@@ -31,6 +32,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, onAudioGenerated, o
             onAudioGenerated={onAudioGenerated} 
             onAudioError={onAudioError}
             isTtsQuotaExceeded={isTtsQuotaExceeded}
+            setIsTtsQuotaExceeded={setIsTtsQuotaExceeded}
           />
         ))}
       </div>
