@@ -22,6 +22,7 @@ const LoadingScreen: React.FC = () => {
           strokeWidth={2}
         />
       </div>
+      <p className="mt-4 text-sm text-muted-foreground animate-pulse">Cerrando sesión...</p>
     </div>
   );
 };

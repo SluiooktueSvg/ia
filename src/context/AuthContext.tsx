@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
@@ -11,24 +12,29 @@ import {
 import { auth } from '@/lib/firebase';
 import LoadingScreen from '@/components/ui/loading-screen';
 
+type LogoutStep = 'none' | 'playingSound' | 'signingOut';
+
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
-  logout: () => void; // Cambiado para no ser una promesa directa
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const BlackScreen = () => <div className="fixed inset-0 z-[200] h-screen w-screen bg-black" />;
+
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [logoutStep, setLogoutStep] = useState<LogoutStep>('none');
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
+      setLogoutStep('none'); // Reset on auth change
     });
     return () => unsubscribe();
   }, []);
@@ -47,39 +53,38 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const logout = () => {
-    setIsLoggingOut(true);
+    if (logoutStep !== 'none') return; // Prevent multiple calls
+
+    setLogoutStep('playingSound');
     const logoutSound = new Audio('/sounds/good-bye.mp3');
     logoutSound.play();
 
-    logoutSound.onended = async () => {
+    const finishSignOut = async () => {
+      setLogoutStep('signingOut');
       try {
         await signOut(auth);
-        // El onAuthStateChanged se encargará de actualizar el estado del usuario
+        // onAuthStateChanged will handle the rest
       } catch (error) {
         console.error("Error signing out: ", error);
-      } finally {
-        // Retrasamos un poco para asegurar que el cambio de estado se propague
-        setTimeout(() => setIsLoggingOut(false), 200);
+        setLogoutStep('none'); // Reset on error
       }
     };
     
-    // Fallback en caso de que el sonido no se pueda reproducir
-    logoutSound.onerror = async () => {
+    logoutSound.onended = finishSignOut;
+    logoutSound.onerror = () => {
       console.error("Failed to play logout sound.");
-       try {
-        await signOut(auth);
-      } catch (error) {
-        console.error("Error signing out after sound error: ", error);
-      } finally {
-        setTimeout(() => setIsLoggingOut(false), 200);
-      }
-    }
+      finishSignOut(); // Proceed with logout even if sound fails
+    };
   };
 
-  // Renderiza la pantalla de carga durante el cierre de sesión
-  if (isLoggingOut) {
+  if (logoutStep === 'playingSound') {
+    return <BlackScreen />;
+  }
+  
+  if (logoutStep === 'signingOut') {
     return <LoadingScreen />;
   }
+
 
   return (
     <AuthContext.Provider value={{ user, loading, signInWithGoogle, logout }}>
