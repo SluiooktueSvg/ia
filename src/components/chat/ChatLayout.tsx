@@ -65,7 +65,7 @@ const CLICK_THRESHOLD = 3;
 const CLICK_TIMEOUT_MS = 500;
 const HEART_ANIMATION_DURATION_MS = 2000;
 const HEARTS_PER_BURST = 5;
-const RIPPLE_ANIMATION_DURATION_MS = 1000;
+const RIPPLE_ANIMATION_DURATION_MS = 800; // Adjusted to match new animation duration
 
 const ANIMATION_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789*&%$#@!";
 const GREETING_ANIMATION_INTERVAL_MS = 60; 
@@ -319,14 +319,14 @@ const ChatLayout: React.FC = () => {
       {activeRipples.map(ripple => (
         <div
           key={ripple.id}
-          className="absolute rounded-full animate-ripple-effect"
+          className="absolute h-1 w-1 rounded-full animate-ripple-effect"
           style={{
             left: ripple.x,
             top: ripple.y,
             transform: 'translate(-50%, -50%)',
             pointerEvents: 'none',
             zIndex: 9998,
-            border: '2px solid hsl(var(--primary))'
+            boxShadow: '0 0 0 0 hsl(var(--primary))',
           }}
         />
       ))}
