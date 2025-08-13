@@ -4,8 +4,9 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { SendHorizontal } from 'lucide-react';
+import { SendHorizontal, Mic, MicOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -15,16 +16,19 @@ interface ChatInputProps {
 }
 
 const placeholderPhrases = [
-  "Escribe tu mensaje...",
+  "Escribe tu mensaje o usa el micrófono...",
   "¿En qué puedo ayudarte hoy?",
   "Pregúntame lo que quieras...",
-  "¿Tienes alguna duda?",
+  "Dime tu consulta...",
   "Cuéntame una idea...",
   "Exploremos juntos...",
 ];
 const TYPING_SPEED = 100;
 const DELETING_SPEED = 50;
 const PAUSE_DURATION = 2000;
+
+// We will initialize recognition inside the component to ensure it only runs on the client.
+let recognition: any | null = null; 
 
 const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,
@@ -33,8 +37,92 @@ const ChatInput: React.FC<ChatInputProps> = ({
   isCentered = false,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const recognitionRef = useRef<any>(null);
   const [animatedPlaceholder, setAnimatedPlaceholder] = useState('');
   const [showCursor, setShowCursor] = useState(true);
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeechRecognitionSupported, setIsSpeechRecognitionSupported] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // This effect runs only on the client, so `window` is available.
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      setIsSpeechRecognitionSupported(true);
+      const recognitionInstance = new SpeechRecognition();
+      recognitionInstance.continuous = false;
+      recognitionInstance.lang = 'es-ES'; // You can make this dynamic if needed
+      recognitionInstance.interimResults = false;
+      recognitionRef.current = recognitionInstance;
+    } else {
+      setIsSpeechRecognitionSupported(false);
+    }
+  }, []);
+
+
+  const handleMicClick = () => {
+    if (!isSpeechRecognitionSupported || !recognitionRef.current) {
+        toast({
+            variant: "destructive",
+            title: "Navegador no compatible",
+            description: "Tu navegador no soporta el reconocimiento de voz.",
+        });
+        return;
+    }
+
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      recognitionRef.current.start();
+      setIsListening(true);
+    }
+  };
+
+  useEffect(() => {
+    const recognition = recognitionRef.current;
+    if (!recognition) return;
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      const transcript = event.results[0][0].transcript;
+      setCurrentMessage(transcript);
+      // Automatically send the message after successful transcription
+      if (transcript.trim()) {
+        onSendMessage(transcript.trim());
+        setCurrentMessage('');
+      }
+      setIsListening(false);
+    };
+
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+        let errorMessage = "Ocurrió un error con el reconocimiento de voz.";
+        if (event.error === 'no-speech') {
+            errorMessage = "No se detectó ninguna voz. Inténtalo de nuevo.";
+        } else if (event.error === 'audio-capture') {
+            errorMessage = "No se pudo acceder al micrófono. Verifica los permisos.";
+        } else if (event.error === 'not-allowed') {
+            errorMessage = "Permiso para el micrófono denegado. Habilítalo en la configuración de tu navegador.";
+        }
+      
+        toast({
+            variant: "destructive",
+            title: "Error de Voz",
+            description: errorMessage,
+        });
+      setIsListening(false);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+    
+    return () => {
+      if (recognition) {
+        recognition.abort();
+      }
+    };
+  }, [onSendMessage, setCurrentMessage, toast]);
+
 
   // --- Cursor Blinking Effect ---
   useEffect(() => {
@@ -46,8 +134,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   // --- Placeholder Animation Effect ---
   useEffect(() => {
-    if (currentMessage) {
-        // If user is typing, clear animated placeholder and stop
+    if (currentMessage || isListening) {
         setAnimatedPlaceholder('');
         return;
     }
@@ -78,7 +165,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
                     charIndex++;
                     setAnimatedPlaceholder(currentPhrase.substring(0, charIndex));
                 } else {
-                    // Finished typing, pause
                     isTyping = false;
                     pauseUntil = timestamp + PAUSE_DURATION;
                 }
@@ -87,7 +173,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
                     charIndex--;
                     setAnimatedPlaceholder(currentPhrase.substring(0, charIndex));
                 } else {
-                    // Finished deleting, switch to next phrase and pause
                     isTyping = true;
                     phraseIndex = (phraseIndex + 1) % placeholderPhrases.length;
                     pauseUntil = timestamp + PAUSE_DURATION / 2;
@@ -102,15 +187,13 @@ const ChatInput: React.FC<ChatInputProps> = ({
     return () => {
         cancelAnimationFrame(animationFrameId);
     };
-  }, [currentMessage]); // Re-start animation if user clears the input
+  }, [currentMessage, isListening]); // Re-start animation if user clears the input or stops listening
 
   // --- Autoresize Textarea ---
   useEffect(() => {
     if (textareaRef.current) {
-      // Reset height to recalculate based on content
       textareaRef.current.style.height = 'auto';
       const scrollHeight = textareaRef.current.scrollHeight;
-      // Set the height to the scroll height to fit the content
       textareaRef.current.style.height = `${scrollHeight}px`;
     }
   }, [currentMessage]);
@@ -134,8 +217,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
     }
   };
   
-  const placeholderTextToShow = currentMessage ? "" : animatedPlaceholder;
-  const displayBlinkingCursor = !currentMessage && showCursor;
+  const placeholderTextToShow = currentMessage ? "" : (isListening ? "Escuchando..." : animatedPlaceholder);
+  const displayBlinkingCursor = !currentMessage && !isListening && showCursor;
 
   return (
     <form
@@ -147,7 +230,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
       )}
     >
       <div className={cn(
-        "relative flex w-full items-center"
+        "relative flex w-full items-center gap-2"
       )}>
         <Textarea
           ref={textareaRef}
@@ -162,16 +245,33 @@ const ChatInput: React.FC<ChatInputProps> = ({
           )}
           rows={1}
           aria-label="Chat message input"
+          disabled={isListening}
         />
-        <Button
-          type="submit"
-          size="icon"
-          className="absolute right-2 flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-accent"
-          aria-label="Send message"
-          disabled={!currentMessage.trim()}
-        >
-          <SendHorizontal className="h-4 w-4" />
-        </Button>
+        <div className="absolute right-2 flex items-center">
+            {isSpeechRecognitionSupported && (
+              <Button
+                type="button"
+                size="icon"
+                onClick={handleMicClick}
+                className={cn(
+                    "h-9 w-9 rounded-full focus:ring-accent mr-1",
+                    isListening ? "bg-red-500 text-white hover:bg-red-600 animate-pulse" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                )}
+                aria-label={isListening ? "Stop listening" : "Start listening"}
+              >
+                {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+              </Button>
+            )}
+            <Button
+              type="submit"
+              size="icon"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-accent"
+              aria-label="Send message"
+              disabled={!currentMessage.trim() || isListening}
+            >
+              <SendHorizontal className="h-4 w-4" />
+            </Button>
+        </div>
       </div>
     </form>
   );
