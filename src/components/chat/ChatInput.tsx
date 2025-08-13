@@ -26,6 +26,7 @@ const placeholderPhrases = [
 const TYPING_SPEED = 100;
 const DELETING_SPEED = 50;
 const PAUSE_DURATION = 2000;
+const FIRST_INTERACTION_SOUND_KEY = 'lsaig-has-interacted';
 
 const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,
@@ -35,18 +36,37 @@ const ChatInput: React.FC<ChatInputProps> = ({
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const interactionSoundRef = useRef<HTMLAudioElement | null>(null);
   const [animatedPlaceholder, setAnimatedPlaceholder] = useState('');
   const [showCursor, setShowCursor] = useState(true);
   const [isListening, setIsListening] = useState(false);
   const [isSpeechRecognitionSupported, setIsSpeechRecognitionSupported] = useState(false);
+  const [soundPlayed, setSoundPlayed] = useState(true); // Default to true, check on mount
   const { toast } = useToast();
 
   useEffect(() => {
-    // This effect runs only on the client, so `window` is available.
-    if (typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+    // This effect runs only on the client, so `window` and `localStorage` are available.
+    if (typeof window !== 'undefined') {
+      if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
         setIsSpeechRecognitionSupported(true);
+      }
+      // Check if the sound has been played before for this user.
+      const hasInteractedBefore = localStorage.getItem(FIRST_INTERACTION_SOUND_KEY);
+      setSoundPlayed(hasInteractedBefore === 'true');
+      // Pre-load the audio
+      interactionSoundRef.current = new Audio('/sounds/open-ended.mp3');
+      interactionSoundRef.current.preload = 'auto';
     }
   }, []);
+
+  const handleFirstInteraction = () => {
+    if (!soundPlayed) {
+      interactionSoundRef.current?.play().catch(e => console.error("Audio playback failed", e));
+      localStorage.setItem(FIRST_INTERACTION_SOUND_KEY, 'true');
+      setSoundPlayed(true);
+    }
+  };
+
 
   const initializeRecognition = useCallback(() => {
     if (!isSpeechRecognitionSupported) return;
@@ -94,6 +114,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
 
   const handleMicClick = () => {
+    handleFirstInteraction(); // Trigger sound on mic click too
     if (!isSpeechRecognitionSupported) {
         toast({
             variant: "destructive",
@@ -236,6 +257,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           value={currentMessage}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
+          onFocus={handleFirstInteraction}
           placeholder={placeholderTextToShow + (displayBlinkingCursor ? '▋' : '')}
           className={cn(
             "flex-grow resize-none overflow-y-hidden bg-card rounded-3xl py-3 pl-5 pr-20 text-base min-h-[52px] max-h-32 shadow-none border transition-colors duration-200",
@@ -277,3 +299,5 @@ const ChatInput: React.FC<ChatInputProps> = ({
 };
 
 export default ChatInput;
+
+    
