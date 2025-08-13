@@ -13,13 +13,14 @@ export function useChatController() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentInput, setCurrentInput] = useState('');
   const [hasSentFirstMessage, setHasSentFirstMessage] = useState(false);
+  const [isTtsQuotaExceeded, setIsTtsQuotaExceeded] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth(); // Get user from auth context
 
   useEffect(() => {
     const loadedMessages = loadChatFromLocalStorage();
     // Mark all loaded messages as played to prevent autoplay on load
-    const messagesMarkedAsPlayed = loadedMessages.map(m => ({ ...m, hasPlayedAudio: true }));
+    const messagesMarkedAsPlayed = loadedMessages.map(m => ({ ...m, hasPlayedAudio: true, audioUrl: m.audioUrl || undefined }));
     setMessages(messagesMarkedAsPlayed);
 
     if (loadedMessages.length > 0) {
@@ -61,16 +62,38 @@ export function useChatController() {
   };
   
   const handleAudioGenerated = useCallback((messageId: string, audioUrl: string) => {
-    setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioUrl, audioLoading: false, hasPlayedAudio: true } : m));
+    setMessages(prev => prev.map(m => {
+      if (m.id === messageId) {
+        // If an audioUrl is provided, it means generation was successful or we're just updating state.
+        // If audioUrl is empty string, it's a signal to start loading.
+        if (audioUrl) {
+          return { ...m, audioUrl, audioLoading: false, hasPlayedAudio: true };
+        } else {
+          return { ...m, audioLoading: true, hasPlayedAudio: false };
+        }
+      }
+      return m;
+    }));
   }, []);
   
   const handleAudioError = useCallback((messageId: string, error: string) => {
     setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioLoading: false, error: (m.error ? m.error + '; ' : '') + error } : m));
-    toast({
-        title: "Audio Generation Error",
-        description: "Could not generate audio for the message.",
-        variant: "destructive",
-    });
+    
+    // Check for quota error and set global state
+    if (error.includes('429') || error.toLowerCase().includes('quota')) {
+      setIsTtsQuotaExceeded(true);
+      toast({
+          title: "Límite de Solicitudes Alcanzado",
+          description: "Has excedido la cuota de generación de audio por el momento.",
+          variant: "destructive",
+      });
+    } else {
+      toast({
+          title: "Audio Generation Error",
+          description: "Could not generate audio for the message.",
+          variant: "destructive",
+      });
+    }
   }, [toast]);
 
 
@@ -86,7 +109,7 @@ export function useChatController() {
       text,
       sender: 'user',
       timestamp: Date.now(),
-      avatarUrl: user.photoURL, // Add user's photo URL
+      avatarUrl: user.photoURL,
     };
     
     // Add user message to state immediately for a responsive UI
@@ -109,7 +132,7 @@ export function useChatController() {
       sender: 'ai',
       timestamp: Date.now(),
       sentimentLoading: true,
-      audioLoading: false, // Will be true only when user clicks play
+      audioLoading: false,
     };
     setMessages(prev => [...prev, aiPlaceholderMessage]);
 
@@ -158,7 +181,8 @@ export function useChatController() {
   const clearChat = () => {
     setMessages([]);
     clearChatFromLocalStorage();
-    setHasSentFirstMessage(false); 
+    setHasSentFirstMessage(false);
+    setIsTtsQuotaExceeded(false); // Reset quota state on clear
     toast({
         title: "Chat Cleared",
         description: "Your chat history has been cleared.",
@@ -175,8 +199,9 @@ export function useChatController() {
   
   const loadChat = () => {
     const loadedMessages = loadChatFromLocalStorage();
-    const messagesMarkedAsPlayed = loadedMessages.map(m => ({ ...m, hasPlayedAudio: true }));
+    const messagesMarkedAsPlayed = loadedMessages.map(m => ({ ...m, hasPlayedAudio: true, audioUrl: m.audioUrl || undefined }));
     setMessages(messagesMarkedAsPlayed);
+    setIsTtsQuotaExceeded(false); // Reset quota state on load
 
     if (loadedMessages.length > 0) {
       setHasSentFirstMessage(true);
@@ -200,6 +225,7 @@ export function useChatController() {
     currentInput,
     setCurrentInput,
     hasSentFirstMessage,
+    isTtsQuotaExceeded,
     sendMessage,
     handleInputChange, // Keep this for setting currentInput
     clearChat,

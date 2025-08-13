@@ -76,6 +76,7 @@ const ChatLayout: React.FC = () => {
     loadChat,
     handleAudioGenerated,
     handleAudioError,
+    isTtsQuotaExceeded,
   } = useChatController();
   const { user, logout } = useAuth();
 
@@ -256,6 +257,7 @@ const ChatLayout: React.FC = () => {
             messages={messages} 
             onAudioGenerated={handleAudioGenerated}
             onAudioError={handleAudioError}
+            isTtsQuotaExceeded={isTtsQuotaExceeded}
           />
           <ChatInput
             currentMessage={currentInput}

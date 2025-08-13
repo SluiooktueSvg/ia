@@ -5,14 +5,16 @@ import type { ChatMessage } from '@/types/chat';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import SentimentIndicator from './SentimentIndicator';
-import { AlertTriangle, Play, Pause, Loader2, Volume2, User } from 'lucide-react';
+import { AlertTriangle, Pause, Loader2, Volume2, MicOff } from 'lucide-react';
 import { Button } from '../ui/button';
 import { textToSpeech } from '@/ai/flows/text-to-speech';
+import { useToast } from '@/hooks/use-toast';
 
 interface MessageBubbleProps {
   message: ChatMessage;
   onAudioGenerated: (messageId: string, audioUrl: string) => void;
   onAudioError: (messageId: string, error: string) => void;
+  isTtsQuotaExceeded: boolean;
 }
 
 const formatMarkdownToHtml = (text: string): string => {
@@ -25,7 +27,7 @@ const formatMarkdownToHtml = (text: string): string => {
   return html;
 };
 
-const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onAudioGenerated, onAudioError }) => {
+const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onAudioGenerated, onAudioError, isTtsQuotaExceeded }) => {
   const isUser = message.sender === 'user';
   const avatarLabel = isUser ? message.avatarUrl?.charAt(0).toUpperCase() || 'U' : 'AI';
   const avatarColor = isUser ? 'bg-primary text-primary-foreground' : 'bg-accent text-accent-foreground';
@@ -34,6 +36,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onAudioGenerated
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const { toast } = useToast();
   
   const handleAudioEnd = () => {
     setIsPlaying(false);
@@ -47,27 +50,50 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onAudioGenerated
         } else {
           audioRef.current.play().catch(e => console.error("Audio playback failed", e));
         }
-      } else if (!message.audioLoading) {
-        // Generate audio on demand
-        try {
-          const { audioUrl } = await textToSpeech(message.text);
-          onAudioGenerated(message.id, audioUrl);
-        } catch (error) {
-          console.error("On-demand audio generation failed:", error);
-          onAudioError(message.id, "Failed to generate audio.");
-        }
+        return;
       }
+    }
+
+    // From here, we handle generating audio if it doesn't exist
+    if (message.audioLoading) {
+      return; // Do nothing if audio is already being loaded
+    }
+    
+    if (isTtsQuotaExceeded) {
+      toast({
+        variant: "destructive",
+        title: "Límite de Solicitudes Alcanzado",
+        description: "Has excedido la cuota de generación de audio por el momento.",
+      });
+      return;
+    }
+
+    try {
+      // Set loading state in parent
+      onAudioGenerated(message.id, ''); // Clearing any previous URL and indicating loading start
+      const { audioUrl } = await textToSpeech(message.text);
+      onAudioGenerated(message.id, audioUrl); // Update with the new URL
+    } catch (error: any) {
+      console.error("On-demand audio generation failed:", error);
+      // Pass the error message to the controller to handle quota exceeded state
+      onAudioError(message.id, error.message || "Failed to generate audio.");
     }
   };
 
-  // Effect to play audio once the URL is set
+  // Effect to play audio automatically once the URL is available and it hasn't been played before
   useEffect(() => {
     if (message.audioUrl && audioRef.current && !message.hasPlayedAudio) {
-      audioRef.current.play().catch(e => console.error("Audio autoplay failed:", e));
-      // This requires state change in the parent component, so a new prop is needed
-      // to inform the parent that the audio has played once.
+      // Set hasPlayedAudio to true immediately to prevent re-playing
+      onAudioGenerated(message.id, message.audioUrl);
+      
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(e => console.error("Audio autoplay failed. User interaction may be required.", e));
+      }
     }
-  }, [message.audioUrl, message.hasPlayedAudio]);
+  }, [message.audioUrl, message.hasPlayedAudio, message.id, onAudioGenerated]);
+
+  const isButtonDisabled = message.audioLoading || (isTtsQuotaExceeded && !message.audioUrl);
 
   return (
     <div
@@ -113,11 +139,13 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onAudioGenerated
                 onEnded={handleAudioEnd}
                 preload="auto"
               />}
-              <Button variant="ghost" size="icon" className="h-5 w-5" onClick={handlePlayPause} disabled={message.audioLoading}>
+              <Button variant="ghost" size="icon" className="h-5 w-5" onClick={handlePlayPause} disabled={isButtonDisabled}>
                 {message.audioLoading ? (
                   <Loader2 className="h-3 w-3 animate-spin"/>
                 ) : isPlaying ? (
                   <Pause className="h-3 w-3"/>
+                ) : (isButtonDisabled && !message.audioUrl) ? (
+                  <MicOff className="h-3 w-3 text-destructive" />
                 ) : (
                   <Volume2 className="h-3 w-3"/>
                 )}
@@ -133,10 +161,10 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onAudioGenerated
         )}
       </div>
       {isUser && (
-        <Avatar className="h-8 w-8">
+         <Avatar className="h-8 w-8">
            <AvatarImage src={message.avatarUrl ?? undefined} alt="User Avatar" />
            <AvatarFallback className={cn("text-sm", avatarColor)}>
-             {avatarLabel}
+             {isUser ? message.avatarUrl?.charAt(0).toUpperCase() || 'U' : 'AI'}
            </AvatarFallback>
         </Avatar>
       )}

@@ -8,9 +8,10 @@ interface MessageListProps {
   messages: ChatMessage[];
   onAudioGenerated: (messageId: string, audioUrl: string) => void;
   onAudioError: (messageId: string, error: string) => void;
+  isTtsQuotaExceeded: boolean;
 }
 
-const MessageList: React.FC<MessageListProps> = ({ messages, onAudioGenerated, onAudioError }) => {
+const MessageList: React.FC<MessageListProps> = ({ messages, onAudioGenerated, onAudioError, isTtsQuotaExceeded }) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
 
@@ -24,7 +25,13 @@ const MessageList: React.FC<MessageListProps> = ({ messages, onAudioGenerated, o
     <ScrollArea className="flex-grow p-4 md:p-6" ref={scrollAreaRef} viewportRef={viewportRef} role="log" aria-live="polite">
       <div className="space-y-2">
         {messages.map((msg) => (
-          <MessageBubble key={msg.id} message={msg} onAudioGenerated={onAudioGenerated} onAudioError={onAudioError} />
+          <MessageBubble 
+            key={msg.id} 
+            message={msg} 
+            onAudioGenerated={onAudioGenerated} 
+            onAudioError={onAudioError}
+            isTtsQuotaExceeded={isTtsQuotaExceeded}
+          />
         ))}
       </div>
     </ScrollArea>
