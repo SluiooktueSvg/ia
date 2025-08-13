@@ -64,18 +64,6 @@ const GREETING_ANIMATION_INTERVAL_MS = 60;
 const GREETING_REVEAL_SPEED_FACTOR = 3; 
 const GREETING_TIME_CHECK_INTERVAL_MS = 60000; // Check time every 1 minute
 
-const getGreetingInfo = () => {
-  const currentHour = new Date().getHours();
-  if (currentHour < 12) {
-    return { prefix: 'Buenos ', dynamicPart: 'días' };
-  } else if (currentHour < 18) {
-    return { prefix: 'Buenas ', dynamicPart: 'tardes' };
-  } else {
-    return { prefix: 'Buenas ', dynamicPart: 'noches' };
-  }
-};
-
-
 const ChatLayout: React.FC = () => {
   const {
     messages,
@@ -87,7 +75,7 @@ const ChatLayout: React.FC = () => {
     saveChat,
     loadChat,
   } = useChatController();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
 
   const [greetingPrefix, setGreetingPrefix] = useState('');
   const [targetDynamicGreetingPart, setTargetDynamicGreetingPart] = useState('');
@@ -100,10 +88,22 @@ const ChatLayout: React.FC = () => {
   const [activeHearts, setActiveHearts] = useState<ActiveHeart[]>([]);
   const currentGreetingInfoRef = useRef<{prefix: string, dynamicPart: string} | null>(null);
 
+  const getGreetingInfo = (userName?: string | null) => {
+    const currentHour = new Date().getHours();
+    const name = userName ? `, ${userName.split(' ')[0]}` : ''; // Get first name
+    if (currentHour < 12) {
+      return { prefix: 'Buenos ', dynamicPart: `días${name}` };
+    } else if (currentHour < 18) {
+      return { prefix: 'Buenas ', dynamicPart: `tardes${name}` };
+    } else {
+      return { prefix: 'Buenas ', dynamicPart: `noches${name}` };
+    }
+  };
+  
   // Effect to update target greeting based on time of day
   useEffect(() => {
     const updateAndAnimateGreetingIfNeeded = () => {
-      const { prefix, dynamicPart } = getGreetingInfo();
+      const { prefix, dynamicPart } = getGreetingInfo(user?.displayName);
       if (
         !currentGreetingInfoRef.current ||
         prefix !== currentGreetingInfoRef.current.prefix ||
@@ -119,7 +119,7 @@ const ChatLayout: React.FC = () => {
 
     const timeCheckIntervalId = setInterval(updateAndAnimateGreetingIfNeeded, GREETING_TIME_CHECK_INTERVAL_MS);
     return () => clearInterval(timeCheckIntervalId);
-  }, []); 
+  }, [user]); // Re-run when user object changes
 
 
   // Effect to run scramble animation when targetDynamicGreetingPart or greetingPrefix changes
