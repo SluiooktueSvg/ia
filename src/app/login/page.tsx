@@ -12,29 +12,37 @@ export default function LoginPage() {
   const { user, signInWithGoogle, loading } = useAuth();
   const router = useRouter();
 
+  // This effect handles the case where a user is already logged in when they visit the page.
   useEffect(() => {
-    if (user) {
+    if (!loading && user) {
       router.push('/chat');
     }
-  }, [user, router]);
+  }, [user, loading, router]);
 
   const handleSignIn = async () => {
     try {
+      // The `signInWithGoogle` function will trigger an auth state change,
+      // which the useEffect above will catch on the next render, causing a redirect.
       await signInWithGoogle();
     } catch (error) {
       console.error("Sign-in failed:", error);
-      // Optionally, show a toast or message to the user
+      // Optionally, show a toast or message to the user here
     }
   };
-
+  
+  // If loading, and we don't have a user yet, show the login page.
+  // This prevents the page from unmounting the button during the sign-in process.
+  // We only show a loading screen if we are absolutely sure we're about to redirect.
   if (loading) {
     return <LoadingScreen />;
   }
   
+  // If we have a user, we are about to redirect, so we can return null or a loading screen.
   if (user) {
-    return null; // Don't render anything while redirecting
+    return <LoadingScreen />;
   }
 
+  // Default view: Show the login page for non-authenticated users.
   return (
     <div className="flex h-screen w-full items-center justify-center bg-background p-4">
       <div className="flex max-w-sm flex-col items-center text-center">
