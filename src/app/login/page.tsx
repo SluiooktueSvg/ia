@@ -18,8 +18,17 @@ export default function LoginPage() {
     }
   }, [user, router]);
 
+  const handleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.error("Sign-in failed:", error);
+      // Optionally, show a toast or message to the user
+    }
+  };
+
   if (loading) {
-    return <LoadingScreen text="Verificando autenticación..." />;
+    return <LoadingScreen />;
   }
   
   if (user) {
@@ -32,7 +41,7 @@ export default function LoginPage() {
         <LSAIGLogo />
         <h1 className="text-2xl font-semibold mt-4">Welcome to LSAIG</h1>
         <p className="text-muted-foreground mt-2">Sign in to start chatting with the AI.</p>
-        <Button onClick={signInWithGoogle} className="mt-6 w-full">
+        <Button onClick={handleSignIn} className="mt-6 w-full">
           Sign In with Google
         </Button>
       </div>
