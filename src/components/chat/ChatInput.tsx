@@ -115,9 +115,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
     }
   }, [currentMessage]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCurrentMessage(e.target.value);
-  };
+  }, [setCurrentMessage]);
 
   const handleSubmit = (e?: React.FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
