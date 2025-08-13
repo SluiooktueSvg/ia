@@ -7,6 +7,7 @@ import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import LSAIGLogo from '@/components/AuraChatLogo';
 import LoadingScreen from '@/components/ui/loading-screen';
+import GoogleLogo from '@/components/GoogleLogo';
 
 export default function LoginPage() {
   const { user, signInWithGoogle, loading } = useAuth();
@@ -53,6 +54,7 @@ export default function LoginPage() {
         <h1 className="text-2xl font-semibold mt-4">Welcome to LSAIG</h1>
         <p className="text-muted-foreground mt-2">Sign in to start chatting with the AI.</p>
         <Button onClick={handleSignIn} className="mt-6 w-full">
+          <GoogleLogo className="mr-2 h-5 w-5" />
           Sign In with Google
         </Button>
       </div>
