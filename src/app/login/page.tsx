@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useAuth } from '@/context/AuthContext';
@@ -5,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import LSAIGLogo from '@/components/AuraChatLogo';
+import LoadingScreen from '@/components/ui/loading-screen';
 
 export default function LoginPage() {
   const { user, signInWithGoogle, loading } = useAuth();
@@ -17,7 +19,7 @@ export default function LoginPage() {
   }, [user, router]);
 
   if (loading) {
-    return <div className="flex h-screen w-full items-center justify-center">Loading...</div>;
+    return <LoadingScreen text="Verificando autenticación..." />;
   }
   
   if (user) {

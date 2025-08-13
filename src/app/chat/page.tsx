@@ -1,9 +1,11 @@
+
 'use client';
 
 import ChatLayout from '@/components/chat/ChatLayout';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import LoadingScreen from '@/components/ui/loading-screen';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,11 +20,7 @@ export default function AuraChatPage() {
   }, [user, loading, router]);
 
   if (loading || !user) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <p>Loading...</p>
-      </div>
-    );
+    return <LoadingScreen text="Cargando tu sesión..." />;
   }
 
   return <ChatLayout />;
