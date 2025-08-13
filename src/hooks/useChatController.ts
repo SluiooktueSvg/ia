@@ -93,7 +93,7 @@ export function useChatController() {
       text,
       sender: 'user',
       timestamp: Date.now(),
-      avatarUrl: user.photoURL || undefined, // Add user's photo URL
+      avatarUrl: user.photoURL, // Add user's photo URL
     };
     
     // Add user message to state immediately for a responsive UI

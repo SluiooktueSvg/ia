@@ -11,5 +11,5 @@ export interface ChatMessage {
   audioUrl?: string;
   audioLoading?: boolean;
   hasPlayedAudio?: boolean; // To prevent autoplay on re-renders
-  avatarUrl?: string; // Add avatarUrl for user profile pictures
+  avatarUrl?: string | null; // Allow null for user profile pictures
 }
