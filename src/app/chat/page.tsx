@@ -5,6 +5,8 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
+export const dynamic = 'force-dynamic';
+
 export default function AuraChatPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
