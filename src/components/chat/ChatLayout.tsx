@@ -8,7 +8,7 @@ import { useChatController } from '@/hooks/useChatController';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import LSAIGLogo from '@/components/AuraChatLogo';
 import { Button } from '@/components/ui/button';
-import { Save, FolderOpen, Trash2, Heart, LogOut, AudioLines, Shield } from 'lucide-react';
+import { Save, FolderOpen, Trash2, Heart, LogOut, AudioLines } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
@@ -91,8 +91,6 @@ const ChatLayout: React.FC = () => {
   const [lastClickTime, setLastClickTime] = useState(0);
   const [activeHearts, setActiveHearts] = useState<ActiveHeart[]>([]);
   const currentGreetingInfoRef = useRef<{prefix: string, dynamicPart: string} | null>(null);
-
-  const isAdmin = user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
   const getGreetingInfo = (userName?: string | null) => {
     const currentHour = new Date().getHours();
@@ -227,13 +225,6 @@ const ChatLayout: React.FC = () => {
           <LSAIGLogo />
         </div>
         <div className="flex items-center gap-1 rounded-full bg-card p-1 shadow-md">
-          {isAdmin && (
-            <Button asChild variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9" aria-label="Admin Panel">
-              <Link href="/admin">
-                <Shield className="h-4 w-4 md:h-5 md:w-5 text-accent" />
-              </Link>
-            </Button>
-          )}
           <Button asChild variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9" aria-label="Voice chat">
             <Link href="/voice">
               <AudioLines className="h-4 w-4 md:h-5 md:w-5" />
