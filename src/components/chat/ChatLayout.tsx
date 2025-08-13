@@ -252,44 +252,46 @@ const ChatLayout: React.FC = () => {
         </div>
       </div>
 
-      {hasSentFirstMessage ? (
-        <>
-          <MessageList 
-            messages={messages} 
-            onAudioGenerated={handleAudioGenerated}
-            onAudioError={handleAudioError}
-            isTtsQuotaExceeded={isTtsQuotaExceeded}
-            setIsTtsQuotaExceeded={setIsTtsQuotaExceeded}
-          />
-          <ChatInput
-            currentMessage={currentInput}
-            setCurrentMessage={setCurrentInput}
-            onSendMessage={sendMessage}
-            isCentered={false}
-          />
-        </>
-      ) : (
-        <div className="flex flex-grow flex-col justify-between">
-          <div className="flex flex-grow flex-col items-center justify-center p-4">
-            <div className="text-center mb-4">
-              {animatedGreetingDisplay && <p className="text-3xl md:text-4xl mt-4 font-greeting font-semibold text-gradient-animated">{animatedGreetingDisplay}</p>}
-              {dynamicHelpText && <p className="text-muted-foreground mt-2 text-sm md:text-base">{dynamicHelpText}</p>}
+      <div className={cn("flex flex-1 flex-col", hasSentFirstMessage ? "h-full" : "min-h-0")}>
+        {hasSentFirstMessage ? (
+          <>
+            <MessageList 
+              messages={messages} 
+              onAudioGenerated={handleAudioGenerated}
+              onAudioError={handleAudioError}
+              isTtsQuotaExceeded={isTtsQuotaExceeded}
+              setIsTtsQuotaExceeded={setIsTtsQuotaExceeded}
+            />
+            <ChatInput
+              currentMessage={currentInput}
+              setCurrentMessage={setCurrentInput}
+              onSendMessage={sendMessage}
+              isCentered={false}
+            />
+          </>
+        ) : (
+          <div className="flex h-full flex-col">
+            <div className="flex flex-1 flex-shrink items-center justify-center overflow-y-auto p-4">
+              <div className="w-full max-w-xl text-center">
+                <div className="mb-4">
+                  {animatedGreetingDisplay && <p className="text-3xl font-semibold text-gradient-animated md:text-4xl">{animatedGreetingDisplay}</p>}
+                  {dynamicHelpText && <p className="mt-2 text-sm text-muted-foreground md:text-base">{dynamicHelpText}</p>}
+                </div>
+                <ChatInput
+                  currentMessage={currentInput}
+                  setCurrentMessage={setCurrentInput}
+                  onSendMessage={sendMessage}
+                  isCentered={true}
+                />
+              </div>
             </div>
-            <div className="w-full max-w-xl">
-              <ChatInput
-                currentMessage={currentInput}
-                setCurrentMessage={setCurrentInput}
-                onSendMessage={sendMessage}
-                isCentered={true}
-              />
-            </div>
+            <footer className="flex-shrink-0 px-4 py-4 text-center text-xs text-muted-foreground">
+              <p>&copy; {new Date().getFullYear()} LSAIG. All rights reserved.</p>
+              <p>Sluiooktue Inc. Luis M.</p>
+            </footer>
           </div>
-          <footer className="text-center text-xs text-muted-foreground py-4 px-4">
-            <p>&copy; {new Date().getFullYear()} LSAIG. All rights reserved.</p>
-            <p>Sluiooktue Inc. Luis M.</p>
-          </footer>
-        </div>
-      )}
+        )}
+      </div>
 
       {activeHearts.map(heart => (
         <Heart
