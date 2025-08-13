@@ -5,9 +5,8 @@ import {
   onAuthStateChanged, 
   User, 
   GoogleAuthProvider, 
-  signInWithRedirect, 
-  signOut,
-  getRedirectResult
+  signInWithPopup, 
+  signOut
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 
@@ -29,24 +28,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(user);
       setLoading(false);
     });
-
-    // Check for redirect result on initial load
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result) {
-          // This is the signed-in user
-          const user = result.user;
-          setUser(user);
-        }
-      })
-      .catch((error) => {
-        // Handle Errors here.
-        console.error("Error getting redirect result: ", error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-
     return () => unsubscribe();
   }, []);
 
@@ -54,12 +35,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setLoading(true);
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithRedirect(auth, provider);
-      // After this, the page will redirect to Google's sign-in page.
-      // The result is handled by the useEffect hook.
+      await signInWithPopup(auth, provider);
+      // onAuthStateChanged will handle the user state update
     } catch (error) {
       console.error("Error signing in with Google: ", error);
-      setLoading(false);
+      // Let the user stay on the login page if they close the popup
+      setLoading(false); 
     }
   };
 

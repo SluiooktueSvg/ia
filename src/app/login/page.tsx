@@ -13,7 +13,6 @@ export default function LoginPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // If loading is finished and we have a user, redirect to chat.
     if (!loading && user) {
       router.push('/chat');
     }
@@ -21,19 +20,15 @@ export default function LoginPage() {
 
   const handleSignIn = async () => {
     try {
-      // signInWithGoogle now triggers a redirect.
-      // The user will be sent to Google and then back to this page.
-      // The result is handled in the AuthProvider's useEffect.
       await signInWithGoogle();
+      // After the popup is successful, the `useEffect` above will catch the user change and redirect.
     } catch (error) {
-      console.error("Sign-in failed:", error);
-      // Optionally, show a toast or message to the user here
+      console.error("Sign-in process was interrupted or failed:", error);
     }
   };
   
-  // While the initial user state is loading, or during the redirect process,
-  // show the loading screen.
-  if (loading) {
+  // While the initial user state is loading, show a loading screen.
+  if (loading && !user) {
     return <LoadingScreen />;
   }
 
