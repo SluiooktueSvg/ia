@@ -3,7 +3,7 @@
 
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import LSAIGLogo from '@/components/AuraChatLogo';
 import LoadingScreen from '@/components/ui/loading-screen';
@@ -11,6 +11,7 @@ import LoadingScreen from '@/components/ui/loading-screen';
 export default function LoginPage() {
   const { user, signInWithGoogle, loading } = useAuth();
   const router = useRouter();
+  const interactionSoundRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     // This effect will run when the component mounts and whenever user or loading changes.
@@ -19,9 +20,18 @@ export default function LoginPage() {
       router.push('/chat');
     }
   }, [user, loading, router]);
+  
+  useEffect(() => {
+    // Pre-load the audio on component mount
+    interactionSoundRef.current = new Audio('/sounds/open-ended.mp3');
+    interactionSoundRef.current.preload = 'auto';
+  }, []);
 
   const handleSignIn = async () => {
     try {
+      // Play the sound first
+      interactionSoundRef.current?.play().catch(e => console.error("Audio playback failed", e));
+      // Then proceed with sign-in
       await signInWithGoogle();
       // After a successful sign-in, the useEffect above will catch the user change and redirect.
     } catch (error) {
