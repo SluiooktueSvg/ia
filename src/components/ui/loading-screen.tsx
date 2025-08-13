@@ -1,14 +1,11 @@
 
 import React from 'react';
+import { Cog } from 'lucide-react';
 
-interface LoadingScreenProps {
-  text?: string;
-}
-
-const LoadingScreen: React.FC<LoadingScreenProps> = ({ text }) => {
+const LoadingScreen: React.FC = () => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
-      <div className="h-12 w-12 animate-spin rounded-full border-4 border-solid border-primary border-t-transparent"></div>
+      <Cog className="h-16 w-16 animate-spin text-primary" />
     </div>
   );
 };
