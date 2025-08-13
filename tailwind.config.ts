@@ -116,6 +116,10 @@ export default {
           '50%': { opacity: '0.8', transform: 'translateY(-40px) scale(1.2)' },
           '100%': { opacity: '0', transform: 'translateY(-100px) scale(0.5)' },
         },
+        spin: {
+          from: { transform: 'rotate(0deg)' },
+          to: { transform: 'rotate(360deg)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -126,6 +130,9 @@ export default {
         'pulse-custom': 'pulse-custom 0.4s ease-in-out',
         'float-fade': 'float-fade 2s ease-out forwards', // New animation class
         'animated-border-glow': 'animated-gradient-text 3s linear infinite', // New animation for border
+        'spin-slow': 'spin 10s linear infinite',
+        'spin-medium-reverse': 'spin 5s linear infinite reverse',
+        'spin-fast': 'spin 2s linear infinite',
       },
     },
   },
