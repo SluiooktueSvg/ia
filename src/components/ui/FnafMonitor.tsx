@@ -10,14 +10,15 @@ interface FnafMonitorProps {
   isOpen: boolean;
 }
 
+// More realistic camera setup inspired by the game
 const CAMERAS = [
-  { id: 'cam01', name: 'CAM 01', x: 200, y: 155, imageUrls: ['https://placehold.co/800x600/1a1a1a/333333', 'https://placehold.co/800x600/1a1a1a/222222'], hint: 'office hallway' },
-  { id: 'cam02', name: 'CAM 02', x: 200, y: 110, imageUrls: ['https://placehold.co/800x600/2b2b2b/444444', 'https://placehold.co/800x600/2b2b2b/333333', 'https://placehold.co/800x600/2b2b2b/111111'], hint: 'dining area' },
+  { id: 'cam01', name: 'CAM 01', x: 200, y: 155, imageUrls: ['https://placehold.co/800x600/1a1a1a/333333', 'https://placehold.co/800x600/220000/ff0000'], hint: 'office hallway' },
+  { id: 'cam02', name: 'CAM 02', x: 200, y: 110, imageUrls: ['https://placehold.co/800x600/2b2b2b/444444', 'https://placehold.co/800x600/2b2b2b/333333', 'https://placehold.co/800x600/2a0000/ff0000'], hint: 'dining area' },
   { id: 'cam03', name: 'CAM 03', x: 150, y: 155, imageUrls: ['https://placehold.co/800x600/1f1f1f/3a3a3a'], hint: 'supply closet' },
   { id: 'cam04', name: 'CAM 04', x: 150, y: 110, imageUrls: ['https://placehold.co/800x600/2a2a2a/4a4a4a', 'https://placehold.co/800x600/2a2a2a/3a3a3a'], hint: 'west hall' },
-  { id: 'cam05', name: 'CAM 05', x: 150, y: 65, imageUrls: ['https://placehold.co/800x600/3c3c3c/555555'], hint: 'backstage' },
-  { id: 'cam06', name: 'CAM 06', x: 100, y: 155, imageUrls: ['https://placehold.co/800x600/1e1e1e/3e3e3e'], hint: 'kitchen' },
-  { id: 'cam07', name: 'CAM 07', x: 100, y: 110, imageUrls: ['https://placehold.co/800x600/2c2c2c/4f4f4f', 'https://placehold.co/800x600/2c2c2c/3f3f3f'], hint: 'east hall' },
+  { id: 'cam05', name: 'CAM 05', x: 150, y: 65, imageUrls: ['https://placehold.co/800x600/3c3c3c/555555', 'https://placehold.co/800x600/3c0000/ff0000'], hint: 'backstage' },
+  { id: 'cam06', name: 'CAM 06', x: 100, y: 155, imageUrls: ['https://placehold.co/800x600/1e1e1e/3e3e3e'], hint: 'kitchen audio' },
+  { id: 'cam07', name: 'CAM 07', x: 100, y: 110, imageUrls: ['https://placehold.co/800x600/2c2c2c/4f4f4f', 'https://placehold.co/800x600/2c2c2c/3f3f3f', 'https://placehold.co/800x600/2c0000/ff0000'], hint: 'east hall' },
   { id: 'cam08', name: 'CAM 08', x: 50, y: 110, imageUrls: ['https://placehold.co/800x600/3a3a3a/5a5a5a'], hint: 'storage room' },
 ];
 
@@ -45,7 +46,7 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
     }
   }, [isOpen]);
 
-  // Effect for changing camera images periodically
+  // Effect for changing camera images periodically to simulate activity
   useEffect(() => {
     const imageChangeInterval = setInterval(() => {
       setCameraImageStates(prevStates => {
@@ -93,9 +94,9 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
       >
         <div className="flex h-full w-full flex-col bg-black/80 border border-black relative">
           {/* Screen Content */}
-          <div className="flex-grow w-full h-full bg-black rounded-sm overflow-hidden relative group/camera-view">
+          <div className="flex-grow w-full h-full bg-black rounded-sm overflow-hidden relative">
             
-            {/* Camera View */}
+            {/* Camera View - IMPORTANT: this is now z-0, behind overlays */}
             <Image
               key={activeCamera.id} // Key changes on camera change to force re-render
               src={activeImageUrl}
@@ -103,21 +104,20 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
               data-ai-hint={activeCamera.hint}
               layout="fill"
               objectFit="cover"
-              className="animate-camera-pan z-10"
+              className="animate-camera-pan z-0"
             />
             
-            {/* Overlay Effects */}
-            <div className="absolute inset-0 bg-black/40 z-20" />
-            <div className="static-noise-bg z-30" />
+            {/* Overlay Effects - Placed after the image to render on top */}
+            <div className="absolute inset-0 bg-black/20 z-10" />
+            <div className="static-noise-bg z-20" />
 
 
-            {/* Top Left CAM indicator */}
-            <div className="absolute top-4 left-4 text-white/80 font-mono text-2xl tracking-widest animate-pulse z-40">
+            {/* UI Elements - Highest z-index to be on top of everything */}
+            <div className="absolute top-4 left-4 text-white/80 font-mono text-2xl tracking-widest animate-pulse z-30">
               <p>{activeCamera.name}</p>
             </div>
 
-            {/* Top Right Buttons */}
-            <div className="absolute top-4 right-4 flex h-20 w-16 flex-col items-center justify-between bg-blue-900/40 p-1 border-2 border-blue-400/30 z-40">
+            <div className="absolute top-4 right-4 flex h-20 w-16 flex-col items-center justify-between bg-blue-900/40 p-1 border-2 border-blue-400/30 z-30">
                 <button className="text-white/80 transition-colors hover:text-white hover:bg-white/10 w-full flex-grow flex items-center justify-center">
                     <Video className="h-8 w-8" />
                 </button>
@@ -126,9 +126,8 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
                 </button>
             </div>
 
-             {/* Bottom Right Map */}
             <div 
-              className="absolute bottom-4 right-4 w-[280px] h-[200px] bg-cover bg-center border border-green-400/30 z-40"
+              className="absolute bottom-4 right-4 w-[280px] h-[200px] bg-cover bg-center border border-green-400/30 z-30"
               style={{ backgroundImage: "url('https://i.imgur.com/2sA4R9M.png')" }} 
             >
               {CAMERAS.map(cam => (
@@ -150,7 +149,7 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
               ))}
             </div>
             
-            <div className="absolute bottom-4 left-4 text-white/70 font-mono text-sm opacity-70 z-40">
+            <div className="absolute bottom-4 left-4 text-white/70 font-mono text-sm opacity-70 z-30">
               <p>REC ●</p>
             </div>
           </div>
