@@ -131,7 +131,7 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
 
             <div 
               className="absolute bottom-4 right-4 w-[280px] h-[200px] bg-cover bg-center border border-green-400/30 z-30"
-              style={{ backgroundImage: "url('https://i.imgur.com/7s1gG99.png')" }} 
+              style={{ backgroundImage: "url('https://i.imgur.com/xVTEp7M.png')" }} 
             >
               {CAMERAS.map(cam => (
                  <button
