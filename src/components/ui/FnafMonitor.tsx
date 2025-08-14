@@ -98,11 +98,12 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
             
             {/* Camera View - z-0 */}
             <Image
-              key={activeCamera.id}
+              key={activeImageUrl} // Use the image URL as the key to force re-render
               src={activeImageUrl}
               alt={`View from ${activeCamera.name}`}
               data-ai-hint={activeCamera.hint}
               fill={true}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="animate-camera-pan z-0 object-cover"
             />
             
