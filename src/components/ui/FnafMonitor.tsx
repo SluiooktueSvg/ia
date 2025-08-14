@@ -11,17 +11,14 @@ interface FnafMonitorProps {
 }
 
 const CAMERAS = [
-  { id: 'cam1a', name: 'CAM 1A', x: 120, y: 10, imageUrls: ['https://placehold.co/800x600/1a1a1a/333333.png', 'https://placehold.co/800x600/220000/ff0000.png'], hint: 'show stage' },
-  { id: 'cam1b', name: 'CAM 1B', x: 105, y: 55, imageUrls: ['https://placehold.co/800x600/2b2b2b/444444.png', 'https://placehold.co/800x600/2b2b2b/333333.png', 'https://placehold.co/800x600/2a0000/ff0000.png'], hint: 'dining area' },
-  { id: 'cam1c', name: 'CAM 1C', x: 70, y: 95, imageUrls: ['https://placehold.co/800x600/1f1f1f/3a3a3a.png'], hint: 'pirate cove' },
-  { id: 'cam5', name: 'CAM 5', x: 25, y: 65, imageUrls: ['https://placehold.co/800x600/3c3c3c/555555.png', 'https://placehold.co/800x600/3c0000/ff0000.png'], hint: 'backstage' },
-  { id: 'cam3', name: 'CAM 3', x: 25, y: 155, imageUrls: ['https://placehold.co/800x600/2a2a2a/4a4a4a.png', 'https://placehold.co/800x600/2a2a2a/3a3a3a.png'], hint: 'supply closet' },
-  { id: 'cam2a', name: 'CAM 2A', x: 75, y: 145, imageUrls: ['https://placehold.co/800x600/1e1e1e/3e3e3e.png'], hint: 'west hall' },
-  { id: 'cam2b', name: 'CAM 2B', x: 75, y: 175, imageUrls: ['https://placehold.co/800x600/1c1c1c/3c3c3c.png'], hint: 'w. hall corner'},
-  { id: 'cam4a', name: 'CAM 4A', x: 135, y: 145, imageUrls: ['https://placehold.co/800x600/2c2c2c/4f4f4f.png', 'https://placehold.co/800x600/2c2c2c/3f3f3f.png', 'https://placehold.co/800x600/2c0000/ff0000.png'], hint: 'east hall' },
-  { id: 'cam4b', name: 'CAM 4B', x: 135, y: 175, imageUrls: ['https://placehold.co/800x600/2f2f2f/4a4a4a.png'], hint: 'e. hall corner'},
-  { id: 'cam7', name: 'CAM 7', x: 215, y: 65, imageUrls: ['https://placehold.co/800x600/3a3a3a/5a5a5a.png'], hint: 'restrooms' },
-  { id: 'cam6', name: 'CAM 6', x: 215, y: 145, imageUrls: ['https://placehold.co/800x600/1e1e1e/3e3e3e.png'], hint: 'kitchen' },
+  { id: 'cam07', name: 'CAM 07', x: 70, y: 10, imageUrls: ['https://placehold.co/800x600/3a3a3a/5a5a5a.png'], hint: 'restrooms' },
+  { id: 'cam08', name: 'CAM 08', x: 130, y: 35, imageUrls: ['https://placehold.co/800x600/3a3a3a/5a5a5a.png'], hint: 'restrooms' },
+  { id: 'cam04', name: 'CAM 04', x: 25, y: 80, imageUrls: ['https://placehold.co/800x600/2c2c2c/4f4f4f.png', 'https://placehold.co/800x600/2c2c2c/3f3f3f.png', 'https://placehold.co/800x600/2c0000/ff0000.png'], hint: 'east hall' },
+  { id: 'cam02', name: 'CAM 02', x: 200, y: 80, imageUrls: ['https://placehold.co/800x600/1e1e1e/3e3e3e.png'], hint: 'west hall' },
+  { id: 'cam05', name: 'CAM 05', x: 25, y: 120, imageUrls: ['https://placehold.co/800x600/3c3c3c/555555.png', 'https://placehold.co/800x600/3c0000/ff0000.png'], hint: 'backstage' },
+  { id: 'cam03', name: 'CAM 03', x: 80, y: 120, imageUrls: ['https://placehold.co/800x600/2a2a2a/4a4a4a.png', 'https://placehold.co/800x600/2a2a2a/3a3a3a.png'], hint: 'supply closet' },
+  { id: 'cam06', name: 'CAM 06', x: 50, y: 160, imageUrls: ['https://placehold.co/800x600/1e1e1e/3e3e3e.png'], hint: 'kitchen' },
+  { id: 'cam01', name: 'CAM 01', x: 170, y: 160, imageUrls: ['https://placehold.co/800x600/2f2f2f/4a4a4a.png'], hint: 'e. hall corner'},
 ];
 
 
@@ -34,7 +31,7 @@ const initialImageStates = CAMERAS.reduce((acc, cam) => {
 
 const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
   const [shouldRender, setShouldRender] = useState(isOpen);
-  const [currentCameraId, setCurrentCameraId] = useState('cam1a');
+  const [currentCameraId, setCurrentCameraId] = useState('cam01');
   const [cameraImageStates, setCameraImageStates] = useState(initialImageStates);
 
   // Effect for showing/hiding the monitor with animation
@@ -131,7 +128,7 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
 
             <div 
               className="absolute bottom-4 right-4 w-[280px] h-[200px] bg-cover bg-center border border-green-400/30 z-30 relative"
-              style={{ backgroundImage: "url('https://i.imgur.com/xVTEp7M.png')" }} 
+              style={{ backgroundImage: "url('https://i.imgur.com/7s1gG99.png')" }} 
             >
               {CAMERAS.map(cam => (
                  <button
