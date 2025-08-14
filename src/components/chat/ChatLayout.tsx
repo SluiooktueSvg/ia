@@ -39,7 +39,7 @@ const helpMessages = [
   { male: "La IA está aquí para ti. ¿Cómo empezamos?", female: "La IA está aquí para ti. ¿Cómo empezamos?" },
   { male: "Pregunta, crea, descubre. ¡Estoy para asistirte!", female: "Pregunta, crea, descubre. ¡Estoy para asistirte!" },
   { male: "¿Qué misterios resolveremos hoy?", female: "¿Qué misterios resolveremos hoy?" },
-  { male: "Tu socio de ideas está listo. ¿Comenzamos?", female: "Tu socia de ideas está lista. ¿Comenzamos?" },
+  { male: "Tu socio de ideas está listo. ¿Comenzamos?", female: "Tu socia de ideas está lista. ¿Comenzamoss?" },
   { male: "¿Hay algo nuevo que quieras aprender o discutir?", female: "¿Hay algo nuevo que quieras aprender o discutir?" },
   { male: "Siempre es un buen momento para una nueva pregunta.", female: "Siempre es un buen momento para una nueva pregunta." },
   { male: "¿Cómo puedo ser de utilidad en este momento?", female: "¿Cómo puedo ser de utilidad en este momento?" },
