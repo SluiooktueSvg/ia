@@ -100,13 +100,7 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
 
             {/* Switching Camera Static Effect */}
             {isSwitching && (
-              <Image
-                src="https://i.pinimg.com/originals/53/68/ea/5368ea855d752bd04ff9446fe7ed93fa.gif"
-                alt="Camera switching static"
-                fill={true}
-                className="object-cover z-40"
-                unoptimized
-              />
+              <div className="camera-switching-noise" />
             )}
 
             {/* UI Elements */}

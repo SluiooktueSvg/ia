@@ -189,6 +189,16 @@ body {
     box-shadow: inset 0 0 100px 25px rgba(0,0,0,0.9);
     pointer-events: none;
   }
+  .camera-switching-noise {
+    position: absolute;
+    inset: 0;
+    z-index: 40; /* High z-index to cover everything */
+    background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXWBgYGHh4d5eXlzc3OLi4ubm5uVlZWYmJitbW1xcXFYWFhZWVl0dHTs7Ozv7+/+/v7w8PDV1dVuhZ25AAAAI3RSTlMAwA8K/P/k4dLKzckvKsvJzsvJzsvJzsvJzsvJzsvJzsvcy2d/AAAA9UlEQVRIS2WQa24EMRCEle0ABBGKq4H//5xAYsVbKxV5UsvdrG3s796dADkAWaCDBLoCgA1g84AR4LIA/AIU4hMLbAIwH3EAmUnQh9g2ADUI/gFsAEsAGyAYvLw/3yYc/YgaYg20w5E9zF+sS+3W67nL/G/YStw7u0/A8wA+o4QyAD4AYgC+A6iA1xAWYgqEgBEAL8A+gA+/h9gGYALsA+wB2wB5AJ8B5ALYARgA2wBqwB2wAbAAvABFAF6AEaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAWYA2YD2wE5ADoCaAJoCjAQgA7wAegAqwAewAfgAvgAfgAfgA/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gA/gA/gI+A/gA/gI+A/gA/gI+A/gA/gI+A/gA/gI+A/gA/gI+A/gA/gI+A/gA+B/gAwABsAAAAAElFTkSuQmCC') repeat 0 0;
+    opacity: 0.6;
+    mix-blend-mode: overlay;
+    animation: static-noise 0.1s steps(4, end) infinite;
+    pointer-events: none;
+  }
 }
 
     
