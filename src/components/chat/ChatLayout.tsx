@@ -10,43 +10,43 @@ import LSAIGLogo from '@/components/AuraChatLogo';
 import { Button } from '@/components/ui/button';
 import { Save, FolderOpen, Trash2, Heart, LogOut, AudioLines, Camera } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { cn } from '@/lib/utils';
+import { cn, inferGenderFromName } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import FnafMonitor from '@/components/ui/FnafMonitor';
 
 const helpMessages = [
-  "¿En qué puedo asistirte hoy?",
-  "¿Listo para explorar algunas ideas?",
-  "¿Sobre qué te gustaría conversar?",
-  "Estoy aquí para ayudarte. ¿Qué tienes en mente?",
-  "¿Cómo puedo hacer tu día un poco mejor?",
-  "Pregúntame lo que sea, ¡estoy para ayudarte!",
-  "¿Qué curiosidad podemos resolver hoy?",
-  "Dime, ¿qué necesitas descubrir o crear?",
-  "¡Hola! ¿Qué aventura iniciamos hoy?",
-  "Estoy lista para tus preguntas. ¿Por dónde empezamos?",
-  "¿Tienes alguna duda o idea? ¡Compártela conmigo!",
-  "Exploremos juntos. ¿Qué tema te interesa?",
-  "Tu asistente virtual a la orden. ¿Qué puedo hacer por ti?",
-  "¿Listo para una charla productiva y amena?",
-  "Cuéntame, ¿qué proyecto o pregunta traes entre manos?",
-  "La curiosidad es el primer paso al conocimiento. ¿Qué te intriga hoy?",
-  "¿Necesitas inspiración o información? Estoy a un clic.",
-  "¿En qué puedo ayudarte a pensar o resolver?",
-  "Conversemos un rato, ¿qué te apetece explorar?",
-  "Estoy lista para procesar tus ideas y preguntas.",
-  "La IA está aquí para ti. ¿Cómo empezamos?",
-  "Pregunta, crea, descubre. ¡Estoy para asistirte!",
-  "¿Qué misterios resolveremos hoy?",
-  "Tu socio de ideas está listo. ¿Comenzamos?",
-  "¿Hay algo nuevo que quieras aprender o discutir?",
-  "Siempre es un buen momento para una nueva pregunta.",
-  "¿Cómo puedo ser de utilidad en este momento?",
-  "Estoy escuchando. ¿Qué se te ocurre?",
-  "La inteligencia artificial a tu servicio. ¿Qué exploramos?",
-  "¿Tienes un desafío? ¡Vamos a enfrentarlo juntos!",
-  "Conversemos sobre lo que más te interese.",
+  { male: "¿En qué puedo asistirte hoy?", female: "¿En qué puedo asistirte hoy?" },
+  { male: "¿Listo para explorar algunas ideas?", female: "¿Lista para explorar algunas ideas?" },
+  { male: "¿Sobre qué te gustaría conversar?", female: "¿Sobre qué te gustaría conversar?" },
+  { male: "Estoy aquí para ayudarte. ¿Qué tienes en mente?", female: "Estoy aquí para ayudarte. ¿Qué tienes en mente?" },
+  { male: "¿Cómo puedo hacer tu día un poco mejor?", female: "¿Cómo puedo hacer tu día un poco mejor?" },
+  { male: "Pregúntame lo que sea, ¡estoy para ayudarte!", female: "Pregúntame lo que sea, ¡estoy para ayudarte!" },
+  { male: "¿Qué curiosidad podemos resolver hoy?", female: "¿Qué curiosidad podemos resolver hoy?" },
+  { male: "Dime, ¿qué necesitas descubrir o crear?", female: "Dime, ¿qué necesitas descubrir o crear?" },
+  { male: "¡Hola! ¿Qué aventura iniciamos hoy?", female: "¡Hola! ¿Qué aventura iniciamos hoy?" },
+  { male: "Estoy lista para tus preguntas. ¿Por dónde empezamos?", female: "Estoy lista para tus preguntas. ¿Por dónde empezamos?" },
+  { male: "¿Tienes alguna duda o idea? ¡Compártela conmigo!", female: "¿Tienes alguna duda o idea? ¡Compártela conmigo!" },
+  { male: "Exploremos juntos. ¿Qué tema te interesa?", female: "Exploremos juntas. ¿Qué tema te interesa?" },
+  { male: "Tu asistente virtual a la orden. ¿Qué puedo hacer por ti?", female: "Tu asistente virtual a la orden. ¿Qué puedo hacer por ti?" },
+  { male: "¿Listo para una charla productiva y amena?", female: "¿Lista para una charla productiva y amena?" },
+  { male: "Cuéntame, ¿qué proyecto o pregunta traes entre manos?", female: "Cuéntame, ¿qué proyecto o pregunta traes entre manos?" },
+  { male: "La curiosidad es el primer paso al conocimiento. ¿Qué te intriga hoy?", female: "La curiosidad es el primer paso al conocimiento. ¿Qué te intriga hoy?" },
+  { male: "¿Necesitas inspiración o información? Estoy a un clic.", female: "¿Necesitas inspiración o información? Estoy a un clic." },
+  { male: "¿En qué puedo ayudarte a pensar o resolver?", female: "¿En qué puedo ayudarte a pensar o resolver?" },
+  { male: "Conversemos un rato, ¿qué te apetece explorar?", female: "Conversemos un rato, ¿qué te apetece explorar?" },
+  { male: "Estoy lista para procesar tus ideas y preguntas.", female: "Estoy lista para procesar tus ideas y preguntas." },
+  { male: "La IA está aquí para ti. ¿Cómo empezamos?", female: "La IA está aquí para ti. ¿Cómo empezamos?" },
+  { male: "Pregunta, crea, descubre. ¡Estoy para asistirte!", female: "Pregunta, crea, descubre. ¡Estoy para asistirte!" },
+  { male: "¿Qué misterios resolveremos hoy?", female: "¿Qué misterios resolveremos hoy?" },
+  { male: "Tu socio de ideas está listo. ¿Comenzamos?", female: "Tu socia de ideas está lista. ¿Comenzamos?" },
+  { male: "¿Hay algo nuevo que quieras aprender o discutir?", female: "¿Hay algo nuevo que quieras aprender o discutir?" },
+  { male: "Siempre es un buen momento para una nueva pregunta.", female: "Siempre es un buen momento para una nueva pregunta." },
+  { male: "¿Cómo puedo ser de utilidad en este momento?", female: "¿Cómo puedo ser de utilidad en este momento?" },
+  { male: "Estoy escuchando. ¿Qué se te ocurre?", female: "Estoy escuchando. ¿Qué se te ocurre?" },
+  { male: "La inteligencia artificial a tu servicio. ¿Qué exploramos?", female: "La inteligencia artificial a tu servicio. ¿Qué exploramos?" },
+  { male: "¿Tienes un desafío? ¡Vamos a enfrentarlo juntos!", female: "¿Tienes un desafío? ¡Vamos a enfrentarlo juntas!" },
+  { male: "Conversemos sobre lo que más te interese.", female: "Conversemos sobre lo que más te interese." },
 ];
 
 interface ActiveHeart {
@@ -161,8 +161,10 @@ const ChatLayout: React.FC = () => {
   }, [greetingText]);
 
   useEffect(() => {
-    setDynamicHelpText(helpMessages[Math.floor(Math.random() * helpMessages.length)]);
-  }, []);
+    const randomMessage = helpMessages[Math.floor(Math.random() * helpMessages.length)];
+    const userGender = user?.displayName ? inferGenderFromName(user.displayName) : 'male';
+    setDynamicHelpText(randomMessage[userGender]);
+  }, [user]);
 
 
   const handlePageClick = (event: MouseEvent<HTMLDivElement>) => {
@@ -312,5 +314,3 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
-
-    
