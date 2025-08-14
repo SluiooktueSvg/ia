@@ -130,7 +130,7 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
             </div>
 
             <div 
-              className="absolute bottom-4 right-4 w-[280px] h-[200px] bg-cover bg-center border border-green-400/30 z-30"
+              className="absolute bottom-4 right-4 w-[280px] h-[200px] bg-cover bg-center border border-green-400/30 z-30 relative"
               style={{ backgroundImage: "url('https://i.imgur.com/xVTEp7M.png')" }} 
             >
               {CAMERAS.map(cam => (
@@ -163,3 +163,5 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
 };
 
 export default FnafMonitor;
+
+    
