@@ -36,7 +36,7 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
     >
       <div
         className={cn(
-          'w-[640px] h-[480px] bg-yellow-900/80 border-2 border-yellow-600/50 p-2 shadow-2xl transform-style-preserve-3d origin-right pointer-events-auto',
+          'w-[600px] h-[500px] bg-yellow-900/80 border-2 border-yellow-600/50 p-2 shadow-2xl transform-style-preserve-3d origin-right pointer-events-auto',
           'transform-gpu', // Improve animation performance
           isOpen ? 'animate-fnaf-in' : 'animate-fnaf-out'
         )}
