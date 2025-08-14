@@ -61,6 +61,7 @@ const HEART_ANIMATION_DURATION_MS = 2000;
 const HEARTS_PER_BURST = 5;
 
 const GREETING_TIME_CHECK_INTERVAL_MS = 60000; // Check time every 1 minute
+const GREETING_SCRAMBLE_SPEED_MS = 30; // Speed of the scramble effect
 
 const ChatLayout: React.FC = () => {
   const {
@@ -80,6 +81,7 @@ const ChatLayout: React.FC = () => {
   const { user, logout } = useAuth();
 
   const [greetingText, setGreetingText] = useState('');
+  const [animatedGreeting, setAnimatedGreeting] = useState('');
   const [dynamicHelpText, setDynamicHelpText] = useState('');
   const { toast } = useToast();
 
@@ -109,6 +111,54 @@ const ChatLayout: React.FC = () => {
     const timeCheckIntervalId = setInterval(updateGreeting, GREETING_TIME_CHECK_INTERVAL_MS);
     return () => clearInterval(timeCheckIntervalId);
   }, [user]);
+
+  // Effect for "scrambled" text animation
+  useEffect(() => {
+    if (!greetingText) return;
+
+    let animationFrameId: number;
+    let revealIndex = 0;
+    let lastUpdateTime = 0;
+    
+    const chars = '█▓▒░ABCDEFGHIJKLMNÑOPQRSTUVWXYZabcdefghijklmnñopqrstuvwxyz0123456789!?#$&*@';
+    
+    const animate = (timestamp: number) => {
+      if (timestamp - lastUpdateTime < GREETING_SCRAMBLE_SPEED_MS) {
+        animationFrameId = requestAnimationFrame(animate);
+        return;
+      }
+
+      if (revealIndex >= greetingText.length) {
+        setAnimatedGreeting(greetingText);
+        return;
+      }
+      
+      lastUpdateTime = timestamp;
+      
+      let scrambled = '';
+      for (let i = 0; i < greetingText.length; i++) {
+        if (i < revealIndex) {
+          scrambled += greetingText[i];
+        } else {
+          scrambled += chars[Math.floor(Math.random() * chars.length)];
+        }
+      }
+      setAnimatedGreeting(scrambled);
+      
+      if (Math.random() > 0.3) { // Stagger the reveal for a more natural feel
+        revealIndex++;
+      }
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    animationFrameId = requestAnimationFrame(animate);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+
+  }, [greetingText]);
 
   useEffect(() => {
     setDynamicHelpText(helpMessages[Math.floor(Math.random() * helpMessages.length)]);
@@ -215,12 +265,9 @@ const ChatLayout: React.FC = () => {
             <div className="flex flex-1 flex-shrink items-center justify-center overflow-y-auto p-4">
               <div className="w-full max-w-xl text-center">
                 <div className="mb-4">
-                  {greetingText && (
-                    <p 
-                      key={greetingText} /* Use key to re-trigger animation on change */
-                      className="text-3xl font-semibold text-gradient-animated md:text-4xl animated-greeting"
-                    >
-                      {greetingText}
+                  {animatedGreeting && (
+                    <p className="text-3xl font-semibold text-gradient-animated md:text-4xl">
+                      {animatedGreeting}
                     </p>
                   )}
                   {dynamicHelpText && <p className="mt-2 text-sm text-muted-foreground md:text-base">{dynamicHelpText}</p>}
