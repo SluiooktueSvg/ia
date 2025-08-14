@@ -96,7 +96,7 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
           {/* Screen Content */}
           <div className="flex-grow w-full h-full bg-black rounded-sm overflow-hidden relative">
             
-            {/* Camera View - z-0 */}
+            {/* Camera View */}
             <Image
               key={activeImageUrl} // Use the image URL as the key to force re-render
               src={activeImageUrl}
@@ -108,11 +108,11 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
             />
             
             {/* Overlay Effects */}
-            <div className="camera-vignette z-10" />
-            <div className="static-noise-bg z-20" />
+            <div className="camera-vignette" />
+            <div className="static-noise-bg" />
 
 
-            {/* UI Elements - z-30 */}
+            {/* UI Elements */}
             <div className="absolute top-4 left-4 text-white/80 font-mono text-2xl tracking-widest animate-pulse z-30">
               <p>{activeCamera.name}</p>
             </div>
