@@ -94,27 +94,30 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
         <div className="flex h-full w-full flex-col bg-black/80 border border-black relative">
           {/* Screen Content */}
           <div className="flex-grow w-full h-full bg-black rounded-sm overflow-hidden relative group/camera-view">
-            <div className="static-noise-bg" />
             
             {/* Camera View */}
             <Image
-              key={activeImageUrl} // Key changes on image url change to force re-render
+              key={activeCamera.id} // Key changes on camera change to force re-render
               src={activeImageUrl}
               alt={`View from ${activeCamera.name}`}
               data-ai-hint={activeCamera.hint}
               layout="fill"
               objectFit="cover"
-              className="animate-camera-pan"
+              className="animate-camera-pan z-10"
             />
-            <div className="absolute inset-0 bg-black/40" />
+            
+            {/* Overlay Effects */}
+            <div className="absolute inset-0 bg-black/40 z-20" />
+            <div className="static-noise-bg z-30" />
+
 
             {/* Top Left CAM indicator */}
-            <div className="absolute top-4 left-4 text-white/80 font-mono text-2xl tracking-widest animate-pulse">
+            <div className="absolute top-4 left-4 text-white/80 font-mono text-2xl tracking-widest animate-pulse z-40">
               <p>{activeCamera.name}</p>
             </div>
 
             {/* Top Right Buttons */}
-            <div className="absolute top-4 right-4 flex h-20 w-16 flex-col items-center justify-between bg-blue-900/40 p-1 border-2 border-blue-400/30">
+            <div className="absolute top-4 right-4 flex h-20 w-16 flex-col items-center justify-between bg-blue-900/40 p-1 border-2 border-blue-400/30 z-40">
                 <button className="text-white/80 transition-colors hover:text-white hover:bg-white/10 w-full flex-grow flex items-center justify-center">
                     <Video className="h-8 w-8" />
                 </button>
@@ -125,7 +128,7 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
 
              {/* Bottom Right Map */}
             <div 
-              className="absolute bottom-4 right-4 w-[280px] h-[200px] bg-cover bg-center border border-green-400/30"
+              className="absolute bottom-4 right-4 w-[280px] h-[200px] bg-cover bg-center border border-green-400/30 z-40"
               style={{ backgroundImage: "url('https://i.imgur.com/2sA4R9M.png')" }} 
             >
               {CAMERAS.map(cam => (
@@ -147,7 +150,7 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
               ))}
             </div>
             
-            <div className="absolute bottom-4 left-4 text-white/70 font-mono text-sm opacity-70">
+            <div className="absolute bottom-4 left-4 text-white/70 font-mono text-sm opacity-70 z-40">
               <p>REC ●</p>
             </div>
           </div>
@@ -158,5 +161,3 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
 };
 
 export default FnafMonitor;
-
-    
