@@ -60,9 +60,6 @@ const CLICK_TIMEOUT_MS = 500;
 const HEART_ANIMATION_DURATION_MS = 2000;
 const HEARTS_PER_BURST = 5;
 
-const ANIMATION_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789*&%$#@!";
-const GREETING_ANIMATION_INTERVAL_MS = 60; 
-const GREETING_REVEAL_SPEED_FACTOR = 3; 
 const GREETING_TIME_CHECK_INTERVAL_MS = 60000; // Check time every 1 minute
 
 const ChatLayout: React.FC = () => {
@@ -82,105 +79,36 @@ const ChatLayout: React.FC = () => {
   } = useChatController();
   const { user, logout } = useAuth();
 
-  const [greetingPrefix, setGreetingPrefix] = useState('');
-  const [targetDynamicGreetingPart, setTargetDynamicGreetingPart] = useState('');
-  const [animatedGreetingDisplay, setAnimatedGreetingDisplay] = useState('');
+  const [greetingText, setGreetingText] = useState('');
   const [dynamicHelpText, setDynamicHelpText] = useState('');
   const { toast } = useToast();
 
   const [clickCount, setClickCount] = useState(0);
   const [lastClickTime, setLastClickTime] = useState(0);
   const [activeHearts, setActiveHearts] = useState<ActiveHeart[]>([]);
-  const currentGreetingInfoRef = useRef<{prefix: string, dynamicPart: string} | null>(null);
-
+  
   const [isMonitorOpen, setIsMonitorOpen] = useState(false);
 
-  const getGreetingInfo = (userName?: string | null) => {
-    const currentHour = new Date().getHours();
-    const name = userName ? `, ${userName.split(' ')[0]}` : ''; // Get first name
-    if (currentHour < 12) {
-      return { prefix: 'Buenos ', dynamicPart: `días${name}` };
-    } else if (currentHour < 18) {
-      return { prefix: 'Buenas ', dynamicPart: `tardes${name}` };
-    } else {
-      return { prefix: 'Buenas ', dynamicPart: `noches${name}` };
-    }
-  };
-  
-  // Effect to update target greeting based on time of day
+  // Effect to update greeting based on time of day
   useEffect(() => {
-    const updateAndAnimateGreetingIfNeeded = () => {
-      const { prefix, dynamicPart } = getGreetingInfo(user?.displayName);
-      if (
-        !currentGreetingInfoRef.current ||
-        prefix !== currentGreetingInfoRef.current.prefix ||
-        dynamicPart !== currentGreetingInfoRef.current.dynamicPart
-      ) {
-        setGreetingPrefix(prefix);
-        setTargetDynamicGreetingPart(dynamicPart); 
-        currentGreetingInfoRef.current = { prefix, dynamicPart };
+    const updateGreeting = () => {
+      const currentHour = new Date().getHours();
+      const name = user?.displayName ? `, ${user.displayName.split(' ')[0]}` : ''; // Get first name
+      let newGreeting = '';
+      if (currentHour < 12) {
+        newGreeting = `Buenos días${name}`;
+      } else if (currentHour < 18) {
+        newGreeting = `Buenas tardes${name}`;
+      } else {
+        newGreeting = `Buenas noches${name}`;
       }
+      setGreetingText(newGreeting);
     };
 
-    updateAndAnimateGreetingIfNeeded(); // Initial determination
-
-    const timeCheckIntervalId = setInterval(updateAndAnimateGreetingIfNeeded, GREETING_TIME_CHECK_INTERVAL_MS);
+    updateGreeting(); // Initial determination
+    const timeCheckIntervalId = setInterval(updateGreeting, GREETING_TIME_CHECK_INTERVAL_MS);
     return () => clearInterval(timeCheckIntervalId);
-  }, [user]); // Re-run when user object changes
-
-
-  // Effect to run scramble animation when targetDynamicGreetingPart or greetingPrefix changes
-  useEffect(() => {
-    if (!targetDynamicGreetingPart || !greetingPrefix) {
-      setAnimatedGreetingDisplay(''); // Clear if no target
-      return;
-    }
-    
-    // Prevent re-animation if the display already matches the target
-    if (animatedGreetingDisplay === greetingPrefix + targetDynamicGreetingPart && animatedGreetingDisplay !== greetingPrefix) {
-        return;
-    }
-
-    let animationTimeoutId: NodeJS.Timeout;
-    let currentScrambledVisualPart = "";
-    for (let i = 0; i < targetDynamicGreetingPart.length; i++) {
-      currentScrambledVisualPart += ANIMATION_CHARS[Math.floor(Math.random() * ANIMATION_CHARS.length)];
-    }
-    setAnimatedGreetingDisplay(greetingPrefix + currentScrambledVisualPart);
-
-    let animationProgressCount = 0;
-    let charactersRevealed = 0;
-    
-    const animate = () => {
-      if (charactersRevealed >= targetDynamicGreetingPart.length) {
-        setAnimatedGreetingDisplay(greetingPrefix + targetDynamicGreetingPart); // Final correct greeting
-        return; // Animation complete
-      }
-
-      animationProgressCount++;
-      
-      let nextScrambledVisualPart = "";
-      for (let i = 0; i < targetDynamicGreetingPart.length; i++) {
-        if (i < charactersRevealed) {
-          nextScrambledVisualPart += targetDynamicGreetingPart[i];
-        } else {
-          nextScrambledVisualPart += ANIMATION_CHARS[Math.floor(Math.random() * ANIMATION_CHARS.length)];
-        }
-      }
-      setAnimatedGreetingDisplay(greetingPrefix + nextScrambledVisualPart);
-
-      if (animationProgressCount % GREETING_REVEAL_SPEED_FACTOR === 0 && charactersRevealed < targetDynamicGreetingPart.length) {
-        charactersRevealed++;
-      }
-      animationTimeoutId = setTimeout(animate, GREETING_ANIMATION_INTERVAL_MS);
-    };
-
-    animate(); // Start the animation
-    
-    return () => {
-      clearTimeout(animationTimeoutId); // Cleanup on unmount or if dependencies change
-    };
-  }, [targetDynamicGreetingPart, greetingPrefix]); // Re-run animation if target part or prefix changes
+  }, [user]);
 
   useEffect(() => {
     setDynamicHelpText(helpMessages[Math.floor(Math.random() * helpMessages.length)]);
@@ -287,7 +215,14 @@ const ChatLayout: React.FC = () => {
             <div className="flex flex-1 flex-shrink items-center justify-center overflow-y-auto p-4">
               <div className="w-full max-w-xl text-center">
                 <div className="mb-4">
-                  {animatedGreetingDisplay && <p className="text-3xl font-semibold text-gradient-animated md:text-4xl">{animatedGreetingDisplay}</p>}
+                  {greetingText && (
+                    <p 
+                      key={greetingText} /* Use key to re-trigger animation on change */
+                      className="text-3xl font-semibold text-gradient-animated md:text-4xl animated-greeting"
+                    >
+                      {greetingText}
+                    </p>
+                  )}
                   {dynamicHelpText && <p className="mt-2 text-sm text-muted-foreground md:text-base">{dynamicHelpText}</p>}
                 </div>
                 <ChatInput
@@ -330,3 +265,5 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
+
+    
