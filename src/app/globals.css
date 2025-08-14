@@ -150,13 +150,13 @@ body {
 
   @keyframes camera-pan {
     0% {
-      transform: scale(1.1) translateX(0%) translateY(0%);
+      transform: scale(1.1) translateX(-5%);
     }
     50% {
-      transform: scale(1.15) translateX(-2%) translateY(2%);
+      transform: scale(1.1) translateX(5%);
     }
     100% {
-      transform: scale(1.1) translateX(0%) translateY(0%);
+      transform: scale(1.1) translateX(-5%);
     }
   }
 
