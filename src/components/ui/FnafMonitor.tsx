@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { Triangle, Camera, Video } from 'lucide-react';
 import Image from 'next/image';
@@ -11,21 +11,29 @@ interface FnafMonitorProps {
 }
 
 const CAMERAS = [
-  { id: 'cam01', name: 'CAM 01', x: 200, y: 155, imgSrc: 'https://placehold.co/800x600', hint: 'office hallway' },
-  { id: 'cam02', name: 'CAM 02', x: 200, y: 110, imgSrc: 'https://placehold.co/800x600', hint: 'dining area' },
-  { id: 'cam03', name: 'CAM 03', x: 150, y: 155, imgSrc: 'https://placehold.co/800x600', hint: 'supply closet' },
-  { id: 'cam04', name: 'CAM 04', x: 150, y: 110, imgSrc: 'https://placehold.co/800x600', hint: 'west hall' },
-  { id: 'cam05', name: 'CAM 05', x: 150, y: 65, imgSrc: 'https://placehold.co/800x600', hint: 'backstage' },
-  { id: 'cam06', name: 'CAM 06', x: 100, y: 155, imgSrc: 'https://placehold.co/800x600', hint: 'kitchen' },
-  { id: 'cam07', name: 'CAM 07', x: 100, y: 110, imgSrc: 'https://placehold.co/800x600', hint: 'east hall' },
-  { id: 'cam08', name: 'CAM 08', x: 50, y: 110, imgSrc: 'https://placehold.co/800x600', hint: 'storage room' },
+  { id: 'cam01', name: 'CAM 01', x: 200, y: 155, imageUrls: ['https://placehold.co/800x600/111/fff', 'https://placehold.co/800x600/111/ddd'], hint: 'office hallway' },
+  { id: 'cam02', name: 'CAM 02', x: 200, y: 110, imageUrls: ['https://placehold.co/800x600/222/fff', 'https://placehold.co/800x600/222/ddd', 'https://placehold.co/800x600/222/bbb'], hint: 'dining area' },
+  { id: 'cam03', name: 'CAM 03', x: 150, y: 155, imageUrls: ['https://placehold.co/800x600/333/fff'], hint: 'supply closet' },
+  { id: 'cam04', name: 'CAM 04', x: 150, y: 110, imageUrls: ['https://placehold.co/800x600/444/fff', 'https://placehold.co/800x600/444/ddd'], hint: 'west hall' },
+  { id: 'cam05', name: 'CAM 05', x: 150, y: 65, imageUrls: ['https://placehold.co/800x600/555/fff'], hint: 'backstage' },
+  { id: 'cam06', name: 'CAM 06', x: 100, y: 155, imageUrls: ['https://placehold.co/800x600/666/fff'], hint: 'kitchen' },
+  { id: 'cam07', name: 'CAM 07', x: 100, y: 110, imageUrls: ['https://placehold.co/800x600/777/fff', 'https://placehold.co/800x600/777/ddd'], hint: 'east hall' },
+  { id: 'cam08', name: 'CAM 08', x: 50, y: 110, imageUrls: ['https://placehold.co/800x600/888/fff'], hint: 'storage room' },
 ];
+
+// Initialize camera image states
+const initialImageStates = CAMERAS.reduce((acc, cam) => {
+    acc[cam.id] = { currentImageIndex: 0 };
+    return acc;
+}, {} as Record<string, { currentImageIndex: number }>);
 
 
 const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
   const [shouldRender, setShouldRender] = useState(isOpen);
   const [currentCameraId, setCurrentCameraId] = useState('cam01');
+  const [cameraImageStates, setCameraImageStates] = useState(initialImageStates);
 
+  // Effect for showing/hiding the monitor with animation
   useEffect(() => {
     if (isOpen) {
       setShouldRender(true);
@@ -37,7 +45,37 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
     }
   }, [isOpen]);
 
-  const activeCamera = CAMERAS.find(c => c.id === currentCameraId) || CAMERAS[0];
+  // Effect for changing camera images periodically
+  useEffect(() => {
+    const imageChangeInterval = setInterval(() => {
+      setCameraImageStates(prevStates => {
+        const newStates = { ...prevStates };
+        // Randomly pick a few cameras to update
+        for (let i = 0; i < Math.ceil(CAMERAS.length / 4); i++) {
+          const randomCamIndex = Math.floor(Math.random() * CAMERAS.length);
+          const camToUpdate = CAMERAS[randomCamIndex];
+          if (camToUpdate.imageUrls.length > 1) {
+            const currentIdx = newStates[camToUpdate.id].currentImageIndex;
+            // Simple logic to just move to the next image, could be random
+            const nextIdx = (currentIdx + 1) % camToUpdate.imageUrls.length;
+            newStates[camToUpdate.id] = { currentImageIndex: nextIdx };
+          }
+        }
+        return newStates;
+      });
+    }, 4000); // Change image every 4 seconds
+
+    return () => clearInterval(imageChangeInterval);
+  }, []);
+
+  const activeCamera = useMemo(() => CAMERAS.find(c => c.id === currentCameraId) || CAMERAS[0], [currentCameraId]);
+  const activeImageUrl = useMemo(() => {
+    const camData = CAMERAS.find(c => c.id === currentCameraId);
+    if (!camData) return CAMERAS[0].imageUrls[0];
+    const state = cameraImageStates[currentCameraId];
+    return camData.imageUrls[state.currentImageIndex];
+  }, [currentCameraId, cameraImageStates]);
+
 
   if (!shouldRender) {
     return null;
@@ -62,8 +100,8 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
             
             {/* Camera View */}
             <Image
-              key={activeCamera.id} // Add key to force re-render on change
-              src={activeCamera.imgSrc}
+              key={`${activeCamera.id}-${activeImageUrl}`} // Key changes on both camera and image url change
+              src={activeImageUrl}
               alt={`View from ${activeCamera.name}`}
               data-ai-hint={activeCamera.hint}
               layout="fill"
