@@ -11,15 +11,16 @@ interface FnafMonitorProps {
 }
 
 // More realistic camera setup inspired by the game
+// Using valid placehold.co URLs
 const CAMERAS = [
-  { id: 'cam01', name: 'CAM 01', x: 200, y: 155, imageUrls: ['https://placehold.co/800x600/1a1a1a/333333', 'https://placehold.co/800x600/220000/ff0000'], hint: 'office hallway' },
-  { id: 'cam02', name: 'CAM 02', x: 200, y: 110, imageUrls: ['https://placehold.co/800x600/2b2b2b/444444', 'https://placehold.co/800x600/2b2b2b/333333', 'https://placehold.co/800x600/2a0000/ff0000'], hint: 'dining area' },
-  { id: 'cam03', name: 'CAM 03', x: 150, y: 155, imageUrls: ['https://placehold.co/800x600/1f1f1f/3a3a3a'], hint: 'supply closet' },
-  { id: 'cam04', name: 'CAM 04', x: 150, y: 110, imageUrls: ['https://placehold.co/800x600/2a2a2a/4a4a4a', 'https://placehold.co/800x600/2a2a2a/3a3a3a'], hint: 'west hall' },
-  { id: 'cam05', name: 'CAM 05', x: 150, y: 65, imageUrls: ['https://placehold.co/800x600/3c3c3c/555555', 'https://placehold.co/800x600/3c0000/ff0000'], hint: 'backstage' },
-  { id: 'cam06', name: 'CAM 06', x: 100, y: 155, imageUrls: ['https://placehold.co/800x600/1e1e1e/3e3e3e'], hint: 'kitchen audio' },
-  { id: 'cam07', name: 'CAM 07', x: 100, y: 110, imageUrls: ['https://placehold.co/800x600/2c2c2c/4f4f4f', 'https://placehold.co/800x600/2c2c2c/3f3f3f', 'https://placehold.co/800x600/2c0000/ff0000'], hint: 'east hall' },
-  { id: 'cam08', name: 'CAM 08', x: 50, y: 110, imageUrls: ['https://placehold.co/800x600/3a3a3a/5a5a5a'], hint: 'storage room' },
+  { id: 'cam01', name: 'CAM 01', x: 200, y: 155, imageUrls: ['https://placehold.co/800x600/1a1a1a/333333.png', 'https://placehold.co/800x600/220000/ff0000.png'], hint: 'office hallway' },
+  { id: 'cam02', name: 'CAM 02', x: 200, y: 110, imageUrls: ['https://placehold.co/800x600/2b2b2b/444444.png', 'https://placehold.co/800x600/2b2b2b/333333.png', 'https://placehold.co/800x600/2a0000/ff0000.png'], hint: 'dining area' },
+  { id: 'cam03', name: 'CAM 03', x: 150, y: 155, imageUrls: ['https://placehold.co/800x600/1f1f1f/3a3a3a.png'], hint: 'supply closet' },
+  { id: 'cam04', name: 'CAM 04', x: 150, y: 110, imageUrls: ['https://placehold.co/800x600/2a2a2a/4a4a4a.png', 'https://placehold.co/800x600/2a2a2a/3a3a3a.png'], hint: 'west hall' },
+  { id: 'cam05', name: 'CAM 05', x: 150, y: 65, imageUrls: ['https://placehold.co/800x600/3c3c3c/555555.png', 'https://placehold.co/800x600/3c0000/ff0000.png'], hint: 'backstage' },
+  { id: 'cam06', name: 'CAM 06', x: 100, y: 155, imageUrls: ['https://placehold.co/800x600/1e1e1e/3e3e3e.png'], hint: 'kitchen audio' },
+  { id: 'cam07', name: 'CAM 07', x: 100, y: 110, imageUrls: ['https://placehold.co/800x600/2c2c2c/4f4f4f.png', 'https://placehold.co/800x600/2c2c2c/3f3f3f.png', 'https://placehold.co/800x600/2c0000/ff0000.png'], hint: 'east hall' },
+  { id: 'cam08', name: 'CAM 08', x: 50, y: 110, imageUrls: ['https://placehold.co/800x600/3a3a3a/5a5a5a.png'], hint: 'storage room' },
 ];
 
 // Initialize camera image states
@@ -102,9 +103,8 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
               src={activeImageUrl}
               alt={`View from ${activeCamera.name}`}
               data-ai-hint={activeCamera.hint}
-              layout="fill"
-              objectFit="cover"
-              className="animate-camera-pan z-0"
+              fill={true}
+              className="animate-camera-pan z-0 object-cover"
             />
             
             {/* Overlay Effects - Placed after the image to render on top */}
