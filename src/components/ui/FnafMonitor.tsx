@@ -96,9 +96,9 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
           {/* Screen Content */}
           <div className="flex-grow w-full h-full bg-black rounded-sm overflow-hidden relative">
             
-            {/* Camera View - IMPORTANT: this is now z-0, behind overlays */}
+            {/* Camera View */}
             <Image
-              key={activeCamera.id} // Key changes on camera change to force re-render
+              key={activeCamera.id}
               src={activeImageUrl}
               alt={`View from ${activeCamera.name}`}
               data-ai-hint={activeCamera.hint}
@@ -106,13 +106,12 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
               className="animate-camera-pan z-0 object-cover"
             />
             
-            {/* Overlay Effects - Placed after the image to render on top */}
+            {/* Overlay Effects */}
             <div className="camera-vignette z-10" />
-            <div className="absolute inset-0 bg-black/10 z-20" />
             <div className="static-noise-bg z-30" />
 
 
-            {/* UI Elements - Highest z-index to be on top of everything */}
+            {/* UI Elements */}
             <div className="absolute top-4 left-4 text-white/80 font-mono text-2xl tracking-widest animate-pulse z-40">
               <p>{activeCamera.name}</p>
             </div>
