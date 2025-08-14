@@ -3,7 +3,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import { Triangle, Camera, Video } from 'lucide-react';
+import { Camera, Video } from 'lucide-react';
 import Image from 'next/image';
 
 interface FnafMonitorProps {
@@ -11,14 +11,14 @@ interface FnafMonitorProps {
 }
 
 const CAMERAS = [
-  { id: 'cam01', name: 'CAM 01', x: 200, y: 155, imageUrls: ['https://placehold.co/800x600/111/fff', 'https://placehold.co/800x600/111/ddd'], hint: 'office hallway' },
-  { id: 'cam02', name: 'CAM 02', x: 200, y: 110, imageUrls: ['https://placehold.co/800x600/222/fff', 'https://placehold.co/800x600/222/ddd', 'https://placehold.co/800x600/222/bbb'], hint: 'dining area' },
-  { id: 'cam03', name: 'CAM 03', x: 150, y: 155, imageUrls: ['https://placehold.co/800x600/333/fff'], hint: 'supply closet' },
-  { id: 'cam04', name: 'CAM 04', x: 150, y: 110, imageUrls: ['https://placehold.co/800x600/444/fff', 'https://placehold.co/800x600/444/ddd'], hint: 'west hall' },
-  { id: 'cam05', name: 'CAM 05', x: 150, y: 65, imageUrls: ['https://placehold.co/800x600/555/fff'], hint: 'backstage' },
-  { id: 'cam06', name: 'CAM 06', x: 100, y: 155, imageUrls: ['https://placehold.co/800x600/666/fff'], hint: 'kitchen' },
-  { id: 'cam07', name: 'CAM 07', x: 100, y: 110, imageUrls: ['https://placehold.co/800x600/777/fff', 'https://placehold.co/800x600/777/ddd'], hint: 'east hall' },
-  { id: 'cam08', name: 'CAM 08', x: 50, y: 110, imageUrls: ['https://placehold.co/800x600/888/fff'], hint: 'storage room' },
+  { id: 'cam01', name: 'CAM 01', x: 200, y: 155, imageUrls: ['https://placehold.co/800x600/1a1a1a/333333', 'https://placehold.co/800x600/1a1a1a/222222'], hint: 'office hallway' },
+  { id: 'cam02', name: 'CAM 02', x: 200, y: 110, imageUrls: ['https://placehold.co/800x600/2b2b2b/444444', 'https://placehold.co/800x600/2b2b2b/333333', 'https://placehold.co/800x600/2b2b2b/111111'], hint: 'dining area' },
+  { id: 'cam03', name: 'CAM 03', x: 150, y: 155, imageUrls: ['https://placehold.co/800x600/1f1f1f/3a3a3a'], hint: 'supply closet' },
+  { id: 'cam04', name: 'CAM 04', x: 150, y: 110, imageUrls: ['https://placehold.co/800x600/2a2a2a/4a4a4a', 'https://placehold.co/800x600/2a2a2a/3a3a3a'], hint: 'west hall' },
+  { id: 'cam05', name: 'CAM 05', x: 150, y: 65, imageUrls: ['https://placehold.co/800x600/3c3c3c/555555'], hint: 'backstage' },
+  { id: 'cam06', name: 'CAM 06', x: 100, y: 155, imageUrls: ['https://placehold.co/800x600/1e1e1e/3e3e3e'], hint: 'kitchen' },
+  { id: 'cam07', name: 'CAM 07', x: 100, y: 110, imageUrls: ['https://placehold.co/800x600/2c2c2c/4f4f4f', 'https://placehold.co/800x600/2c2c2c/3f3f3f'], hint: 'east hall' },
+  { id: 'cam08', name: 'CAM 08', x: 50, y: 110, imageUrls: ['https://placehold.co/800x600/3a3a3a/5a5a5a'], hint: 'storage room' },
 ];
 
 // Initialize camera image states
