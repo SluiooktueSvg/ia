@@ -1,7 +1,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Triangle } from 'lucide-react';
 
@@ -10,13 +10,29 @@ interface FnafMonitorProps {
 }
 
 const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
+  const [shouldRender, setShouldRender] = useState(isOpen);
+
+  useEffect(() => {
+    if (isOpen) {
+      setShouldRender(true);
+    } else {
+      // Wait for the animation to finish before unmounting
+      const timer = setTimeout(() => {
+        setShouldRender(false);
+      }, 350); // This duration should match the animation duration in CSS
+
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  if (!shouldRender) {
+    return null;
+  }
+
   return (
     <div
       id="fnaf-monitor"
-      className={cn(
-        'fixed top-0 right-0 h-full w-full z-50 flex items-center justify-end pointer-events-none perspective-1000',
-        !isOpen && 'hidden'
-      )}
+      className="fixed inset-0 z-50 flex items-center justify-end pointer-events-none perspective-1000"
     >
       <div
         className={cn(
