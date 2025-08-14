@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
-import FnafMonitor from '@/components/ui/FnafMonitor'; // Importar el nuevo componente
+import FnafMonitor from '@/components/ui/FnafMonitor';
 
 const helpMessages = [
   "¿En qué puedo asistirte hoy?",
