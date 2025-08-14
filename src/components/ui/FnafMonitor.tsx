@@ -24,18 +24,9 @@ const CAMERAS = [
     { id: 'cam07', name: 'CAM 7', x: 270, y: 70 },
 ];
 
-
-// Initialize camera image states
-const initialImageStates = CAMERAS.reduce((acc, cam) => {
-    acc[cam.id] = { currentImageIndex: 0 };
-    return acc;
-}, {} as Record<string, { currentImageIndex: number }>);
-
-
 const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
   const [shouldRender, setShouldRender] = useState(isOpen);
   const [currentCameraId, setCurrentCameraId] = useState('cam01a');
-  const [cameraImageStates, setCameraImageStates] = useState(initialImageStates);
   const [isSwitching, setIsSwitching] = useState(false);
 
   const handleCameraSwitch = (camId: string) => {
@@ -61,40 +52,12 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
     }
   }, [isOpen]);
 
-  // Effect for changing camera images periodically to simulate activity
-  useEffect(() => {
-    const imageChangeInterval = setInterval(() => {
-      setCameraImageStates(prevStates => {
-        const newStates = { ...prevStates };
-        // Randomly pick a few cameras to update
-        for (let i = 0; i < Math.ceil(CAMERAS.length / 4); i++) {
-          const randomCamIndex = Math.floor(Math.random() * CAMERAS.length);
-          const camToUpdate = CAMERAS[randomCamIndex];
-          if (camToUpdate.id.length > 1) { // Assuming multi-image cameras have longer IDs just for this logic
-            const currentIdx = newStates[camToUpdate.id].currentImageIndex;
-            // Simple logic to just move to the next image, could be random
-            const nextIdx = (currentIdx + 1) % 2; // Assuming 2 images for simplicity
-            newStates[camToUpdate.id] = { currentImageIndex: nextIdx };
-          }
-        }
-        return newStates;
-      });
-    }, 4000); // Change image every 4 seconds
-
-    return () => clearInterval(imageChangeInterval);
-  }, []);
-
   const activeCamera = useMemo(() => CAMERAS.find(c => c.id === currentCameraId) || CAMERAS[0], [currentCameraId]);
   const activeImageUrl = useMemo(() => {
-    const state = cameraImageStates[activeCamera.id];
-    if (activeCamera.id === 'cam01b' && state.currentImageIndex === 1) {
-        return 'https://placehold.co/800x600/2c0000/ff0000.png';
-    }
     // Using a simple hash from camera ID to generate a placeholder color
     const colorCode = `${activeCamera.id.charCodeAt(3) % 9}${activeCamera.id.charCodeAt(4) % 9}${activeCamera.id.charCodeAt(3) % 9}`;
     return `https://placehold.co/800x600/${colorCode}${colorCode}/ffffff.png`;
-  }, [activeCamera, cameraImageStates]);
-
+  }, [activeCamera]);
 
   if (!shouldRender) {
     return null;
@@ -125,7 +88,7 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
               key={activeImageUrl} // Force re-render on image change
               src={activeImageUrl}
               alt={`View from ${activeCamera.name}`}
-              data-ai-hint={activeCamera.hint}
+              data-ai-hint="security camera"
               fill={true}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-cover animate-camera-pan z-0"
@@ -137,9 +100,14 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
 
             {/* Switching Camera Static Effect */}
             {isSwitching && (
-              <div className="absolute inset-0 w-full h-full static-noise-bg z-40" style={{ opacity: 0.8 }} />
+              <Image
+                src="https://i.pinimg.com/originals/53/68/ea/5368ea855d752bd04ff9446fe7ed93fa.gif"
+                alt="Camera switching static"
+                fill={true}
+                className="object-cover z-40"
+                unoptimized
+              />
             )}
-
 
             {/* UI Elements */}
             <div className="absolute top-4 left-4 text-white/80 font-mono text-2xl tracking-widest animate-pulse z-30">
@@ -161,17 +129,17 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
               {/* Code-based map layout */}
               <div className="w-full h-full relative">
                 {/* Rooms */}
-                <MapRoom className="top-[15px] left-[113px] w-[54px] h-[40px] border" /> {/* Backstage */}
-                <MapRoom className="top-[60px] left-[113px] w-[54px] h-[50px] border" /> {/* Show Stage */}
-                <MapRoom className="top-[115px] left-[65px] w-[120px] h-[55px] border" /> {/* Dining Area */}
-                <MapRoom className="top-[60px] left-[65px] w-[43px] h-[50px] border" /> {/* Pirate Cove */}
-                <MapRoom className="top-[60px] left-[240px] w-[70px] h-[55px] border" /> {/* Kitchen */}
-                <MapRoom className="top-[120px] left-[240px] w-[70px] h-[50px] border" /> {/* Restrooms */}
-                <MapRoom className="top-[60px] left-[180px] w-[55px] h-[55px] border" /> {/* Supply Closet */}
+                <MapRoom className="top-[15px] left-[113px] w-[54px] h-[40px]" /> {/* Backstage */}
+                <MapRoom className="top-[60px] left-[113px] w-[54px] h-[50px]" /> {/* Show Stage */}
+                <MapRoom className="top-[115px] left-[65px] w-[120px] h-[55px]" /> {/* Dining Area */}
+                <MapRoom className="top-[60px] left-[65px] w-[43px] h-[50px]" /> {/* Pirate Cove */}
+                <MapRoom className="top-[60px] left-[240px] w-[70px] h-[55px]" /> {/* Kitchen */}
+                <MapRoom className="top-[120px] left-[240px] w-[70px] h-[50px]" /> {/* Restrooms */}
+                <MapRoom className="top-[60px] left-[180px] w-[55px] h-[55px]" /> {/* Supply Closet */}
                 
                 {/* Halls */}
-                <MapRoom className="top-[75px] left-[25px] w-[40px] h-[85px] border" /> {/* W. Hall */}
-                <MapRoom className="top-[75px] left-[200px] w-[40px] h-[85px] border" /> {/* E. Hall */}
+                <MapRoom className="top-[75px] left-[25px] w-[40px] h-[85px]" /> {/* W. Hall */}
+                <MapRoom className="top-[75px] left-[200px] w-[40px] h-[85px]" /> {/* E. Hall */}
                 <MapRoom className="top-[165px] left-[113px] w-[54px] h-[10px]" /> {/* Connector */}
 
                 {/* You */}
