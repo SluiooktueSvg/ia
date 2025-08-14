@@ -36,7 +36,7 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
     >
       <div
         className={cn(
-          'w-[550px] h-[450px] bg-yellow-900/80 border-2 border-yellow-600/50 p-2 shadow-2xl transform-style-preserve-3d origin-right pointer-events-auto',
+          'w-[640px] h-[480px] bg-yellow-900/80 border-2 border-yellow-600/50 p-2 shadow-2xl transform-style-preserve-3d origin-right pointer-events-auto',
           'transform-gpu', // Improve animation performance
           isOpen ? 'animate-fnaf-in' : 'animate-fnaf-out'
         )}
@@ -66,7 +66,7 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
              {/* Bottom Right Map */}
             <div 
               data-ai-hint="security map"
-              className="absolute bottom-4 right-4 w-[250px] h-[180px] bg-cover bg-center"
+              className="absolute bottom-4 right-4 w-[280px] h-[200px] bg-cover bg-center"
               style={{ backgroundImage: "url('https://i.imgur.com/2sA4R9M.png')" }} 
             />
             
