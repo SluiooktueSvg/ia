@@ -70,11 +70,9 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
 
   const activeCamera = useMemo(() => CAMERAS.find(c => c.id === currentCameraId) || CAMERAS[0], [currentCameraId]);
   const activeImageUrl = useMemo(() => {
-    const camData = CAMERAS.find(c => c.id === currentCameraId);
-    if (!camData) return CAMERAS[0].imageUrls[0];
-    const state = cameraImageStates[currentCameraId];
-    return camData.imageUrls[state.currentImageIndex];
-  }, [currentCameraId, cameraImageStates]);
+    const state = cameraImageStates[activeCamera.id];
+    return activeCamera.imageUrls[state.currentImageIndex];
+  }, [activeCamera, cameraImageStates]);
 
 
   if (!shouldRender) {
@@ -100,7 +98,7 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
             
             {/* Camera View */}
             <Image
-              key={`${activeCamera.id}-${activeImageUrl}`} // Key changes on both camera and image url change
+              key={activeImageUrl} // Key changes on image url change to force re-render
               src={activeImageUrl}
               alt={`View from ${activeCamera.name}`}
               data-ai-hint={activeCamera.hint}
@@ -160,3 +158,5 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
 };
 
 export default FnafMonitor;
+
+    
