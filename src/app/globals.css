@@ -114,22 +114,22 @@ body {
   /* Keyframes for FNAF monitor animation */
   @keyframes fnaf-monitor-in {
     from {
-      transform: translateX(100%) rotateY(-90deg);
+      transform: translateX(120%) rotateY(-90deg) scale(0.8);
       opacity: 0;
     }
     to {
-      transform: translateX(0) rotateY(0deg);
+      transform: translateX(0) rotateY(0deg) scale(1);
       opacity: 1;
     }
   }
 
   @keyframes fnaf-monitor-out {
     from {
-      transform: translateX(0) rotateY(0deg);
+      transform: translateX(0) rotateY(0deg) scale(1);
       opacity: 1;
     }
     to {
-      transform: translateX(100%) rotateY(-90deg);
+      transform: translateX(120%) rotateY(-90deg) scale(0.8);
       opacity: 0;
     }
   }
@@ -149,10 +149,10 @@ body {
   }
 
   .animate-fnaf-in {
-    animation: fnaf-monitor-in 0.3s forwards cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fnaf-monitor-in 0.35s forwards cubic-bezier(0.4, 0, 0.2, 1);
   }
   .animate-fnaf-out {
-    animation: fnaf-monitor-out 0.3s forwards cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fnaf-monitor-out 0.35s forwards cubic-bezier(0.4, 0, 0.2, 1);
   }
   .static-noise-bg {
     position: absolute;
@@ -162,7 +162,7 @@ body {
     bottom: -50%;
     width: 200%;
     height: 200%;
-    background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXWBgYGHh4d5eXlzc3OLi4ubm5uVlZWYmJitbW1xcXFYWFhZWVl0dHTs7Ozv7+/+/v7w8PDV1dVuhZ25AAAAI3RSTlMAwA8K/P/k4dLKzckvKsvJzsvJzsvJzsvJzsvJzsvJzsvJzsvJzsvcy2d/AAAA9UlEQVRIS2WQa24EMRCEle0ABBGKq4H//5xAYsVbKxV5UsvdrG3s796dADkAWaCDBLoCgA1g84AR4LIA/AIU4hMLbAIwH3EAmUnQh9g2ADUI/gFsAEsAGyAYvLw/3yYc/YgaYg20w5E9zF+sS+3W67nL/G/YStw7u0/A8wA+o4QyAD4AYgC+A6iA1xAWYgqEgBEAL8A+gA+/h9gGYALsA+wB2wB5AJ8B5ALYARgA2wBqwB2wAbAAvABFAF6AEaAFaAFaAFaAF6AEaAFaAAGAA6AEaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFAAcAB2gVYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYA2YD2wE5ADoCaAJoCjAQgA7wAegAqwAewAfgAvgAfgAfgA/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gA/gA/gI+A/gA/gI+A/gA/gI+A/gA/gI+A/gA/gI+A/gA/gI+A/gA/gI+A/gA/gI+A/gA/gI+A/gA/gI+A/gA+B/gAwABsAAAAAElFTkSuQmCC') repeat 0 0;
+    background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXWBgYGHh4d5eXlzc3OLi4ubm5uVlZWYmJitbW1xcXFYWFhZWVl0dHTs7Ozv7+/+/v7w8PDV1dVuhZ25AAAAI3RSTlMAwA8K/P/k4dLKzckvKsvJzsvJzsvJzsvJzsvJzsvJzsvJzsvcy2d/AAAA9UlEQVRIS2WQa24EMRCEle0ABBGKq4H//5xAYsVbKxV5UsvdrG3s796dADkAWaCDBLoCgA1g84AR4LIA/AIU4hMLbAIwH3EAmUnQh9g2ADUI/gFsAEsAGyAYvLw/3yYc/YgaYg20w5E9zF+sS+3W67nL/G/YStw7u0/A8wA+o4QyAD4AYgC+A6iA1xAWYgqEgBEAL8A+gA+/h9gGYALsA+wB2wB5AJ8B5ALYARgA2wBqwB2wAbAAvABFAF6AEaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFaAFAAcAB2gVYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYAWYA2YD2wE5ADoCaAJoCjAQgA7wAegAqwAewAfgAvgAfgAfgA/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gB/gA/gA/gI+A/gA/gI+A/gA/gI+A/gA/gI+A/gA/gI+A/gA/gI+A/gA/gI+A/gA/gI+A/gA/gI+A/gA/gI+A/gA+B/gAwABsAAAAAElFTkSuQmCC') repeat 0 0;
     opacity: 0.15;
     animation: static-noise 0.2s steps(8, end) infinite;
   }
