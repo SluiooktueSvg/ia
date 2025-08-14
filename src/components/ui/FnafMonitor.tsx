@@ -11,17 +11,17 @@ interface FnafMonitorProps {
 }
 
 const CAMERAS = [
-    { id: 'cam01a', name: 'CAM 1A', x: 130, y: 55, hint: 'Show Stage' },
-    { id: 'cam01b', name: 'CAM 1B', x: 130, y: 110, hint: 'Dining Area' },
-    { id: 'cam01c', name: 'CAM 1C', x: 200, y: 90, hint: 'Pirate Cove' },
-    { id: 'cam02a', name: 'CAM 2A', x: 30, y: 70, hint: 'W. Hall' },
-    { id: 'cam02b', name: 'CAM 2B', x: 30, y: 130, hint: 'W. Hall Corner' },
-    { id: 'cam03', name: 'CAM 3', x: 200, y: 155, hint: 'Supply Closet' },
-    { id: 'cam04a', name: 'CAM 4A', x: 240, y: 70, hint: 'E. Hall' },
-    { id: 'cam04b', name: 'CAM 4B', x: 240, y: 130, hint: 'E. Hall Corner' },
-    { id: 'cam05', name: 'CAM 5', x: 130, y: 5, hint: 'Backstage' },
-    { id: 'cam06', name: 'CAM 6', x: 300, y: 10, hint: 'Kitchen' },
-    { id: 'cam07', name: 'CAM 7', x: 300, y: 155, hint: 'Restrooms' },
+    { id: 'cam01a', name: 'CAM 1A', x: 130, y: 70 },
+    { id: 'cam01b', name: 'CAM 1B', x: 130, y: 125 },
+    { id: 'cam01c', name: 'CAM 1C', x: 80, y: 125 },
+    { id: 'cam02a', name: 'CAM 2A', x: 40, y: 85 },
+    { id: 'cam02b', name: 'CAM 2B', x: 40, y: 145 },
+    { id: 'cam03', name: 'CAM 3', x: 80, y: 70 },
+    { id: 'cam04a', name: 'CAM 4A', x: 220, y: 85 },
+    { id: 'cam04b', name: 'CAM 4B', x: 220, y: 145 },
+    { id: 'cam05', name: 'CAM 5', x: 130, y: 20 },
+    { id: 'cam06', name: 'CAM 6', x: 270, y: 125 },
+    { id: 'cam07', name: 'CAM 7', x: 270, y: 70 },
 ];
 
 
@@ -36,6 +36,18 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
   const [shouldRender, setShouldRender] = useState(isOpen);
   const [currentCameraId, setCurrentCameraId] = useState('cam01a');
   const [cameraImageStates, setCameraImageStates] = useState(initialImageStates);
+  const [isSwitching, setIsSwitching] = useState(false);
+
+  const handleCameraSwitch = (camId: string) => {
+    if (camId === currentCameraId) return;
+
+    setIsSwitching(true);
+    setCurrentCameraId(camId);
+
+    setTimeout(() => {
+        setIsSwitching(false);
+    }, 200); // Duration of the static effect in ms
+  };
 
   // Effect for showing/hiding the monitor with animation
   useEffect(() => {
@@ -89,7 +101,7 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
   }
 
   const MapRoom = ({ className }: { className?: string }) => (
-    <div className={cn("absolute bg-gray-500/10 border-2 border-gray-400/50", className)} />
+    <div className={cn("absolute bg-gray-500/10", className)} />
   );
 
   return (
@@ -123,6 +135,11 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
             <div className="camera-vignette" />
             <div className="static-noise-bg" />
 
+            {/* Switching Camera Static Effect */}
+            {isSwitching && (
+              <div className="absolute inset-0 w-full h-full static-noise-bg z-40" style={{ opacity: 0.8 }} />
+            )}
+
 
             {/* UI Elements */}
             <div className="absolute top-4 left-4 text-white/80 font-mono text-2xl tracking-widest animate-pulse z-30">
@@ -139,41 +156,40 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
             </div>
 
             <div 
-              className="absolute bottom-4 right-4 w-[320px] h-[180px] z-30"
+              className="absolute bottom-2 right-2 w-[320px] h-[180px] z-30"
             >
               {/* Code-based map layout */}
               <div className="w-full h-full relative">
                 {/* Rooms */}
-                <MapRoom className="top-[5px] left-[113px] w-[54px] h-[36px]" /> {/* Backstage */}
-                <MapRoom className="top-[45px] left-[113px] w-[54px] h-[45px]" /> {/* Show Stage */}
-                <MapRoom className="top-[95px] left-[81px] w-[90px] h-[72px]" /> {/* Dining Area */}
-                <MapRoom className="top-[81px] left-[176px] w-[27px] h-[45px]" /> {/* Pirate Cove */}
-                <MapRoom className="top-[9px] left-[243px] w-[72px] h-[54px]" /> {/* Kitchen */}
-                <MapRoom className="top-[126px] left-[243px] w-[72px] h-[41px]" /> {/* Restrooms */}
-                <MapRoom className="top-[126px] left-[176px] w-[54px] h-[41px]" /> {/* Supply Closet */}
+                <MapRoom className="top-[15px] left-[113px] w-[54px] h-[40px] border" /> {/* Backstage */}
+                <MapRoom className="top-[60px] left-[113px] w-[54px] h-[50px] border" /> {/* Show Stage */}
+                <MapRoom className="top-[115px] left-[65px] w-[120px] h-[55px] border" /> {/* Dining Area */}
+                <MapRoom className="top-[60px] left-[65px] w-[43px] h-[50px] border" /> {/* Pirate Cove */}
+                <MapRoom className="top-[60px] left-[240px] w-[70px] h-[55px] border" /> {/* Kitchen */}
+                <MapRoom className="top-[120px] left-[240px] w-[70px] h-[50px] border" /> {/* Restrooms */}
+                <MapRoom className="top-[60px] left-[180px] w-[55px] h-[55px] border" /> {/* Supply Closet */}
                 
                 {/* Halls */}
-                <MapRoom className="top-[68px] left-[27px] w-[72px] h-[18px]" /> {/* W. Hall top */}
-                <MapRoom className="top-[122px] left-[27px] w-[72px] h-[18px]" /> {/* W. Hall bottom */}
-                <MapRoom className="top-[68px] left-[202px] w-[72px] h-[18px]" /> {/* E. Hall top */}
-                <MapRoom className="top-[122px] left-[202px] w-[72px] h-[18px]" /> {/* E. Hall bottom */}
+                <MapRoom className="top-[75px] left-[25px] w-[40px] h-[85px] border" /> {/* W. Hall */}
+                <MapRoom className="top-[75px] left-[200px] w-[40px] h-[85px] border" /> {/* E. Hall */}
+                <MapRoom className="top-[165px] left-[113px] w-[54px] h-[10px]" /> {/* Connector */}
 
                 {/* You */}
-                <div className="absolute bottom-[22px] left-[121px] flex items-center justify-center text-white/80">
+                <div className="absolute bottom-[-5px] left-[126px] flex items-center justify-center text-white/80">
                   <svg width="20" height="15" viewBox="0 0 20 15"><polygon points="10,0 20,15 0,15" fill="currentColor"/></svg>
                 </div>
 
                 {CAMERAS.map(cam => (
                    <button
                       key={cam.id}
-                      onClick={() => setCurrentCameraId(cam.id)}
+                      onClick={() => handleCameraSwitch(cam.id)}
                       className={cn(
                           "absolute w-12 h-6 bg-gray-800/70 border border-gray-500 text-white/80 text-[10px] font-mono flex items-center justify-center transition-all hover:bg-green-500/80 hover:scale-110",
                           currentCameraId === cam.id && "bg-green-600/90 animate-pulse border-white"
                       )}
                       style={{
-                          left: `${Math.round(cam.x * 0.9)}px`,
-                          top: `${Math.round(cam.y * 0.9)}px`,
+                          left: `${cam.x}px`,
+                          top: `${cam.y}px`,
                           transform: 'translate(-50%, -50%)' // Center the button on the coords
                       }}
                       aria-label={`Switch to ${cam.name}`}
