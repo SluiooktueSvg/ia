@@ -173,3 +173,5 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
 };
 
 export default FnafMonitor;
+
+    
