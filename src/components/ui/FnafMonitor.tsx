@@ -96,7 +96,7 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
           {/* Screen Content */}
           <div className="flex-grow w-full h-full bg-black rounded-sm overflow-hidden relative">
             
-            {/* Camera View */}
+            {/* Camera View - z-0 */}
             <Image
               key={activeCamera.id}
               src={activeImageUrl}
@@ -108,15 +108,15 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
             
             {/* Overlay Effects */}
             <div className="camera-vignette z-10" />
-            <div className="static-noise-bg z-30" />
+            <div className="static-noise-bg z-20" />
 
 
-            {/* UI Elements */}
-            <div className="absolute top-4 left-4 text-white/80 font-mono text-2xl tracking-widest animate-pulse z-40">
+            {/* UI Elements - z-30 */}
+            <div className="absolute top-4 left-4 text-white/80 font-mono text-2xl tracking-widest animate-pulse z-30">
               <p>{activeCamera.name}</p>
             </div>
 
-            <div className="absolute top-4 right-4 flex h-20 w-16 flex-col items-center justify-between bg-blue-900/40 p-1 border-2 border-blue-400/30 z-40">
+            <div className="absolute top-4 right-4 flex h-20 w-16 flex-col items-center justify-between bg-blue-900/40 p-1 border-2 border-blue-400/30 z-30">
                 <button className="text-white/80 transition-colors hover:text-white hover:bg-white/10 w-full flex-grow flex items-center justify-center">
                     <Video className="h-8 w-8" />
                 </button>
@@ -126,7 +126,7 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
             </div>
 
             <div 
-              className="absolute bottom-4 right-4 w-[280px] h-[200px] bg-cover bg-center border border-green-400/30 z-40"
+              className="absolute bottom-4 right-4 w-[280px] h-[200px] bg-cover bg-center border border-green-400/30 z-30"
               style={{ backgroundImage: "url('https://i.imgur.com/2sA4R9M.png')" }} 
             >
               {CAMERAS.map(cam => (
@@ -148,7 +148,7 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
               ))}
             </div>
             
-            <div className="absolute bottom-4 left-4 text-white/70 font-mono text-sm opacity-70 z-40">
+            <div className="absolute bottom-4 left-4 text-white/70 font-mono text-sm opacity-70 z-30">
               <p>REC ●</p>
             </div>
           </div>
