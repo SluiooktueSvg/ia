@@ -11,14 +11,17 @@ interface FnafMonitorProps {
 }
 
 const CAMERAS = [
-  { id: 'cam07', name: 'CAM 07', x: 70, y: 10, imageUrls: ['https://placehold.co/800x600/3a3a3a/5a5a5a.png'], hint: 'restrooms' },
-  { id: 'cam08', name: 'CAM 08', x: 130, y: 35, imageUrls: ['https://placehold.co/800x600/3a3a3a/5a5a5a.png'], hint: 'restrooms' },
-  { id: 'cam04', name: 'CAM 04', x: 25, y: 80, imageUrls: ['https://placehold.co/800x600/2c2c2c/4f4f4f.png', 'https://placehold.co/800x600/2c2c2c/3f3f3f.png', 'https://placehold.co/800x600/2c0000/ff0000.png'], hint: 'east hall' },
-  { id: 'cam02', name: 'CAM 02', x: 200, y: 80, imageUrls: ['https://placehold.co/800x600/1e1e1e/3e3e3e.png'], hint: 'west hall' },
-  { id: 'cam05', name: 'CAM 05', x: 25, y: 120, imageUrls: ['https://placehold.co/800x600/3c3c3c/555555.png', 'https://placehold.co/800x600/3c0000/ff0000.png'], hint: 'backstage' },
-  { id: 'cam03', name: 'CAM 03', x: 80, y: 120, imageUrls: ['https://placehold.co/800x600/2a2a2a/4a4a4a.png', 'https://placehold.co/800x600/2a2a2a/3a3a3a.png'], hint: 'supply closet' },
-  { id: 'cam06', name: 'CAM 06', x: 50, y: 160, imageUrls: ['https://placehold.co/800x600/1e1e1e/3e3e3e.png'], hint: 'kitchen' },
-  { id: 'cam01', name: 'CAM 01', x: 170, y: 160, imageUrls: ['https://placehold.co/800x600/2f2f2f/4a4a4a.png'], hint: 'e. hall corner'},
+    { id: 'cam01a', name: 'CAM 1A', x: 130, y: 55, hint: 'Show Stage' },
+    { id: 'cam01b', name: 'CAM 1B', x: 130, y: 110, hint: 'Dining Area' },
+    { id: 'cam01c', name: 'CAM 1C', x: 200, y: 90, hint: 'Pirate Cove' },
+    { id: 'cam02a', name: 'CAM 2A', x: 30, y: 70, hint: 'W. Hall' },
+    { id: 'cam02b', name: 'CAM 2B', x: 30, y: 130, hint: 'W. Hall Corner' },
+    { id: 'cam03', name: 'CAM 3', x: 200, y: 155, hint: 'Supply Closet' },
+    { id: 'cam04a', name: 'CAM 4A', x: 240, y: 70, hint: 'E. Hall' },
+    { id: 'cam04b', name: 'CAM 4B', x: 240, y: 130, hint: 'E. Hall Corner' },
+    { id: 'cam05', name: 'CAM 5', x: 130, y: 5, hint: 'Backstage' },
+    { id: 'cam06', name: 'CAM 6', x: 300, y: 10, hint: 'Kitchen' },
+    { id: 'cam07', name: 'CAM 7', x: 300, y: 155, hint: 'Restrooms' },
 ];
 
 
@@ -31,7 +34,7 @@ const initialImageStates = CAMERAS.reduce((acc, cam) => {
 
 const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
   const [shouldRender, setShouldRender] = useState(isOpen);
-  const [currentCameraId, setCurrentCameraId] = useState('cam01');
+  const [currentCameraId, setCurrentCameraId] = useState('cam01a');
   const [cameraImageStates, setCameraImageStates] = useState(initialImageStates);
 
   // Effect for showing/hiding the monitor with animation
@@ -55,10 +58,10 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
         for (let i = 0; i < Math.ceil(CAMERAS.length / 4); i++) {
           const randomCamIndex = Math.floor(Math.random() * CAMERAS.length);
           const camToUpdate = CAMERAS[randomCamIndex];
-          if (camToUpdate.imageUrls.length > 1) {
+          if (camToUpdate.id.length > 1) { // Assuming multi-image cameras have longer IDs just for this logic
             const currentIdx = newStates[camToUpdate.id].currentImageIndex;
             // Simple logic to just move to the next image, could be random
-            const nextIdx = (currentIdx + 1) % camToUpdate.imageUrls.length;
+            const nextIdx = (currentIdx + 1) % 2; // Assuming 2 images for simplicity
             newStates[camToUpdate.id] = { currentImageIndex: nextIdx };
           }
         }
@@ -72,13 +75,21 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
   const activeCamera = useMemo(() => CAMERAS.find(c => c.id === currentCameraId) || CAMERAS[0], [currentCameraId]);
   const activeImageUrl = useMemo(() => {
     const state = cameraImageStates[activeCamera.id];
-    return activeCamera.imageUrls[state.currentImageIndex];
+    // A simple way to alternate images for demo purposes
+    if (activeCamera.id === 'cam01b' && state.currentImageIndex === 1) {
+        return 'https://placehold.co/800x600/2c0000/ff0000.png';
+    }
+    return `https://placehold.co/800x600/${activeCamera.id.charCodeAt(3)}a${activeCamera.id.charCodeAt(4)}a${activeCamera.id.charCodeAt(3)}a/ffffff.png`;
   }, [activeCamera, cameraImageStates]);
 
 
   if (!shouldRender) {
     return null;
   }
+
+  const MapRoom = ({ className }: { className?: string }) => (
+    <div className={cn("absolute bg-gray-500/10 border-2 border-gray-400/50", className)} />
+  );
 
   return (
     <div
@@ -127,26 +138,49 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
             </div>
 
             <div 
-              className="absolute bottom-4 right-4 w-[280px] h-[200px] bg-cover bg-center border border-green-400/30 z-30 relative"
-              style={{ backgroundImage: "url('https://i.imgur.com/7s1gG99.png')" }} 
+              className="absolute bottom-4 right-4 w-[360px] h-[200px] border border-green-400/30 z-30"
             >
-              {CAMERAS.map(cam => (
-                 <button
-                    key={cam.id}
-                    onClick={() => setCurrentCameraId(cam.id)}
-                    className={cn(
-                        "absolute w-10 h-6 bg-gray-800/50 border border-gray-500 text-white/80 text-xs font-mono flex items-center justify-center transition-all hover:bg-green-500/80 hover:scale-110",
-                        currentCameraId === cam.id && "bg-green-600/90 animate-pulse border-white"
-                    )}
-                    style={{
-                        left: `${cam.x}px`,
-                        top: `${cam.y}px`
-                    }}
-                    aria-label={`Switch to ${cam.name}`}
-                 >
-                    {cam.name.replace('CAM ', '')}
-                 </button>
-              ))}
+              {/* Code-based map layout */}
+              <div className="w-full h-full relative">
+                {/* Rooms */}
+                <MapRoom className="top-[5px] left-[125px] w-[60px] h-[40px]" /> {/* Backstage */}
+                <MapRoom className="top-[50px] left-[125px] w-[60px] h-[50px]" /> {/* Show Stage */}
+                <MapRoom className="top-[105px] left-[90px] w-[100px] h-[80px]" /> {/* Dining Area */}
+                <MapRoom className="top-[90px] left-[195px] w-[30px] h-[50px]" /> {/* Pirate Cove */}
+                <MapRoom className="top-[10px] left-[270px] w-[80px] h-[60px]" /> {/* Kitchen */}
+                <MapRoom className="top-[140px] left-[270px] w-[80px] h-[45px]" /> {/* Restrooms */}
+                <MapRoom className="top-[140px] left-[195px] w-[60px] h-[45px]" /> {/* Supply Closet */}
+                
+                {/* Halls */}
+                <MapRoom className="top-[75px] left-[30px] w-[80px] h-[20px]" /> {/* W. Hall top */}
+                <MapRoom className="top-[135px] left-[30px] w-[80px] h-[20px]" /> {/* W. Hall bottom */}
+                <MapRoom className="top-[75px] left-[225px] w-[80px] h-[20px]" /> {/* E. Hall top */}
+                <MapRoom className="top-[135px] left-[225px] w-[80px] h-[20px]" /> {/* E. Hall bottom */}
+
+                {/* You */}
+                <div className="absolute bottom-[25px] left-[135px] flex items-center justify-center text-white/80">
+                  <svg width="20" height="15" viewBox="0 0 20 15"><polygon points="10,0 20,15 0,15" fill="currentColor"/></svg>
+                </div>
+
+                {CAMERAS.map(cam => (
+                   <button
+                      key={cam.id}
+                      onClick={() => setCurrentCameraId(cam.id)}
+                      className={cn(
+                          "absolute w-12 h-6 bg-gray-800/70 border border-gray-500 text-white/80 text-[10px] font-mono flex items-center justify-center transition-all hover:bg-green-500/80 hover:scale-110",
+                          currentCameraId === cam.id && "bg-green-600/90 animate-pulse border-white"
+                      )}
+                      style={{
+                          left: `${cam.x}px`,
+                          top: `${cam.y}px`,
+                          transform: 'translate(-50%, -50%)' // Center the button on the coords
+                      }}
+                      aria-label={`Switch to ${cam.name}`}
+                   >
+                      {cam.name}
+                   </button>
+                ))}
+              </div>
             </div>
             
             <div className="absolute bottom-4 left-4 text-white/70 font-mono text-sm opacity-70 z-30">
