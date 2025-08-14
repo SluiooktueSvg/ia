@@ -8,11 +8,12 @@ import { useChatController } from '@/hooks/useChatController';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import LSAIGLogo from '@/components/AuraChatLogo';
 import { Button } from '@/components/ui/button';
-import { Save, FolderOpen, Trash2, Heart, LogOut, AudioLines } from 'lucide-react';
+import { Save, FolderOpen, Trash2, Heart, LogOut, AudioLines, Camera } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
+import FnafMonitor from '@/components/ui/FnafMonitor'; // Importar el nuevo componente
 
 const helpMessages = [
   "¿En qué puedo asistirte hoy?",
@@ -91,6 +92,8 @@ const ChatLayout: React.FC = () => {
   const [lastClickTime, setLastClickTime] = useState(0);
   const [activeHearts, setActiveHearts] = useState<ActiveHeart[]>([]);
   const currentGreetingInfoRef = useRef<{prefix: string, dynamicPart: string} | null>(null);
+
+  const [isMonitorOpen, setIsMonitorOpen] = useState(false);
 
   const getGreetingInfo = (userName?: string | null) => {
     const currentHour = new Date().getHours();
@@ -186,7 +189,7 @@ const ChatLayout: React.FC = () => {
 
   const handlePageClick = (event: MouseEvent<HTMLDivElement>) => {
     // --- Heart Burst Effect ---
-    if ((event.target as HTMLElement).closest('#chat-input-form')) {
+    if ((event.target as HTMLElement).closest('#chat-input-form') || (event.target as HTMLElement).closest('#fnaf-monitor')) {
       return;
     }
     const currentTime = Date.now();
@@ -216,7 +219,7 @@ const ChatLayout: React.FC = () => {
 
   return (
     <SidebarInset
-      className="flex h-screen flex-col bg-background md:m-0 md:rounded-none md:shadow-none"
+      className="flex h-screen flex-col bg-background md:m-0 md:rounded-none md:shadow-none overflow-hidden"
       onClick={handlePageClick}
     >
       <div className="flex items-center justify-between p-3 md:p-4">
@@ -225,6 +228,15 @@ const ChatLayout: React.FC = () => {
           <LSAIGLogo />
         </div>
         <div className="flex items-center gap-1 rounded-full bg-card p-1 shadow-md">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9" 
+            aria-label="Toggle camera monitor"
+            onClick={() => setIsMonitorOpen(!isMonitorOpen)}
+          >
+            <Camera className="h-4 w-4 md:h-5 md:w-5" />
+          </Button>
           <Button asChild variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9" aria-label="Voice chat">
             <Link href="/voice">
               <AudioLines className="h-4 w-4 md:h-5 md:w-5" />
@@ -294,6 +306,9 @@ const ChatLayout: React.FC = () => {
         )}
       </div>
       
+      {/* FNAF Monitor */}
+      <FnafMonitor isOpen={isMonitorOpen} />
+
       {/* Heart Burst Effect Renderer */}
       {activeHearts.map(heart => (
         <Heart

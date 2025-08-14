@@ -137,6 +137,27 @@ export default {
           '0%, 100%': { boxShadow: '0 0 10px -5px currentColor', transform: 'scale(1)' },
           '50%': { boxShadow: '0 0 20px 5px currentColor', transform: 'scale(1.02)' },
         },
+        'fnaf-monitor-in': {
+          'from': { transform: 'translateX(100%) rotateY(-90deg)', opacity: '0' },
+          'to': { transform: 'translateX(0) rotateY(0deg)', opacity: '1' },
+        },
+        'fnaf-monitor-out': {
+          'from': { transform: 'translateX(0) rotateY(0deg)', opacity: '1' },
+          'to': { transform: 'translateX(100%) rotateY(-90deg)', opacity: '0' },
+        },
+        'static-noise': {
+          '0%': { transform: 'translate(0,0)' },
+          '10%': { transform: 'translate(-5%,-5%)' },
+          '20%': { transform: 'translate(-10%,5%)' },
+          '30%': { transform: 'translate(5%,-10%)' },
+          '40%': { transform: 'translate(-5%,15%)' },
+          '50%': { transform: 'translate(-10%,5%)' },
+          '60%': { transform: 'translate(15%,0)' },
+          '70%': { transform: 'translate(0,10%)' },
+          '80%': { transform: 'translate(-15%,0)' },
+          '90%': { transform: 'translate(10%,5%)' },
+          '100%': { transform: 'translate(5%,0)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -154,8 +175,23 @@ export default {
         'pulse-voice-speaking': 'pulse-voice-speaking 1.5s ease-in-out infinite',
         'wave': 'wave 4s linear infinite',
         'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+        'fnaf-in': 'fnaf-monitor-in 0.3s forwards cubic-bezier(0.4, 0, 0.2, 1)',
+        'fnaf-out': 'fnaf-monitor-out 0.3s forwards cubic-bezier(0.4, 0, 0.2, 1)',
+        'static-noise': 'static-noise 0.2s steps(8, end) infinite',
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [
+    require('tailwindcss-animate'),
+    function ({ addUtilities }) {
+      addUtilities({
+        '.perspective-1000': {
+          'perspective': '1000px',
+        },
+        '.transform-style-preserve-3d': {
+          'transform-style': 'preserve-3d',
+        },
+      })
+    },
+  ],
 } satisfies Config;
