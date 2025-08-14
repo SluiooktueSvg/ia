@@ -11,7 +11,6 @@ interface FnafMonitorProps {
 }
 
 // More realistic camera setup inspired by the game
-// Using valid placehold.co URLs
 const CAMERAS = [
   { id: 'cam01', name: 'CAM 01', x: 200, y: 155, imageUrls: ['https://placehold.co/800x600/1a1a1a/333333.png', 'https://placehold.co/800x600/220000/ff0000.png'], hint: 'office hallway' },
   { id: 'cam02', name: 'CAM 02', x: 200, y: 110, imageUrls: ['https://placehold.co/800x600/2b2b2b/444444.png', 'https://placehold.co/800x600/2b2b2b/333333.png', 'https://placehold.co/800x600/2a0000/ff0000.png'], hint: 'dining area' },
@@ -108,16 +107,17 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
             />
             
             {/* Overlay Effects - Placed after the image to render on top */}
-            <div className="absolute inset-0 bg-black/20 z-10" />
-            <div className="static-noise-bg z-20" />
+            <div className="camera-vignette z-10" />
+            <div className="absolute inset-0 bg-black/10 z-20" />
+            <div className="static-noise-bg z-30" />
 
 
             {/* UI Elements - Highest z-index to be on top of everything */}
-            <div className="absolute top-4 left-4 text-white/80 font-mono text-2xl tracking-widest animate-pulse z-30">
+            <div className="absolute top-4 left-4 text-white/80 font-mono text-2xl tracking-widest animate-pulse z-40">
               <p>{activeCamera.name}</p>
             </div>
 
-            <div className="absolute top-4 right-4 flex h-20 w-16 flex-col items-center justify-between bg-blue-900/40 p-1 border-2 border-blue-400/30 z-30">
+            <div className="absolute top-4 right-4 flex h-20 w-16 flex-col items-center justify-between bg-blue-900/40 p-1 border-2 border-blue-400/30 z-40">
                 <button className="text-white/80 transition-colors hover:text-white hover:bg-white/10 w-full flex-grow flex items-center justify-center">
                     <Video className="h-8 w-8" />
                 </button>
@@ -127,7 +127,7 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
             </div>
 
             <div 
-              className="absolute bottom-4 right-4 w-[280px] h-[200px] bg-cover bg-center border border-green-400/30 z-30"
+              className="absolute bottom-4 right-4 w-[280px] h-[200px] bg-cover bg-center border border-green-400/30 z-40"
               style={{ backgroundImage: "url('https://i.imgur.com/2sA4R9M.png')" }} 
             >
               {CAMERAS.map(cam => (
@@ -149,7 +149,7 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
               ))}
             </div>
             
-            <div className="absolute bottom-4 left-4 text-white/70 font-mono text-sm opacity-70 z-30">
+            <div className="absolute bottom-4 left-4 text-white/70 font-mono text-sm opacity-70 z-40">
               <p>REC ●</p>
             </div>
           </div>
