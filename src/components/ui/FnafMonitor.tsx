@@ -57,7 +57,6 @@ const FnafMonitor: React.FC<FnafMonitorProps> = ({ isOpen }) => {
                 <button className="text-white/80 transition-colors hover:text-white hover:bg-white/10 w-full flex-grow flex items-center justify-center">
                     <Triangle className="h-8 w-8 fill-current" />
                 </button>
-                <div className="text-white/60 text-xs font-mono">CLICK</div>
                  <button className="text-white/80 transition-colors hover:text-white hover:bg-white/10 w-full flex-grow flex items-center justify-center">
                     <Triangle className="h-8 w-8 fill-current rotate-180" />
                 </button>
