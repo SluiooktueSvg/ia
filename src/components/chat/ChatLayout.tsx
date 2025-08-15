@@ -119,10 +119,12 @@ const ChatLayout: React.FC = () => {
     // Effect to handle exit transition
   useEffect(() => {
     if (isExitingCodeMode) {
+      // The fade-out animation is 500ms. After that, we show the loading screen
+      // for 2000ms, then switch back to the normal view.
       const timer = setTimeout(() => {
         setIsCodeMode(false);
         setIsExitingCodeMode(false);
-      }, 2000); // Duration of the loading animation
+      }, 2500); // 500ms for fade out + 2000ms for loading screen
       return () => clearTimeout(timer);
     }
   }, [isExitingCodeMode, setIsCodeMode]);
@@ -276,7 +278,7 @@ const ChatLayout: React.FC = () => {
   
   const renderCodeTerminal = () => {
     return (
-      <div className={cn("font-code fixed inset-0 z-[100] flex flex-col bg-black text-green-500", !isExitingCodeMode ? "animate-fade-in" : "animate-fade-out")}>
+      <div className={cn("font-code fixed inset-0 z-[100] flex flex-col bg-black text-green-500", isExitingCodeMode ? "animate-fade-out" : "animate-fade-in")}>
         <header className="flex items-center justify-between bg-[#0c0c0c] p-2 text-xs text-gray-300">
           <div className="flex items-center gap-2">
             <Square className="h-4 w-4 fill-white" />
@@ -321,12 +323,15 @@ const ChatLayout: React.FC = () => {
     );
   };
   
-  if (isCodeMode) {
+  if (isCodeMode && !isExitingCodeMode) {
     return renderCodeTerminal();
   }
 
   return (
     <div className="relative h-screen w-full">
+      {/* This ensures the terminal stays rendered during the fade-out animation */}
+      {isCodeMode && isExitingCodeMode && renderCodeTerminal()}
+      
       <SidebarInset
         className="flex h-screen flex-col bg-background md:m-0 md:rounded-none md:shadow-none overflow-hidden"
         onClick={handlePageClick}
@@ -465,5 +470,7 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
+
+    
 
     
