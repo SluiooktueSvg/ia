@@ -304,136 +304,143 @@ const ChatLayout: React.FC = () => {
     );
   };
   
-  if (isEnteringCodeMode) {
-    return <LoadingScreen message="Iniciando modo de código..." />;
-  }
-
   if (isCodeMode) {
     return renderCodeTerminal();
   }
 
   return (
-    <SidebarInset
-      className="flex h-screen flex-col bg-background md:m-0 md:rounded-none md:shadow-none overflow-hidden"
-      onClick={handlePageClick}
-    >
-      <div className="flex items-center justify-between p-3 md:p-4">
-        <div className="flex items-center gap-2">
-          <SidebarTrigger className="md:hidden" />
-          <LSAIGLogo />
-        </div>
-        <div className="flex items-center gap-1 rounded-full bg-card p-1 shadow-md">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9"
-            aria-label="Toggle code mode"
-            onClick={handleEnterCodeMode}
-          >
-            <Terminal className="h-4 w-4 md:h-5 md:w-5" />
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9" 
-            aria-label="Toggle camera monitor"
-            onClick={() => setIsMonitorOpen(!isMonitorOpen)}
-          >
-            <Camera className="h-4 w-4 md:h-5 md:w-5" />
-          </Button>
-          <Button asChild variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9" aria-label="Voice chat">
-            <Link href="/voice">
-              <AudioLines className="h-4 w-4 md:h-5 md:w-5" />
-            </Link>
-          </Button>
-          <Button variant="ghost" size="icon" onClick={saveChat} aria-label="Save chat" className="h-8 w-8 rounded-full hover:animate-pulse-custom md:h-9 md:w-9">
-            <Save className="h-4 w-4 md:h-5 md:w-5" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={loadChat} aria-label="Load chat" className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9">
-            <FolderOpen className="h-4 w-4 md:h-5 md:w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => {
-              clearChat();
-            }}
-            aria-label="Clear chat"
-            className="h-8 w-8 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10 hover:animate-shake md:h-9 md:w-9"
-          >
-            <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={logout} aria-label="Log out" className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9">
-            <LogOut className="h-4 w-4 md:h-5 md:w-5" />
-          </Button>
-        </div>
-      </div>
-
-      <div className={cn("flex flex-1 flex-col", hasSentFirstMessage ? "h-full" : "min-h-0")}>
-        {hasSentFirstMessage ? (
-          <>
-            <MessageList 
-              messages={messages} 
-              onAudioGenerated={handleAudioGenerated}
-              onAudioError={handleAudioError}
-              isTtsQuotaExceeded={isTtsQuotaExceeded}
-              setIsTtsQuotaExceeded={setIsTtsQuotaExceeded}
-            />
-            <ChatInput
-              currentMessage={currentInput}
-              setCurrentMessage={setCurrentInput}
-              onSendMessage={sendMessage}
-            />
-          </>
-        ) : (
-          <div className="flex h-full flex-col">
-            <div className="flex flex-1 flex-shrink items-center justify-center overflow-y-auto p-4">
-              <div className="w-full max-w-xl text-center">
-                <div className="mb-4">
-                  {animatedGreeting && (
-                    <p className="text-3xl font-semibold text-gradient-animated md:text-4xl">
-                      {animatedGreeting}
-                    </p>
-                  )}
-                  {dynamicHelpText && <p className="mt-2 text-sm text-muted-foreground md:text-base">{dynamicHelpText}</p>}
-                </div>
-                <ChatInput
-                  currentMessage={currentInput}
-                  setCurrentMessage={setCurrentInput}
-                  onSendMessage={sendMessage}
-                  isCentered={true}
-                />
-              </div>
-            </div>
-            <footer className="flex-shrink-0 px-4 py-4 text-center text-xs text-muted-foreground">
-              <p>&copy; {new Date().getFullYear()} LSAIG. All rights reserved.</p>
-              <p>Sluiooktue Inc. Luis M.</p>
-            </footer>
+    <div className="relative h-screen w-full">
+      <SidebarInset
+        className="flex h-screen flex-col bg-background md:m-0 md:rounded-none md:shadow-none overflow-hidden"
+        onClick={handlePageClick}
+      >
+        <div className="flex items-center justify-between p-3 md:p-4">
+          <div className="flex items-center gap-2">
+            <SidebarTrigger className="md:hidden" />
+            <LSAIGLogo />
           </div>
-        )}
-      </div>
-      
-      {/* FNAF Monitor */}
-      <FnafMonitor isOpen={isMonitorOpen} />
+          <div className="flex items-center gap-1 rounded-full bg-card p-1 shadow-md">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9"
+              aria-label="Toggle code mode"
+              onClick={handleEnterCodeMode}
+            >
+              <Terminal className="h-4 w-4 md:h-5 md:w-5" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9" 
+              aria-label="Toggle camera monitor"
+              onClick={() => setIsMonitorOpen(!isMonitorOpen)}
+            >
+              <Camera className="h-4 w-4 md:h-5 md:w-5" />
+            </Button>
+            <Button asChild variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9" aria-label="Voice chat">
+              <Link href="/voice">
+                <AudioLines className="h-4 w-4 md:h-5 md:w-5" />
+              </Link>
+            </Button>
+            <Button variant="ghost" size="icon" onClick={saveChat} aria-label="Save chat" className="h-8 w-8 rounded-full hover:animate-pulse-custom md:h-9 md:w-9">
+              <Save className="h-4 w-4 md:h-5 md:w-5" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={loadChat} aria-label="Load chat" className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9">
+              <FolderOpen className="h-4 w-4 md:h-5 md:w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                clearChat();
+              }}
+              aria-label="Clear chat"
+              className="h-8 w-8 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10 hover:animate-shake md:h-9 md:w-9"
+            >
+              <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={logout} aria-label="Log out" className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9">
+              <LogOut className="h-4 w-4 md:h-5 md:w-5" />
+            </Button>
+          </div>
+        </div>
 
-      {/* Heart Burst Effect Renderer */}
-      {activeHearts.map(heart => (
-        <Heart
-          key={heart.id}
-          className="absolute text-red-500 animate-float-fade"
-          style={{
-            left: `${heart.x}px`,
-            top: `${heart.y}px`,
-            transform: 'translate(-50%, -50%)',
-            pointerEvents: 'none',
-            zIndex: 9999,
-          }}
-          size={24}
-          fill="currentColor"
-        />
-      ))}
-    </SidebarInset>
+        <div className={cn("flex flex-1 flex-col", hasSentFirstMessage ? "h-full" : "min-h-0")}>
+          {hasSentFirstMessage ? (
+            <>
+              <MessageList 
+                messages={messages} 
+                onAudioGenerated={handleAudioGenerated}
+                onAudioError={handleAudioError}
+                isTtsQuotaExceeded={isTtsQuotaExceeded}
+                setIsTtsQuotaExceeded={setIsTtsQuotaExceeded}
+              />
+              <ChatInput
+                currentMessage={currentInput}
+                setCurrentMessage={setCurrentInput}
+                onSendMessage={sendMessage}
+              />
+            </>
+          ) : (
+            <div className="flex h-full flex-col">
+              <div className="flex flex-1 flex-shrink items-center justify-center overflow-y-auto p-4">
+                <div className="w-full max-w-xl text-center">
+                  <div className="mb-4">
+                    {animatedGreeting && (
+                      <p className="text-3xl font-semibold text-gradient-animated md:text-4xl">
+                        {animatedGreeting}
+                      </p>
+                    )}
+                    {dynamicHelpText && <p className="mt-2 text-sm text-muted-foreground md:text-base">{dynamicHelpText}</p>}
+                  </div>
+                  <ChatInput
+                    currentMessage={currentInput}
+                    setCurrentMessage={setCurrentInput}
+                    onSendMessage={sendMessage}
+                    isCentered={true}
+                  />
+                </div>
+              </div>
+              <footer className="flex-shrink-0 px-4 py-4 text-center text-xs text-muted-foreground">
+                <p>&copy; {new Date().getFullYear()} LSAIG. All rights reserved.</p>
+                <p>Sluiooktue Inc. Luis M.</p>
+              </footer>
+            </div>
+          )}
+        </div>
+        
+        {/* FNAF Monitor */}
+        <FnafMonitor isOpen={isMonitorOpen} />
+
+        {/* Heart Burst Effect Renderer */}
+        {activeHearts.map(heart => (
+          <Heart
+            key={heart.id}
+            className="absolute text-red-500 animate-float-fade"
+            style={{
+              left: `${heart.x}px`,
+              top: `${heart.y}px`,
+              transform: 'translate(-50%, -50%)',
+              pointerEvents: 'none',
+              zIndex: 9999,
+            }}
+            size={24}
+            fill="currentColor"
+          />
+        ))}
+      </SidebarInset>
+
+      {/* Code Mode Transition Overlay */}
+      {isEnteringCodeMode && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 animate-fade-in">
+          <LoadingScreen message="Iniciando modo de código..." />
+        </div>
+      )}
+    </div>
   );
 };
 
 export default ChatLayout;
+
+    
