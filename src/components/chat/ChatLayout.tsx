@@ -97,7 +97,6 @@ const ChatLayout: React.FC = () => {
   const [isMonitorOpen, setIsMonitorOpen] = useState(false);
   const [isEnteringCodeMode, setIsEnteringCodeMode] = useState(false);
   const [isExitingCodeMode, setIsExitingCodeMode] = useState(false);
-  const [isMaximized, setIsMaximized] = useState(true);
   const codeTerminalRef = useRef<HTMLDivElement>(null);
 
   // Effect to handle AI-triggered code mode entry
@@ -124,7 +123,6 @@ const ChatLayout: React.FC = () => {
       const timer = setTimeout(() => {
         setIsCodeMode(false);
         setIsExitingCodeMode(false);
-        setIsMaximized(true); // Reset maximization state on exit
       }, 2500); // 500ms for fade out + 2000ms for loading screen
       return () => clearTimeout(timer);
     }
@@ -141,10 +139,6 @@ const ChatLayout: React.FC = () => {
   
   const handleExitCodeMode = () => {
     setIsExitingCodeMode(true);
-  };
-
-  const handleToggleMaximize = () => {
-    setIsMaximized(!isMaximized);
   };
 
   // Effect to update greeting based on time of day
@@ -284,52 +278,43 @@ const ChatLayout: React.FC = () => {
   const renderCodeTerminal = () => {
     return (
       <div className={cn(
-        "font-code z-[100] flex flex-col bg-black text-green-500 p-2 transition-all duration-300",
-        isExitingCodeMode ? "animate-fade-out" : "animate-fade-in",
-        isMaximized ? "fixed inset-0" : "fixed inset-x-0 mx-auto top-10 w-[90vw] h-[80vh] max-w-4xl rounded-lg shadow-2xl"
+        "font-code fixed inset-0 z-[100] flex flex-col bg-black text-green-500 p-4 transition-opacity duration-500",
+        isExitingCodeMode ? "animate-fade-out" : "animate-fade-in"
       )}>
-        <div className={cn("flex flex-col flex-1 border border-gray-600/50 bg-[#060606]", isMaximized ? "rounded-none" : "rounded-lg overflow-hidden")}>
-          <header className="flex items-center justify-between bg-[#0c0c0c] p-1 text-xs text-gray-300 border-b border-gray-600/50">
-            <div className="flex items-center gap-2 px-2">
-              <Terminal className="h-4 w-4" />
-              <span>C:\\WINDOWS\\system32\\cmd.exe - LSAIG Code Mode</span>
+        <div className="absolute top-4 right-4">
+            <Button variant="outline" onClick={handleExitCodeMode} className="bg-transparent text-green-500 border-green-500 hover:bg-green-500 hover:text-black">
+                Salir del modo código
+            </Button>
+        </div>
+        <div ref={codeTerminalRef} className="flex-1 overflow-y-auto pt-12 text-sm">
+           <div className="mb-4 flex flex-col items-center justify-center">
+            <LSAIGLogo variant="terminal" />
+            <div className="mt-2 text-center text-xs text-green-500/80">
+                <p>LSAIG [Version 1.0.0]</p>
+                <p>(c) LSAIG Corporation. All rights reserved.</p>
             </div>
-            <div className="flex items-center">
-                <Button variant="ghost" size="icon" onClick={handleExitCodeMode} className="h-6 w-8 rounded-none hover:bg-white/10"><Minus className="h-4 w-4" /></Button>
-                <Button variant="ghost" size="icon" onClick={handleToggleMaximize} className="h-6 w-8 rounded-none hover:bg-white/10"><Square className="h-3 w-3" /></Button>
-                <Button variant="destructive" size="icon" onClick={handleExitCodeMode} className="h-6 w-8 rounded-none hover:bg-red-700/80"><X className="h-4 w-4" /></Button>
-            </div>
-          </header>
-          <div ref={codeTerminalRef} className="flex-1 overflow-y-auto p-4 text-sm">
-             <div className="mb-4 flex flex-col items-center justify-center">
-              <LSAIGLogo variant="terminal" />
-              <div className="mt-2 text-center text-xs text-green-500/80">
-                  <p>LSAIG [Version 1.0.0]</p>
-                  <p>(c) LSAIG Corporation. All rights reserved.</p>
-              </div>
-            </div>
-            {messages.map((msg, index) => (
-              <div key={index} className="mb-2">
-                <span className={cn('align-top', msg.sender === 'user' ? "text-cyan-400" : "text-green-500")}>
-                  C:\\Users\\{msg.sender === 'user' ? user?.displayName?.split(' ')[0] || 'User' : 'LSAIG'}>
-                </span>
-                {msg.sender === 'ai' ? parseAndRenderMessage(msg.text) : <pre className="inline whitespace-pre-wrap pl-2">{msg.text}</pre>}
-              </div>
-            ))}
-            {isAiThinking && (
-              <div className="mb-2">
-                <span className="inline-block h-4 w-2 animate-cmd-cursor-blink bg-green-500"></span>
-              </div>
-            )}
-            {!isAiThinking && (
-              <ChatInput
-                isCodeMode={true}
-                currentMessage={currentInput}
-                setCurrentMessage={setCurrentInput}
-                onSendMessage={sendMessage}
-              />
-            )}
           </div>
+          {messages.map((msg, index) => (
+            <div key={index} className="mb-2">
+              <span className={cn('align-top', msg.sender === 'user' ? "text-cyan-400" : "text-green-500")}>
+                C:\\Users\\{msg.sender === 'user' ? user?.displayName?.split(' ')[0] || 'User' : 'LSAIG'}>
+              </span>
+              {msg.sender === 'ai' ? parseAndRenderMessage(msg.text) : <pre className="inline whitespace-pre-wrap pl-2">{msg.text}</pre>}
+            </div>
+          ))}
+          {isAiThinking && (
+            <div className="mb-2">
+              <span className="inline-block h-4 w-2 animate-cmd-cursor-blink bg-green-500"></span>
+            </div>
+          )}
+          {!isAiThinking && (
+            <ChatInput
+              isCodeMode={true}
+              currentMessage={currentInput}
+              setCurrentMessage={setCurrentInput}
+              onSendMessage={sendMessage}
+            />
+          )}
         </div>
       </div>
     );
