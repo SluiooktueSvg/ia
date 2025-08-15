@@ -252,7 +252,7 @@ const ChatLayout: React.FC = () => {
             Exit Code Mode
           </Button>
         </header>
-        <div ref={codeTerminalRef} className="flex-1 overflow-y-auto p-4">
+        <div ref={codeTerminalRef} className="flex-1 overflow-y-auto p-4 text-sm">
           <p>LSAIG [Version 1.0.0]</p>
           <p>(c) LSAIG Corporation. All rights reserved.</p>
           <br />
