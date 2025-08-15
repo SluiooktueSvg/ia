@@ -18,7 +18,7 @@ import LoadingScreen from '@/components/ui/loading-screen';
 
 const helpMessages = [
   { male: "¿En qué puedo ayudarte hoy?", female: "¿En qué puedo ayudarte hoy?" },
-  { male: "¿Listo para explorar algunas ideas?", female: "¿Lista para explorar algunas ideas?" },
+  { male: "¿Listo para explorar algunas ideas?", female: "¿Listo para explorar algunas ideas?" },
   { male: "¿Sobre qué te gustaría conversar?", female: "¿Sobre qué te gustaría conversar?" },
   { male: "Estoy aquí para ayudarte. ¿Qué tienes en mente?", female: "Estoy aquí para ayudarte. ¿Qué tienes en mente?" },
   { male: "¿Cómo puedo hacer tu día un poco mejor?", female: "¿Cómo puedo hacer tu día un poco mejor?" },
@@ -119,8 +119,7 @@ const ChatLayout: React.FC = () => {
     // Effect to handle exit transition
   useEffect(() => {
     if (isExitingCodeMode) {
-      // The fade-out animation is 500ms. After that, we show the loading screen
-      // for 2000ms, then switch back to the normal view.
+      // The fade-out animation is 500ms. We wait for that + 2000ms for loading screen
       const timer = setTimeout(() => {
         setIsCodeMode(false);
         setIsExitingCodeMode(false);
@@ -470,7 +469,5 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
-
-    
 
     
