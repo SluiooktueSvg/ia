@@ -264,16 +264,13 @@ const ChatLayout: React.FC = () => {
               {msg.sender === 'ai' ? parseAndRenderMessage(msg.text) : <pre className="inline whitespace-pre-wrap pl-2">{msg.text}</pre>}
             </div>
           ))}
-          <div className="inline-block h-4 w-2 animate-cmd-cursor-blink bg-green-500" />
-        </div>
-        <footer className="bg-[#0c0c0c] p-2">
            <ChatInput
               isCodeMode={true}
               currentMessage={currentInput}
               setCurrentMessage={setCurrentInput}
               onSendMessage={sendMessage}
             />
-        </footer>
+        </div>
       </div>
     );
   };
@@ -407,5 +404,3 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
-
-    
