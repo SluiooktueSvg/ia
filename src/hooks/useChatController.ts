@@ -159,14 +159,11 @@ export function useChatController() {
       const sentimentResult = await analyzeSentiment({ text });
       const userSentiment = sentimentResult.sentiment;
       
-      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
       const responseInput: MessageCompletionInput = { 
         userInputText: text,
         history: historyForAI.slice(0, -1), // Send history *excluding* the latest user message which is the main input
         userSentiment: userSentiment, // Pass the analyzed sentiment
         isCodeMode: isCodeMode, // Pass the code mode state to the AI
-        timezone: userTimezone, // Pass the user's timezone
        };
       const aiResponse = await completeMessage(responseInput);
       

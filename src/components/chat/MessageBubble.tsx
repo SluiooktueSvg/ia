@@ -128,7 +128,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onAudioGenerated
           <p id={`message-text-${message.id}`} className="text-sm whitespace-pre-wrap break-words">{message.text}</p>
         )}
         <div id={`message-meta-${message.id}`} className={cn("mt-1.5 flex items-center gap-2 text-xs", isUser ? "text-primary-foreground/70" : "text-muted-foreground")}>
-          <span>{format(new Date(message.timestamp), 'p', { locale: es })}</span>
+          <span>{format(new Date(message.timestamp), 'p')}</span>
           {!isUser && <SentimentIndicator sentiment={message.sentiment} isLoading={message.sentimentLoading} />}
           {!isUser && (
             <>
