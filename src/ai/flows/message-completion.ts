@@ -9,9 +9,9 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {MessageData} from 'genkit/ai';
 import {z} from 'genkit';
 import {getCurrentDate} from '../tools/current-date';
-import { MessageData } from 'genkit/ai';
 
 const HistoryMessageSchema = z.object({
   isUser: z.boolean(),
@@ -37,8 +37,14 @@ const MessageCompletionInputSchema = z.object({
     .describe(
       "Set to true if the chat is in 'Code Mode'. This changes the AI's persona to a programming expert."
     ),
+  timezone: z
+    .string()
+    .optional()
+    .describe('The timezone of the user, e.g. "America/New_York".'),
 });
-export type MessageCompletionInput = z.infer<typeof MessageCompletionInputSchema>;
+export type MessageCompletionInput = z.infer<
+  typeof MessageCompletionInputSchema
+>;
 
 const MessageCompletionOutputSchema = z.object({
   completion: z.string().describe('The AI-generated chat response.'),
@@ -61,7 +67,7 @@ const promptText = `You are LSAIG, an exceptionally friendly, empathetic, and hi
 **Important Instruction:** First, identify the language of the user's latest message. Then, craft your entire response in that same language.
 
 **Date & Time Requests:**
-If the user asks for the current date, time, or day, you MUST use the \`getCurrentDate\` tool to get the information and then provide it in your response.
+If the user asks for the current date, time, or day, you MUST use the \`getCurrentDate\` tool to get the information and then provide it in your response. If a timezone is provided in the input, you MUST pass it to the tool.
 
 {{#if isCodeMode}}
 **Code Mode Activated**
@@ -111,26 +117,26 @@ const completeMessageFlow = ai.defineFlow(
   async (input: MessageCompletionInput) => {
     // Dynamically build the history
     const history: MessageData[] = [
-      { role: 'system', content: [{ text: promptText.replace(/{{.*?}}/g, '') }] },
+      {role: 'system', content: [{text: promptText.replace(/{{.*?}}/g, '')}]},
     ];
 
     input.history.forEach(msg => {
       history.push({
         role: msg.isUser ? 'user' : 'model',
-        content: [{ text: msg.text }],
+        content: [{text: msg.text}],
       });
     });
-    
+
     // Add the latest user message
-    history.push({ role: 'user', content: [{ text: input.userInputText }] });
+    history.push({role: 'user', content: [{text: input.userInputText}]});
 
     const llmResponse = await ai.generate({
       prompt: history,
       config: chatResponsePrompt.config,
       tools: [getCurrentDate],
       output: {
-        schema: MessageCompletionOutputSchema
-      }
+        schema: MessageCompletionOutputSchema,
+      },
     });
 
     const toolRequest = llmResponse.toolRequest();
@@ -142,8 +148,8 @@ const completeMessageFlow = ai.defineFlow(
         config: chatResponsePrompt.config,
         tools: [getCurrentDate],
         output: {
-          schema: MessageCompletionOutputSchema
-        }
+          schema: MessageCompletionOutputSchema,
+        },
       });
 
       const finalOutput = finalResponse.output();
