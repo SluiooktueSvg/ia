@@ -207,46 +207,76 @@ const ChatLayout: React.FC = () => {
     }
   };
   
-  const renderCodeTerminal = () => (
-    <div className="font-code fixed inset-0 z-[100] flex animate-fade-in flex-col bg-black text-green-400">
-      <header className="flex items-center justify-between bg-[#0c0c0c] p-2 text-xs text-gray-300">
-        <div className="flex items-center gap-2">
-          <Square className="h-4 w-4 fill-white" />
-          <span>C:\WINDOWS\system32\cmd.exe - LSAIG Code Mode</span>
+  const renderCodeTerminal = () => {
+    const parseAndRenderMessage = (text: string) => {
+      if (!text.includes('```')) {
+        return <pre className="inline whitespace-pre-wrap pl-2">{text}</pre>;
+      }
+
+      const parts = text.split('```');
+      return (
+        <div className="whitespace-pre-wrap pl-2">
+          {parts.map((part, index) => {
+            if (index % 2 === 1) {
+              // This is a code block
+              const codeLines = part.split('\n');
+              const language = codeLines.shift(); // Remove language identifier
+              const codeContent = codeLines.join('\n');
+              return (
+                <div key={index} className="my-2 rounded border border-green-400/30 bg-green-900/10 p-2">
+                  <pre className="font-code text-sm">{codeContent}</pre>
+                </div>
+              );
+            } else {
+              // This is regular text
+              return <span key={index}>{part}</span>;
+            }
+          })}
         </div>
-        <Button
-          size="sm"
-          variant="destructive"
-          onClick={() => setIsCodeMode(false)}
-          className="h-6 px-2 py-0 text-xs"
-        >
-          Exit Code Mode
-        </Button>
-      </header>
-      <div ref={codeTerminalRef} className="flex-1 overflow-y-auto p-4">
-        <p>LSAIG [Version 1.0.0]</p>
-        <p>(c) LSAIG Corporation. All rights reserved.</p>
-        <br />
-        {messages.map((msg, index) => (
-          <div key={index} className="mb-2">
-            <span className={cn(msg.sender === 'user' ? "text-cyan-400" : "text-green-400")}>
-              C:\Users\{msg.sender === 'user' ? user?.displayName?.split(' ')[0] || 'User' : 'LSAIG'}&gt;
-            </span>
-            <pre className="inline whitespace-pre-wrap pl-2">{msg.text}</pre>
+      );
+    };
+
+    return (
+      <div className="font-code fixed inset-0 z-[100] flex animate-fade-in flex-col bg-black text-green-400">
+        <header className="flex items-center justify-between bg-[#0c0c0c] p-2 text-xs text-gray-300">
+          <div className="flex items-center gap-2">
+            <Square className="h-4 w-4 fill-white" />
+            <span>C:\WINDOWS\system32\cmd.exe - LSAIG Code Mode</span>
           </div>
-        ))}
-         <div className="inline-block h-4 w-2 animate-cmd-cursor-blink bg-green-400" />
+          <Button
+            size="sm"
+            variant="destructive"
+            onClick={() => setIsCodeMode(false)}
+            className="h-6 px-2 py-0 text-xs"
+          >
+            Exit Code Mode
+          </Button>
+        </header>
+        <div ref={codeTerminalRef} className="flex-1 overflow-y-auto p-4">
+          <p>LSAIG [Version 1.0.0]</p>
+          <p>(c) LSAIG Corporation. All rights reserved.</p>
+          <br />
+          {messages.map((msg, index) => (
+            <div key={index} className="mb-2">
+              <span className={cn('align-top', msg.sender === 'user' ? "text-cyan-400" : "text-green-400")}>
+                C:\Users\{msg.sender === 'user' ? user?.displayName?.split(' ')[0] || 'User' : 'LSAIG'}&gt;
+              </span>
+              {msg.sender === 'ai' ? parseAndRenderMessage(msg.text) : <pre className="inline whitespace-pre-wrap pl-2">{msg.text}</pre>}
+            </div>
+          ))}
+          <div className="inline-block h-4 w-2 animate-cmd-cursor-blink bg-green-400" />
+        </div>
+        <footer className="bg-[#0c0c0c] p-2">
+           <ChatInput
+              currentMessage={currentInput}
+              setCurrentMessage={setCurrentInput}
+              onSendMessage={sendMessage}
+              isCentered={false}
+            />
+        </footer>
       </div>
-      <footer className="bg-[#0c0c0c] p-2">
-         <ChatInput
-            currentMessage={currentInput}
-            setCurrentMessage={setCurrentInput}
-            onSendMessage={sendMessage}
-            isCentered={false}
-          />
-      </footer>
-    </div>
-  );
+    );
+  };
 
   if (isCodeMode) {
     return renderCodeTerminal();
