@@ -284,16 +284,9 @@ const ChatLayout: React.FC = () => {
         {/* Window Title Bar */}
         <header className="flex h-8 items-center justify-between rounded-t-md bg-[#0c0c0c] border-b border-gray-700 px-2">
           <div className="flex items-center gap-2 text-xs">
-            <Square className="h-4 w-4 fill-current" />
-            <span>C:\WINDOWS\system32\cmd.exe - LSAIG Code Mode</span>
+            <span className="text-white">C:\WINDOWS\system32\cmd.exe - LSAIG Code Mode</span>
           </div>
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" className="h-6 w-6 text-white hover:bg-gray-700">
-              <Minus className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-6 w-6 text-white hover:bg-gray-700">
-              <Square className="h-4 w-4" />
-            </Button>
             <Button variant="ghost" size="icon" onClick={handleExitCodeMode} className="h-6 w-6 text-white hover:bg-red-600">
               <X className="h-4 w-4" />
             </Button>
@@ -483,3 +476,5 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
+
+    
