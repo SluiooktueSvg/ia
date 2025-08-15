@@ -14,6 +14,7 @@ import { cn, inferGenderFromName } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import FnafMonitor from '@/components/ui/FnafMonitor';
+import LoadingScreen from '@/components/ui/loading-screen';
 
 const helpMessages = [
   { male: "¿En qué puedo ayudarte hoy?", female: "¿En qué puedo ayudarte hoy?" },
@@ -39,7 +40,7 @@ const helpMessages = [
   { male: "La IA está aquí para ti. ¿Cómo empezamos?", female: "La IA está aquí para ti. ¿Cómo empezamos?" },
   { male: "Pregunta, crea, descubre. ¡Estoy para asistirte!", female: "Pregunta, crea, descubre. ¡Estoy para asistirte!" },
   { male: "¿Qué misterios resolveremos hoy?", female: "¿Qué misterios resolveremos hoy?" },
-  { male: "Tu asistente de ideas está operativo. ¿Comenzamos?", female: "Tu asistente de ideas está operativo. ¿Comenzamos?" },
+  { male: "Tu asistente de ideas está operativo. ¿Comenzamos?", female: "Tu asistente de ideas está operativo. ¿Comenzamoss?" },
   { male: "¿Hay algo nuevo que quieras aprender o discutir?", female: "¿Hay algo nuevo que quieras aprender o discutir?" },
   { male: "Siempre es un buen momento para una nueva pregunta.", female: "Siempre es un buen momento para una nueva pregunta." },
   { male: "¿Cómo puedo ser de utilidad en este momento?", female: "¿Cómo puedo ser de utilidad en este momento?" },
@@ -93,7 +94,18 @@ const ChatLayout: React.FC = () => {
   const [activeHearts, setActiveHearts] = useState<ActiveHeart[]>([]);
   
   const [isMonitorOpen, setIsMonitorOpen] = useState(false);
+  const [isEnteringCodeMode, setIsEnteringCodeMode] = useState(false);
   const codeTerminalRef = useRef<HTMLDivElement>(null);
+
+  // Effect to handle AI-triggered code mode entry
+  useEffect(() => {
+    if (isCodeMode && !isEnteringCodeMode) {
+      // This can happen if the AI response triggers code mode.
+      // We can add the transition here as well if desired.
+      // For now, we just ensure we are not stuck in a transition state.
+    }
+  }, [isCodeMode, isEnteringCodeMode]);
+
 
   // Effect to scroll to bottom of code terminal
   useEffect(() => {
@@ -101,6 +113,14 @@ const ChatLayout: React.FC = () => {
       codeTerminalRef.current.scrollTop = codeTerminalRef.current.scrollHeight;
     }
   }, [messages, isCodeMode, isAiThinking]);
+
+  const handleEnterCodeMode = () => {
+    setIsEnteringCodeMode(true);
+    setTimeout(() => {
+      setIsCodeMode(true);
+      setIsEnteringCodeMode(false);
+    }, 2000); // Duration of the loading animation
+  };
 
   // Effect to update greeting based on time of day
   useEffect(() => {
@@ -271,17 +291,23 @@ const ChatLayout: React.FC = () => {
             </div>
           )}
           {!isAiThinking && (
-             <ChatInput
+            <div className="mt-2">
+              <ChatInput
                 isCodeMode={true}
                 currentMessage={currentInput}
                 setCurrentMessage={setCurrentInput}
                 onSendMessage={sendMessage}
               />
+            </div>
           )}
         </div>
       </div>
     );
   };
+  
+  if (isEnteringCodeMode) {
+    return <LoadingScreen message="Iniciando modo de código..." />;
+  }
 
   if (isCodeMode) {
     return renderCodeTerminal();
@@ -303,7 +329,7 @@ const ChatLayout: React.FC = () => {
             size="icon"
             className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9"
             aria-label="Toggle code mode"
-            onClick={() => setIsCodeMode(true)}
+            onClick={handleEnterCodeMode}
           >
             <Terminal className="h-4 w-4 md:h-5 md:w-5" />
           </Button>
@@ -412,3 +438,5 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
+
+    
