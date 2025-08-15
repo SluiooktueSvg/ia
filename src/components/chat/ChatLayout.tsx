@@ -281,7 +281,7 @@ const ChatLayout: React.FC = () => {
         <header className="flex items-center justify-between bg-[#0c0c0c] p-2 text-xs text-gray-300">
           <div className="flex items-center gap-2">
             <Square className="h-4 w-4 fill-white" />
-            <span>C:\WINDOWS\system32\cmd.exe - LSAIG Code Mode</span>
+            <span>C:\\WINDOWS\\system32\\cmd.exe - LSAIG Code Mode</span>
           </div>
           <Button
             size="sm"
@@ -293,15 +293,17 @@ const ChatLayout: React.FC = () => {
           </Button>
         </header>
         <div ref={codeTerminalRef} className="flex-1 overflow-y-auto p-4 text-sm">
-          <p>LSAIG [Version 1.0.0]</p>
-          <p>(c) LSAIG Corporation. All rights reserved.</p>
-          <div className="my-4 flex flex-col items-center justify-center">
-            <LSAIGLogo />
+           <div className="mb-4 flex flex-col items-center justify-center">
+            <LSAIGLogo variant="terminal" />
+            <div className="mt-2 text-center text-xs text-green-500/80">
+                <p>LSAIG [Version 1.0.0]</p>
+                <p>(c) LSAIG Corporation. All rights reserved.</p>
+            </div>
           </div>
           {messages.map((msg, index) => (
             <div key={index} className="mb-2">
               <span className={cn('align-top', msg.sender === 'user' ? "text-cyan-400" : "text-green-500")}>
-                C:\Users\{msg.sender === 'user' ? user?.displayName?.split(' ')[0] || 'User' : 'LSAIG'}&gt;
+                C:\\Users\\{msg.sender === 'user' ? user?.displayName?.split(' ')[0] || 'User' : 'LSAIG'}>
               </span>
               {msg.sender === 'ai' ? parseAndRenderMessage(msg.text) : <pre className="inline whitespace-pre-wrap pl-2">{msg.text}</pre>}
             </div>
@@ -473,5 +475,3 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
-
-    

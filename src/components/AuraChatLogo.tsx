@@ -1,6 +1,14 @@
-import React from 'react';
 
-const LSAIGLogo: React.FC = () => {
+import React from 'react';
+import { cn } from '@/lib/utils';
+
+interface LSAIGLogoProps {
+  variant?: 'default' | 'terminal';
+}
+
+const LSAIGLogo: React.FC<LSAIGLogoProps> = ({ variant = 'default' }) => {
+  const isTerminal = variant === 'terminal';
+
   return (
     <div className="flex items-center gap-2">
       <svg
@@ -9,7 +17,7 @@ const LSAIGLogo: React.FC = () => {
         viewBox="0 0 28 28"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="text-primary" // This ensures currentColor is applied from parent
+        className={cn(isTerminal ? 'text-green-500' : 'text-primary')}
       >
         <style>
           {`
@@ -65,7 +73,12 @@ const LSAIGLogo: React.FC = () => {
         <ellipse className="orbit-lsaig orbit-3-lsaig" cx="14" cy="14" rx="12" ry="5"/>
         <circle className="nucleus-lsaig" cx="14" cy="14" r="2.5"/>
       </svg>
-      <h1 className="text-2xl font-semibold text-primary font-headline">LSAIG</h1>
+      <h1 className={cn(
+        "text-2xl font-semibold",
+        isTerminal ? 'text-green-500 font-code' : 'text-primary font-headline'
+      )}>
+        LSAIG
+      </h1>
     </div>
   );
 };

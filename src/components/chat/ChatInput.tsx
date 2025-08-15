@@ -234,7 +234,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
       <div className="mt-2">
         <form id="chat-input-form" onSubmit={handleSubmit} className="flex items-center">
           <span className="text-green-500">
-            C:\Users\{user?.displayName?.split(' ')[0] || 'User'}&gt;
+            C:\\Users\\{user?.displayName?.split(' ')[0] || 'User'}>
           </span>
           <input
             ref={inputRef}
