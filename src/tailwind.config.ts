@@ -192,7 +192,7 @@ export default {
         'fnaf-out': 'fnaf-monitor-out 0.35s forwards cubic-bezier(0.4, 0, 0.2, 1)',
         'static-noise': 'static-noise 0.2s steps(8, end) infinite',
         'camera-pan': 'camera-pan 10s linear infinite',
-        'fade-in': 'fade-in 0.3s ease-in-out',
+        'fade-in': 'fade-in 0.5s ease-in-out',
         'cmd-cursor-blink': 'cmd-cursor-blink 1s step-end infinite',
       },
     },
