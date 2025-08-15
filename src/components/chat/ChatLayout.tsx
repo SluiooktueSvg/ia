@@ -26,7 +26,7 @@ const helpMessages = [
   { male: "Dime, ¿qué necesitas descubrir o crear?", female: "Dime, ¿qué necesitas descubrir o crear?" },
   { male: "¡Hola! ¿Qué aventura iniciamos hoy?", female: "¡Hola! ¿Qué aventura iniciamos hoy?" },
   { male: "Estoy a tu disposición. ¿Por dónde empezamos?", female: "Estoy a tu disposición. ¿Por dónde empezamos?" },
-  { male: "¿Tienes alguna duda o idea? ¡Compártela conmigo!", female: "¿Tienes alguna duda o idea? ¡Compártela conmigo!" },
+  { male: "¿Tienes alguna duda o idea? ¡Compártela conmigo!", female: "¿Tienes una duda o idea? ¡Compártela conmigo!" },
   { male: "Exploremos juntos. ¿Qué tema te interesa?", female: "Exploremos juntos. ¿Qué tema te interesa?" },
   { male: "Tu asistente virtual a la orden. ¿Qué puedo hacer por ti?", female: "Tu asistente virtual a la orden. ¿Qué puedo hacer por ti?" },
   { male: "¿Listo para una charla productiva y amena?", female: "¿Lista para una charla productiva y amena?" },
@@ -79,6 +79,7 @@ const ChatLayout: React.FC = () => {
     setIsTtsQuotaExceeded,
     isCodeMode,
     setIsCodeMode,
+    isAiThinking,
   } = useChatController();
   const { user, logout } = useAuth();
 
@@ -99,7 +100,7 @@ const ChatLayout: React.FC = () => {
     if (isCodeMode && codeTerminalRef.current) {
       codeTerminalRef.current.scrollTop = codeTerminalRef.current.scrollHeight;
     }
-  }, [messages, isCodeMode]);
+  }, [messages, isCodeMode, isAiThinking]);
 
   // Effect to update greeting based on time of day
   useEffect(() => {
@@ -264,6 +265,12 @@ const ChatLayout: React.FC = () => {
               {msg.sender === 'ai' ? parseAndRenderMessage(msg.text) : <pre className="inline whitespace-pre-wrap pl-2">{msg.text}</pre>}
             </div>
           ))}
+          {isAiThinking && (
+            <div className="mb-2">
+              <span className="align-top text-green-500">C:\Users\LSAIG&gt;</span>
+              <span className="inline-block h-4 w-2 animate-cmd-cursor-blink bg-green-500 ml-2"></span>
+            </div>
+          )}
            <ChatInput
               isCodeMode={true}
               currentMessage={currentInput}

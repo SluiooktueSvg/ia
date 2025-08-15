@@ -15,6 +15,7 @@ export function useChatController() {
   const [hasSentFirstMessage, setHasSentFirstMessage] = useState(false);
   const [isTtsQuotaExceeded, setIsTtsQuotaExceeded] = useState(false);
   const [isCodeMode, setIsCodeMode] = useState(false);
+  const [isAiThinking, setIsAiThinking] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth(); // Get user from auth context
 
@@ -124,17 +125,23 @@ export function useChatController() {
     // Add user message to state immediately for a responsive UI
     setMessages(prev => [...prev, userMessage]);
     setCurrentInput('');
+    setIsAiThinking(true);
 
     const aiMessageId = Date.now().toString() + '-ai';
-    const aiPlaceholderMessage: ChatMessage = {
-      id: aiMessageId,
-      text: 'Thinking...',
-      sender: 'ai',
-      timestamp: Date.now(),
-      sentimentLoading: true,
-      audioLoading: false,
-    };
-    setMessages(prev => [...prev, aiPlaceholderMessage]);
+    
+    // In standard UI, add a placeholder. In code mode, the thinking indicator is handled separately.
+    if (!isCodeMode) {
+      const aiPlaceholderMessage: ChatMessage = {
+        id: aiMessageId,
+        text: 'Thinking...',
+        sender: 'ai',
+        timestamp: Date.now(),
+        sentimentLoading: true,
+        audioLoading: false,
+      };
+      setMessages(prev => [...prev, aiPlaceholderMessage]);
+    }
+
 
     try {
       // Analyze sentiment of the user's message before sending to completion
@@ -148,36 +155,53 @@ export function useChatController() {
        };
       const aiResponse = await completeMessage(responseInput);
       
-      if (aiResponse.containsCode) {
+      if (aiResponse.containsCode && !isCodeMode) {
         setIsCodeMode(true);
       }
 
       const refinedAiText = aiResponse.completion.trim();
 
       const finalAiMessage: ChatMessage = {
-        ...aiPlaceholderMessage,
+        id: aiMessageId,
         text: refinedAiText || "I'm not sure how to respond to that.",
-        sentimentLoading: false, // Initial state, sentiment will be fetched next
+        sender: 'ai',
+        timestamp: Date.now(),
+        sentimentLoading: false,
       };
-      setMessages(prev => prev.map(m => m.id === aiMessageId ? finalAiMessage : m));
       
-      // Fetch sentiment
-      fetchSentimentForMessage(aiMessageId, finalAiMessage.text);
+      if(isCodeMode) {
+        setMessages(prev => [...prev, finalAiMessage]);
+      } else {
+        setMessages(prev => prev.map(m => m.id === aiMessageId ? finalAiMessage : m));
+      }
+      
+      // Fetch sentiment only for non-code mode for now
+      if (!isCodeMode) {
+        fetchSentimentForMessage(aiMessageId, finalAiMessage.text);
+      }
 
     } catch (error) {
         console.error('Error getting AI response:', error);
         const errorAiMessage: ChatMessage = {
-            ...aiPlaceholderMessage,
+            id: aiMessageId,
             text: "Sorry, I encountered an error.",
+            sender: 'ai',
+            timestamp: Date.now(),
             sentimentLoading: false,
             audioLoading: false,
         };
-        setMessages(prev => prev.map(m => m.id === aiMessageId ? errorAiMessage : m));
+        if(isCodeMode) {
+            setMessages(prev => [...prev, errorAiMessage]);
+        } else {
+            setMessages(prev => prev.map(m => m.id === aiMessageId ? errorAiMessage : m));
+        }
         toast({
             title: "AI Response Error",
             description: "Could not get a response from the AI.",
             variant: "destructive",
         });
+    } finally {
+        setIsAiThinking(false);
     }
   };
 
@@ -233,6 +257,7 @@ export function useChatController() {
     setIsTtsQuotaExceeded,
     isCodeMode,
     setIsCodeMode,
+    isAiThinking,
     sendMessage,
     handleInputChange, // Keep this for setting currentInput
     clearChat,
