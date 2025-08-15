@@ -8,7 +8,7 @@ import { useChatController } from '@/hooks/useChatController';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import LSAIGLogo from '@/components/AuraChatLogo';
 import { Button } from '@/components/ui/button';
-import { Save, FolderOpen, Trash2, Heart, LogOut, AudioLines, Camera, Square } from 'lucide-react';
+import { Save, FolderOpen, Trash2, Heart, LogOut, AudioLines, Camera, Square, Terminal } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { cn, inferGenderFromName } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
@@ -212,7 +212,7 @@ const ChatLayout: React.FC = () => {
       if (!text.includes('```')) {
         return <pre className="inline whitespace-pre-wrap pl-2">{text}</pre>;
       }
-
+  
       const parts = text.split('```');
       return (
         <div className="whitespace-pre-wrap pl-2">
@@ -235,7 +235,7 @@ const ChatLayout: React.FC = () => {
         </div>
       );
     };
-
+  
     return (
       <div className="font-code fixed inset-0 z-[100] flex animate-fade-in flex-col bg-black text-green-500">
         <header className="flex items-center justify-between bg-[#0c0c0c] p-2 text-xs text-gray-300">
@@ -293,6 +293,15 @@ const ChatLayout: React.FC = () => {
           <LSAIGLogo />
         </div>
         <div className="flex items-center gap-1 rounded-full bg-card p-1 shadow-md">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9"
+            aria-label="Toggle code mode"
+            onClick={() => setIsCodeMode(true)}
+          >
+            <Terminal className="h-4 w-4 md:h-5 md:w-5" />
+          </Button>
           <Button 
             variant="ghost" 
             size="icon" 
@@ -398,3 +407,5 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
+
+    
