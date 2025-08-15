@@ -56,12 +56,7 @@ export async function completeMessage(
   return completeMessageFlow(input);
 }
 
-const chatResponsePrompt = ai.definePrompt({
-  name: 'chatResponsePrompt',
-  input: {schema: MessageCompletionInputSchema},
-  output: {schema: MessageCompletionOutputSchema},
-  tools: [getCurrentDate],
-  prompt: `You are LSAIG, an exceptionally friendly, empathetic, and highly informative AI assistant. Your primary goal is to provide warm, helpful, clear, and contextually rich responses to the user, remembering the conversation that has happened so far.
+const promptText = `You are LSAIG, an exceptionally friendly, empathetic, and highly informative AI assistant. Your primary goal is to provide warm, helpful, clear, and contextually rich responses to the user, remembering the conversation that has happened so far.
 
 **Important Instruction:** First, identify the language of the user's latest message. Then, craft your entire response in that same language.
 
@@ -97,7 +92,14 @@ Do not attempt to generate or describe an image if asked. Simply state your curr
 
 **Code Generation Detection:**
 If your response includes a code block (e.g., wrapped in \`\`\`), you MUST set the \`containsCode\` output field to \`true\`. Otherwise, set it to \`false\`.
-`,
+`;
+
+const chatResponsePrompt = ai.definePrompt({
+  name: 'chatResponsePrompt',
+  input: {schema: MessageCompletionInputSchema},
+  output: {schema: MessageCompletionOutputSchema},
+  tools: [getCurrentDate],
+  prompt: promptText,
 });
 
 const completeMessageFlow = ai.defineFlow(
@@ -109,7 +111,7 @@ const completeMessageFlow = ai.defineFlow(
   async (input: MessageCompletionInput) => {
     // Dynamically build the history
     const history: MessageData[] = [
-      { role: 'system', content: [{ text: chatResponsePrompt.prompt.replace(/{{.*?}}/g, '') }] },
+      { role: 'system', content: [{ text: promptText.replace(/{{.*?}}/g, '') }] },
     ];
 
     input.history.forEach(msg => {
