@@ -1,6 +1,7 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import type { ChatMessage } from '@/types/chat';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -127,7 +128,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onAudioGenerated
           <p id={`message-text-${message.id}`} className="text-sm whitespace-pre-wrap break-words">{message.text}</p>
         )}
         <div id={`message-meta-${message.id}`} className={cn("mt-1.5 flex items-center gap-2 text-xs", isUser ? "text-primary-foreground/70" : "text-muted-foreground")}>
-          <span>{format(new Date(message.timestamp), 'p')}</span>
+          <span>{format(new Date(message.timestamp), 'p', { locale: es })}</span>
           {!isUser && <SentimentIndicator sentiment={message.sentiment} isLoading={message.sentimentLoading} />}
           {!isUser && (
             <>
