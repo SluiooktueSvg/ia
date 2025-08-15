@@ -138,9 +138,13 @@ const completeMessageFlow = ai.defineFlow(
     const toolRequest = llmResponse.toolRequest();
     if (toolRequest) {
       const toolResponse = await toolRequest.run();
+
+      // Ensure toolResponse.content is treated as Part[]
+      const toolResponseContent = Array.isArray(toolResponse.content) ? toolResponse.content : [toolResponse.content];
+
       const finalResponse = await ai.generate({
         prompt: {
-          messages: [...history, llmResponse.message, { role: 'tool', content: toolResponse.content as Part[] }]
+          messages: [...history, llmResponse.message, { role: 'tool', content: toolResponseContent }]
         },
         config: chatResponsePrompt.config,
         tools: [getCurrentDate],
