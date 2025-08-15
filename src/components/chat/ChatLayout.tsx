@@ -267,8 +267,7 @@ const ChatLayout: React.FC = () => {
           ))}
           {isAiThinking && (
             <div className="mb-2">
-              <span className="align-top text-green-500">C:\Users\LSAIG&gt;</span>
-              <span className="inline-block h-4 w-2 animate-cmd-cursor-blink bg-green-500 ml-2"></span>
+              <span className="inline-block h-4 w-2 animate-cmd-cursor-blink bg-green-500"></span>
             </div>
           )}
            <ChatInput
