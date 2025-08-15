@@ -10,7 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { getCurrentDate } from '../tools/current-date';
+import {getCurrentDate} from '../tools/current-date';
 
 const HistoryMessageSchema = z.object({
   isUser: z.boolean(),
@@ -18,22 +18,40 @@ const HistoryMessageSchema = z.object({
 });
 
 const MessageCompletionInputSchema = z.object({
-  history: z.array(HistoryMessageSchema).describe("The history of the conversation so far."),
+  history: z
+    .array(HistoryMessageSchema)
+    .describe('The history of the conversation so far.'),
   userInputText: z
     .string()
     .describe("The user's latest message to which the AI should respond."),
-  userSentiment: z.string().optional().describe("The detected sentiment of the user's message (e.g., positive, negative, neutral). This can be used to tailor the tone of the response."),
-  isCodeMode: z.boolean().optional().describe("Set to true if the chat is in 'Code Mode'. This changes the AI's persona to a programming expert."),
+  userSentiment: z
+    .string()
+    .optional()
+    .describe(
+      "The detected sentiment of the user's message (e.g., positive, negative, neutral). This can be used to tailor the tone of the response."
+    ),
+  isCodeMode: z
+    .boolean()
+    .optional()
+    .describe(
+      "Set to true if the chat is in 'Code Mode'. This changes the AI's persona to a programming expert."
+    ),
 });
 export type MessageCompletionInput = z.infer<typeof MessageCompletionInputSchema>;
 
 const MessageCompletionOutputSchema = z.object({
   completion: z.string().describe('The AI-generated chat response.'),
-  containsCode: z.boolean().describe('Set to true if the completion contains a code block.'),
+  containsCode: z
+    .boolean()
+    .describe('Set to true if the completion contains a code block.'),
 });
-export type MessageCompletionOutput = z.infer<typeof MessageCompletionOutputSchema>;
+export type MessageCompletionOutput = z.infer<
+  typeof MessageCompletionOutputSchema
+>;
 
-export async function completeMessage(input: MessageCompletionInput): Promise<MessageCompletionOutput> {
+export async function completeMessage(
+  input: MessageCompletionInput
+): Promise<MessageCompletionOutput> {
   return completeMessageFlow(input);
 }
 
@@ -101,14 +119,46 @@ const completeMessageFlow = ai.defineFlow(
     outputSchema: MessageCompletionOutputSchema,
   },
   async (input: MessageCompletionInput) => {
-    const {output} = await chatResponsePrompt(input);
-    
-    // If the model decides to use a tool and doesn't return text content, output can be null.
-    // We must return a valid MessageCompletionOutput object.
-    if (!output) {
-      return { completion: '', containsCode: false };
+    // Note: The 'generate' function from 'genkit/ai' is used here to allow for multi-turn conversations with tools.
+    // The 'generate' function returns a response that can be a tool request, which we handle in a loop.
+    const llmResponse = await ai.generate({
+      prompt: chatResponsePrompt.prompt,
+      model: ai.getModel(),
+      config: chatResponsePrompt.config,
+      tools: [getCurrentDate],
+      input,
+    });
+
+    const toolRequest = llmResponse.toolRequest();
+    if (toolRequest) {
+      const toolResponse = await toolRequest.run();
+      const finalResponse = await ai.generate({
+        prompt: chatResponsePrompt.prompt,
+        model: ai.getModel(),
+        config: chatResponsePrompt.config,
+        tools: [getCurrentDate],
+        history: [...llmResponse.history(), toolResponse],
+        input,
+      });
+
+      const finalOutput = finalResponse.output();
+      if (!finalOutput) {
+        return {
+          completion: 'An error occurred while processing the tool response.',
+          containsCode: false,
+        };
+      }
+      return finalOutput;
     }
-    
+
+    const output = llmResponse.output();
+    if (!output) {
+      return {
+        completion: 'An error occurred while generating a response.',
+        containsCode: false,
+      };
+    }
+
     return output;
   }
 );
