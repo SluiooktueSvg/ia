@@ -116,10 +116,6 @@ export default {
           '50%': { opacity: '0.8', transform: 'translateY(-40px) scale(1.2)' },
           '100%': { opacity: '0', transform: 'translateY(-100px) scale(0.5)' },
         },
-        spin: {
-          from: { transform: 'rotate(0deg)' },
-          to: { transform: 'rotate(360deg)' },
-        },
         'pulse-voice': {
           '0%, 100%': { transform: 'scale(1)', opacity: '1' },
           '50%': { transform: 'scale(1.05)', opacity: '0.9' },
@@ -175,6 +171,18 @@ export default {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0' },
         },
+        'code-load': {
+          '0%, 100%': { opacity: '1', color: 'hsl(var(--primary))', content: "'='" },
+          '10%': { content: "'<'" },
+          '20%': { content: "'/'" },
+          '30%': { opacity: '0.5', color: 'hsl(var(--accent))', content: "'>'" },
+          '40%': { content: "'{'" },
+          '50%': { content: "'}'" },
+          '60%': { opacity: '0.8', color: 'hsl(var(--secondary))', content: "'['" },
+          '70%': { content: "']'" },
+          '80%': { content: "'*'" },
+          '90%': { opacity: '0.6', color: 'hsl(var(--chart-2))', content: "';'" },
+        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -185,9 +193,6 @@ export default {
         'pulse-custom': 'pulse-custom 0.4s ease-in-out',
         'float-fade': 'float-fade 2s ease-out forwards',
         'animated-border-glow': 'animated-gradient-text 3s linear infinite',
-        'spin-slow': 'spin 3s linear infinite',
-        'spin-medium-reverse': 'spin 5s linear infinite reverse',
-        'spin-fast': 'spin 2s linear infinite',
         'pulse-voice': 'pulse-voice 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'pulse-voice-speaking': 'pulse-voice-speaking 1.5s ease-in-out infinite',
         'wave': 'wave 4s linear infinite',
@@ -199,6 +204,7 @@ export default {
         'fade-in': 'fade-in 0.5s ease-in-out',
         'fade-out': 'fade-out 0.5s ease-in-out forwards',
         'cmd-cursor-blink': 'cmd-cursor-blink 1s step-end infinite',
+        'code-load': 'code-load 1.5s infinite',
       },
     },
   },
