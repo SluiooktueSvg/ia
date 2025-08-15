@@ -21,7 +21,7 @@ const helpMessages = [
   { male: "¿Sobre qué te gustaría conversar?", female: "¿Sobre qué te gustaría conversar?" },
   { male: "Estoy aquí para ayudarte. ¿Qué tienes en mente?", female: "Estoy aquí para ayudarte. ¿Qué tienes en mente?" },
   { male: "¿Cómo puedo hacer tu día un poco mejor?", female: "¿Cómo puedo hacer tu día un poco mejor?" },
-  { male: "Pregúntame lo que sea, ¡estoy para ayudarte!", female: "Pregúntame lo que sea, ¡estoy para ayudarte!" },
+  { male: "Pregúntame lo que sea, ¡estoy para ayudarte!", female: "Pregúntame lo que sea, ¡estoy para asistirte!" },
   { male: "¿Qué curiosidad podemos resolver hoy?", female: "¿Qué curiosidad podemos resolver hoy?" },
   { male: "Dime, ¿qué necesitas descubrir o crear?", female: "Dime, ¿qué necesitas descubrir o crear?" },
   { male: "¡Hola! ¿Qué aventura iniciamos hoy?", female: "¡Hola! ¿Qué aventura iniciamos hoy?" },
@@ -270,12 +270,14 @@ const ChatLayout: React.FC = () => {
               <span className="inline-block h-4 w-2 animate-cmd-cursor-blink bg-green-500"></span>
             </div>
           )}
-           <ChatInput
-              isCodeMode={true}
-              currentMessage={currentInput}
-              setCurrentMessage={setCurrentInput}
-              onSendMessage={sendMessage}
-            />
+          {!isAiThinking && (
+             <ChatInput
+                isCodeMode={true}
+                currentMessage={currentInput}
+                setCurrentMessage={setCurrentInput}
+                onSendMessage={sendMessage}
+              />
+          )}
         </div>
       </div>
     );
