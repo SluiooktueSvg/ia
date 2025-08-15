@@ -104,6 +104,17 @@ export function useChatController() {
   const sendMessage = async (text: string) => {
     if (!text.trim() || !user) return;
 
+    // --- Client-side command handling for Code Mode ---
+    if (isCodeMode) {
+      const command = text.trim().toLowerCase();
+      if (command === 'cls' || command === 'clear') {
+        setMessages([]); // Clear messages in the view
+        setCurrentInput(''); // Clear the input field
+        return; // Stop execution, don't send to AI
+      }
+      // Add other commands here with `else if`
+    }
+    
     if (!hasSentFirstMessage) {
       setHasSentFirstMessage(true);
     }
