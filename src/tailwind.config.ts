@@ -211,5 +211,3 @@ export default {
     },
   ],
 } satisfies Config;
-
-    

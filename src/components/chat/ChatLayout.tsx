@@ -40,7 +40,7 @@ const helpMessages = [
   { male: "La IA está aquí para ti. ¿Cómo empezamos?", female: "La IA está aquí para ti. ¿Cómo empezamos?" },
   { male: "Pregunta, crea, descubre. ¡Estoy para asistirte!", female: "Pregunta, crea, descubre. ¡Estoy para asistirte!" },
   { male: "¿Qué misterios resolveremos hoy?", female: "¿Qué misterios resolveremos hoy?" },
-  { male: "Tu asistente de ideas está operativo. ¿Comenzamos?", female: "Tu asistente de ideas está operativo. ¿Comenzamoss?" },
+  { male: "Tu asistente de ideas está operativo. ¿Comenzamos?", female: "Tu asistente de ideas está operativo. ¿Comenzamos?" },
   { male: "¿Hay algo nuevo que quieras aprender o discutir?", female: "¿Hay algo nuevo que quieras aprender o discutir?" },
   { male: "Siempre es un buen momento para una nueva pregunta.", female: "Siempre es un buen momento para una nueva pregunta." },
   { male: "¿Cómo puedo ser de utilidad en este momento?", female: "¿Cómo puedo ser de utilidad en este momento?" },
@@ -49,6 +49,7 @@ const helpMessages = [
   { male: "¿Tienes un desafío? ¡Vamos a enfrentarlo juntos!", female: "¿Tienes un desafío? ¡Vamos a enfrentarlo juntos!" },
   { male: "Conversemos sobre lo que más te interese.", female: "Conversemos sobre lo que más te interese." },
 ];
+
 
 interface ActiveHeart {
   id: string;
@@ -291,14 +292,12 @@ const ChatLayout: React.FC = () => {
             </div>
           )}
           {!isAiThinking && (
-            <div className="mt-2">
-              <ChatInput
-                isCodeMode={true}
-                currentMessage={currentInput}
-                setCurrentMessage={setCurrentInput}
-                onSendMessage={sendMessage}
-              />
-            </div>
+            <ChatInput
+              isCodeMode={true}
+              currentMessage={currentInput}
+              setCurrentMessage={setCurrentInput}
+              onSendMessage={sendMessage}
+            />
           )}
         </div>
       </div>
@@ -438,5 +437,3 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
-
-    
