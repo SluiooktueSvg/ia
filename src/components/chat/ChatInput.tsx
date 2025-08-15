@@ -7,12 +7,14 @@ import { Button } from '@/components/ui/button';
 import { SendHorizontal, Mic, MicOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/context/AuthContext';
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
   currentMessage: string;
   setCurrentMessage: (message: string) => void;
   isCentered?: boolean;
+  isCodeMode?: boolean;
 }
 
 const placeholderPhrases = [
@@ -32,6 +34,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   currentMessage,
   setCurrentMessage,
   isCentered = false,
+  isCodeMode = false,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
@@ -40,6 +43,14 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const [isListening, setIsListening] = useState(false);
   const [isSpeechRecognitionSupported, setIsSpeechRecognitionSupported] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isCodeMode && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isCodeMode]);
 
   useEffect(() => {
     // This effect runs only on the client, so `window` is available.
@@ -135,7 +146,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   // --- Placeholder Animation Effect ---
   useEffect(() => {
-    if (currentMessage || isListening) {
+    if (currentMessage || isListening || isCodeMode) {
         setAnimatedPlaceholder('');
         return;
     }
@@ -188,7 +199,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
     return () => {
         cancelAnimationFrame(animationFrameId);
     };
-  }, [currentMessage, isListening]); // Re-start animation if user clears the input or stops listening
+  }, [currentMessage, isListening, isCodeMode]);
 
   // --- Autoresize Textarea ---
   useEffect(() => {
@@ -199,7 +210,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
     }
   }, [currentMessage]);
 
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     setCurrentMessage(e.target.value);
   }, [setCurrentMessage]);
 
@@ -211,13 +222,33 @@ const ChatInput: React.FC<ChatInputProps> = ({
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmit();
     }
   };
   
+  if (isCodeMode) {
+    return (
+      <form id="chat-input-form" onSubmit={handleSubmit} className="flex items-center">
+        <span className="text-green-400">
+          C:\Users\{user?.displayName?.split(' ')[0] || 'User'}&gt;
+        </span>
+        <input
+          ref={inputRef}
+          type="text"
+          value={currentMessage}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          className="flex-1 bg-transparent text-green-400 font-code outline-none pl-2"
+          autoFocus
+        />
+        <div className="inline-block h-4 w-2 animate-cmd-cursor-blink bg-green-400" />
+      </form>
+    );
+  }
+
   const placeholderTextToShow = currentMessage ? "" : (isListening ? "Escuchando..." : animatedPlaceholder);
   const displayBlinkingCursor = !currentMessage && !isListening && showCursor;
 
@@ -279,3 +310,5 @@ const ChatInput: React.FC<ChatInputProps> = ({
 };
 
 export default ChatInput;
+
+    

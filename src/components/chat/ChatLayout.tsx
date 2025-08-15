@@ -268,10 +268,10 @@ const ChatLayout: React.FC = () => {
         </div>
         <footer className="bg-[#0c0c0c] p-2">
            <ChatInput
+              isCodeMode={true}
               currentMessage={currentInput}
               setCurrentMessage={setCurrentInput}
               onSendMessage={sendMessage}
-              isCentered={false}
             />
         </footer>
       </div>
@@ -344,7 +344,6 @@ const ChatLayout: React.FC = () => {
               currentMessage={currentInput}
               setCurrentMessage={setCurrentInput}
               onSendMessage={sendMessage}
-              isCentered={false}
             />
           </>
         ) : (
@@ -399,3 +398,5 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
+
+    
