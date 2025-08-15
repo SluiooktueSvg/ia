@@ -304,7 +304,7 @@ const ChatLayout: React.FC = () => {
           {messages.map((msg, index) => (
             <div key={index} className="mb-2">
               <span className={cn('align-top', msg.sender === 'user' ? "text-cyan-400" : "text-green-500")}>
-                C:\\Users\\{msg.sender === 'user' ? user?.displayName?.split(' ')[0] || 'User' : 'LSAIG'}>
+                {msg.sender === 'user' ? `C:\\Users\\${user?.displayName?.split(' ')[0] || 'User'}>` : 'LSAIG>'}
               </span>
               {msg.sender === 'ai' ? parseAndRenderMessage(msg.text) : <pre className="inline whitespace-pre-wrap pl-2">{msg.text}</pre>}
             </div>
@@ -476,5 +476,3 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
-
-    
