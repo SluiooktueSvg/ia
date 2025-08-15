@@ -123,7 +123,6 @@ const completeMessageFlow = ai.defineFlow(
     // The 'generate' function returns a response that can be a tool request, which we handle in a loop.
     const llmResponse = await ai.generate({
       prompt: chatResponsePrompt.prompt,
-      model: ai.getModel(),
       config: chatResponsePrompt.config,
       tools: [getCurrentDate],
       input,
@@ -134,7 +133,6 @@ const completeMessageFlow = ai.defineFlow(
       const toolResponse = await toolRequest.run();
       const finalResponse = await ai.generate({
         prompt: chatResponsePrompt.prompt,
-        model: ai.getModel(),
         config: chatResponsePrompt.config,
         tools: [getCurrentDate],
         history: [...llmResponse.history(), toolResponse],
