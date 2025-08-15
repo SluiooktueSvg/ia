@@ -125,9 +125,7 @@ const completeMessageFlow = ai.defineFlow(
     history.push({ role: 'user', content: [{ text: input.userInputText }] });
 
     const llmResponse = await ai.generate({
-      prompt: {
-        messages: history
-      },
+      prompt: history,
       config: chatResponsePrompt.config,
       tools: [getCurrentDate],
       output: {
@@ -140,9 +138,7 @@ const completeMessageFlow = ai.defineFlow(
       const toolResponse = await toolRequest.run();
 
       const finalResponse = await ai.generate({
-        prompt: {
-          messages: [...history, llmResponse.message, toolResponse]
-        },
+        prompt: [...history, llmResponse.message, toolResponse],
         config: chatResponsePrompt.config,
         tools: [getCurrentDate],
         output: {
