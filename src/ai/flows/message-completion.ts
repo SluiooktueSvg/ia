@@ -11,6 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import {getCurrentDate} from '../tools/current-date';
+import { MessageData, Part } from 'genkit/ai';
 
 const HistoryMessageSchema = z.object({
   isUser: z.boolean(),
@@ -96,19 +97,6 @@ Do not attempt to generate or describe an image if asked. Simply state your curr
 
 **Code Generation Detection:**
 If your response includes a code block (e.g., wrapped in \`\`\`), you MUST set the \`containsCode\` output field to \`true\`. Otherwise, set it to \`false\`.
-
-**Conversation History:**
-{{#each history}}
-  {{#if this.isUser}}
-    User: {{{this.text}}}
-  {{else}}
-    LSAIG: {{{this.text}}}
-  {{/if}}
-{{/each}}
-
-**New Message from User:**
-User: {{{userInputText}}}
-LSAIG:
 `,
 });
 
@@ -119,24 +107,44 @@ const completeMessageFlow = ai.defineFlow(
     outputSchema: MessageCompletionOutputSchema,
   },
   async (input: MessageCompletionInput) => {
-    // Note: The 'generate' function from 'genkit/ai' is used here to allow for multi-turn conversations with tools.
-    // The 'generate' function returns a response that can be a tool request, which we handle in a loop.
+    // Dynamically build the history
+    const history: MessageData[] = [
+      { role: 'system', content: [{ text: chatResponsePrompt.prompt.replace(/{{.*?}}/g, '') }] },
+    ];
+
+    input.history.forEach(msg => {
+      history.push({
+        role: msg.isUser ? 'user' : 'model',
+        content: [{ text: msg.text }],
+      });
+    });
+    
+    // Add the latest user message
+    history.push({ role: 'user', content: [{ text: input.userInputText }] });
+
     const llmResponse = await ai.generate({
-      prompt: chatResponsePrompt.prompt,
+      prompt: {
+        messages: history
+      },
       config: chatResponsePrompt.config,
       tools: [getCurrentDate],
-      input,
+      output: {
+        schema: MessageCompletionOutputSchema
+      }
     });
 
     const toolRequest = llmResponse.toolRequest();
     if (toolRequest) {
       const toolResponse = await toolRequest.run();
       const finalResponse = await ai.generate({
-        prompt: chatResponsePrompt.prompt,
+        prompt: {
+          messages: [...history, llmResponse.message, { role: 'tool', content: toolResponse.content as Part[] }]
+        },
         config: chatResponsePrompt.config,
         tools: [getCurrentDate],
-        history: [...llmResponse.history(), toolResponse],
-        input,
+        output: {
+          schema: MessageCompletionOutputSchema
+        }
       });
 
       const finalOutput = finalResponse.output();
