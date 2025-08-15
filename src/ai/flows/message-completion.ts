@@ -11,7 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import {getCurrentDate} from '../tools/current-date';
-import { MessageData, Part } from 'genkit/ai';
+import { MessageData } from 'genkit/ai';
 
 const HistoryMessageSchema = z.object({
   isUser: z.boolean(),
@@ -139,12 +139,9 @@ const completeMessageFlow = ai.defineFlow(
     if (toolRequest) {
       const toolResponse = await toolRequest.run();
 
-      // Ensure toolResponse.content is treated as Part[]
-      const toolResponseContent = Array.isArray(toolResponse.content) ? toolResponse.content : [toolResponse.content];
-
       const finalResponse = await ai.generate({
         prompt: {
-          messages: [...history, llmResponse.message, { role: 'tool', content: toolResponseContent }]
+          messages: [...history, llmResponse.message, toolResponse]
         },
         config: chatResponsePrompt.config,
         tools: [getCurrentDate],
