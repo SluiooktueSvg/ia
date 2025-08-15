@@ -278,15 +278,29 @@ const ChatLayout: React.FC = () => {
   const renderCodeTerminal = () => {
     return (
       <div className={cn(
-        "font-code fixed inset-0 z-[100] flex flex-col bg-black text-green-500 p-4 transition-opacity duration-500",
+        "font-code fixed inset-0 z-[100] flex flex-col bg-black text-green-500 p-1 transition-opacity duration-500",
         isExitingCodeMode ? "animate-fade-out" : "animate-fade-in"
       )}>
-        <div className="absolute top-4 right-4">
-            <Button variant="outline" onClick={handleExitCodeMode} className="bg-transparent text-green-500 border-green-500 hover:bg-green-500 hover:text-black">
-                Salir del modo código
+        {/* Window Title Bar */}
+        <header className="flex h-8 items-center justify-between rounded-t-md bg-[#0c0c0c] border-b border-gray-700 px-2">
+          <div className="flex items-center gap-2 text-xs">
+            <Square className="h-4 w-4 fill-current" />
+            <span>C:\WINDOWS\system32\cmd.exe - LSAIG Code Mode</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" className="h-6 w-6 text-white hover:bg-gray-700">
+              <Minus className="h-4 w-4" />
             </Button>
-        </div>
-        <div ref={codeTerminalRef} className="flex-1 overflow-y-auto pt-12 text-sm">
+            <Button variant="ghost" size="icon" className="h-6 w-6 text-white hover:bg-gray-700">
+              <Square className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={handleExitCodeMode} className="h-6 w-6 text-white hover:bg-red-600">
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </header>
+
+        <div ref={codeTerminalRef} className="flex-1 overflow-y-auto p-4 text-sm bg-black">
            <div className="mb-4 flex flex-col items-center justify-center">
             <LSAIGLogo variant="terminal" />
             <div className="mt-2 text-center text-xs text-green-500/80">
@@ -469,5 +483,3 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
-
-    
