@@ -102,6 +102,13 @@ const completeMessageFlow = ai.defineFlow(
   },
   async (input: MessageCompletionInput) => {
     const {output} = await chatResponsePrompt(input);
-    return output!;
+    
+    // If the model decides to use a tool and doesn't return text content, output can be null.
+    // We must return a valid MessageCompletionOutput object.
+    if (!output) {
+      return { completion: '', containsCode: false };
+    }
+    
+    return output;
   }
 );
