@@ -16,7 +16,7 @@ import Link from 'next/link';
 import FnafMonitor from '@/components/ui/FnafMonitor';
 
 const helpMessages = [
-  { male: "¿En qué puedo asistirte hoy?", female: "¿En qué puedo asistirte hoy?" },
+  { male: "¿En qué puedo ayudarte hoy?", female: "¿En qué puedo ayudarte hoy?" },
   { male: "¿Listo para explorar algunas ideas?", female: "¿Lista para explorar algunas ideas?" },
   { male: "¿Sobre qué te gustaría conversar?", female: "¿Sobre qué te gustaría conversar?" },
   { male: "Estoy aquí para ayudarte. ¿Qué tienes en mente?", female: "Estoy aquí para ayudarte. ¿Qué tienes en mente?" },
@@ -223,7 +223,7 @@ const ChatLayout: React.FC = () => {
               const language = codeLines.shift(); // Remove language identifier
               const codeContent = codeLines.join('\n');
               return (
-                <div key={index} className="my-2 rounded border border-green-400/30 bg-green-900/10 p-2">
+                <div key={index} className="my-2 rounded border border-green-500/30 bg-green-900/20 p-2">
                   <pre className="font-code text-sm">{codeContent}</pre>
                 </div>
               );
@@ -237,7 +237,7 @@ const ChatLayout: React.FC = () => {
     };
 
     return (
-      <div className="font-code fixed inset-0 z-[100] flex animate-fade-in flex-col bg-black text-green-400">
+      <div className="font-code fixed inset-0 z-[100] flex animate-fade-in flex-col bg-black text-green-500">
         <header className="flex items-center justify-between bg-[#0c0c0c] p-2 text-xs text-gray-300">
           <div className="flex items-center gap-2">
             <Square className="h-4 w-4 fill-white" />
@@ -258,13 +258,13 @@ const ChatLayout: React.FC = () => {
           <br />
           {messages.map((msg, index) => (
             <div key={index} className="mb-2">
-              <span className={cn('align-top', msg.sender === 'user' ? "text-cyan-400" : "text-green-400")}>
+              <span className={cn('align-top', msg.sender === 'user' ? "text-cyan-400" : "text-green-500")}>
                 C:\Users\{msg.sender === 'user' ? user?.displayName?.split(' ')[0] || 'User' : 'LSAIG'}&gt;
               </span>
               {msg.sender === 'ai' ? parseAndRenderMessage(msg.text) : <pre className="inline whitespace-pre-wrap pl-2">{msg.text}</pre>}
             </div>
           ))}
-          <div className="inline-block h-4 w-2 animate-cmd-cursor-blink bg-green-400" />
+          <div className="inline-block h-4 w-2 animate-cmd-cursor-blink bg-green-500" />
         </div>
         <footer className="bg-[#0c0c0c] p-2">
            <ChatInput
@@ -398,5 +398,3 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
-
-    
