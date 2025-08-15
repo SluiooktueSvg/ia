@@ -8,7 +8,7 @@ import { useChatController } from '@/hooks/useChatController';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import LSAIGLogo from '@/components/AuraChatLogo';
 import { Button } from '@/components/ui/button';
-import { Save, FolderOpen, Trash2, Heart, LogOut, AudioLines, Camera, Square, Terminal } from 'lucide-react';
+import { Save, FolderOpen, Trash2, Heart, LogOut, AudioLines, Camera, Square, Terminal, X } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { cn, inferGenderFromName } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
@@ -277,50 +277,49 @@ const ChatLayout: React.FC = () => {
   
   const renderCodeTerminal = () => {
     return (
-      <div className={cn("font-code fixed inset-0 z-[100] flex flex-col bg-black text-green-500", isExitingCodeMode ? "animate-fade-out" : "animate-fade-in")}>
-        <header className="flex items-center justify-between bg-[#0c0c0c] p-2 text-xs text-gray-300">
-          <div className="flex items-center gap-2">
-            <Square className="h-4 w-4 fill-white" />
-            <span>C:\\WINDOWS\\system32\\cmd.exe - LSAIG Code Mode</span>
+      <div className={cn("font-code fixed inset-0 z-[100] flex flex-col bg-black text-green-500 p-2", isExitingCodeMode ? "animate-fade-out" : "animate-fade-in")}>
+        <div className="flex flex-col flex-1 border border-gray-600/50 bg-[#060606]">
+          <header className="flex items-center justify-between bg-[#0c0c0c] p-1 text-xs text-gray-300 border-b border-gray-600/50">
+            <div className="flex items-center gap-2 px-2">
+              <Terminal className="h-4 w-4" />
+              <span>C:\\WINDOWS\\system32\\cmd.exe - LSAIG Code Mode</span>
+            </div>
+            <div className="flex items-center">
+                <Button variant="ghost" size="icon" className="h-6 w-8 rounded-none hover:bg-white/10"><div className="w-3 h-px bg-white"/></Button>
+                <Button variant="ghost" size="icon" className="h-6 w-8 rounded-none hover:bg-white/10"><Square className="h-3 w-3" /></Button>
+                <Button variant="destructive" size="icon" onClick={handleExitCodeMode} className="h-6 w-8 rounded-none hover:bg-red-700/80"><X className="h-4 w-4" /></Button>
+            </div>
+          </header>
+          <div ref={codeTerminalRef} className="flex-1 overflow-y-auto p-4 text-sm">
+             <div className="mb-4 flex flex-col items-center justify-center">
+              <LSAIGLogo variant="terminal" />
+              <div className="mt-2 text-center text-xs text-green-500/80">
+                  <p>LSAIG [Version 1.0.0]</p>
+                  <p>(c) LSAIG Corporation. All rights reserved.</p>
+              </div>
+            </div>
+            {messages.map((msg, index) => (
+              <div key={index} className="mb-2">
+                <span className={cn('align-top', msg.sender === 'user' ? "text-cyan-400" : "text-green-500")}>
+                  C:\\Users\\{msg.sender === 'user' ? user?.displayName?.split(' ')[0] || 'User' : 'LSAIG'}>
+                </span>
+                {msg.sender === 'ai' ? parseAndRenderMessage(msg.text) : <pre className="inline whitespace-pre-wrap pl-2">{msg.text}</pre>}
+              </div>
+            ))}
+            {isAiThinking && (
+              <div className="mb-2">
+                <span className="inline-block h-4 w-2 animate-cmd-cursor-blink bg-green-500"></span>
+              </div>
+            )}
+            {!isAiThinking && (
+              <ChatInput
+                isCodeMode={true}
+                currentMessage={currentInput}
+                setCurrentMessage={setCurrentInput}
+                onSendMessage={sendMessage}
+              />
+            )}
           </div>
-          <Button
-            size="sm"
-            variant="destructive"
-            onClick={handleExitCodeMode}
-            className="h-6 px-2 py-0 text-xs"
-          >
-            Exit Code Mode
-          </Button>
-        </header>
-        <div ref={codeTerminalRef} className="flex-1 overflow-y-auto p-4 text-sm">
-           <div className="mb-4 flex flex-col items-center justify-center">
-            <LSAIGLogo variant="terminal" />
-            <div className="mt-2 text-center text-xs text-green-500/80">
-                <p>LSAIG [Version 1.0.0]</p>
-                <p>(c) LSAIG Corporation. All rights reserved.</p>
-            </div>
-          </div>
-          {messages.map((msg, index) => (
-            <div key={index} className="mb-2">
-              <span className={cn('align-top', msg.sender === 'user' ? "text-cyan-400" : "text-green-500")}>
-                C:\\Users\\{msg.sender === 'user' ? user?.displayName?.split(' ')[0] || 'User' : 'LSAIG'}>
-              </span>
-              {msg.sender === 'ai' ? parseAndRenderMessage(msg.text) : <pre className="inline whitespace-pre-wrap pl-2">{msg.text}</pre>}
-            </div>
-          ))}
-          {isAiThinking && (
-            <div className="mb-2">
-              <span className="inline-block h-4 w-2 animate-cmd-cursor-blink bg-green-500"></span>
-            </div>
-          )}
-          {!isAiThinking && (
-            <ChatInput
-              isCodeMode={true}
-              currentMessage={currentInput}
-              setCurrentMessage={setCurrentInput}
-              onSendMessage={sendMessage}
-            />
-          )}
         </div>
       </div>
     );
@@ -475,3 +474,5 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
+
+    
