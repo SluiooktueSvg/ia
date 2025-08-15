@@ -163,6 +163,7 @@ export function useChatController() {
         userInputText: text,
         history: historyForAI.slice(0, -1), // Send history *excluding* the latest user message which is the main input
         userSentiment: userSentiment, // Pass the analyzed sentiment
+        isCodeMode: isCodeMode, // Pass the code mode state to the AI
        };
       const aiResponse = await completeMessage(responseInput);
       
