@@ -10,6 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { getCurrentDate } from '../tools/current-date';
 
 const HistoryMessageSchema = z.object({
   isUser: z.boolean(),
@@ -40,9 +41,13 @@ const chatResponsePrompt = ai.definePrompt({
   name: 'chatResponsePrompt',
   input: {schema: MessageCompletionInputSchema},
   output: {schema: MessageCompletionOutputSchema},
+  tools: [getCurrentDate],
   prompt: `You are LSAIG, an exceptionally friendly, empathetic, and highly informative AI assistant. Your primary goal is to provide warm, helpful, clear, and contextually rich responses to the user, remembering the conversation that has happened so far.
 
 **Important Instruction:** First, identify the language of the user's latest message. Then, craft your entire response in that same language.
+
+**Date & Time Requests:**
+If the user asks for the current date, time, or day, you MUST use the \`getCurrentDate\` tool to get the information and then provide it in your response.
 
 {{#if isCodeMode}}
 **Code Mode Activated**
