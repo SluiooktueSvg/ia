@@ -96,6 +96,7 @@ const ChatLayout: React.FC = () => {
   
   const [isMonitorOpen, setIsMonitorOpen] = useState(false);
   const [isEnteringCodeMode, setIsEnteringCodeMode] = useState(false);
+  const [isExitingCodeMode, setIsExitingCodeMode] = useState(false);
   const codeTerminalRef = useRef<HTMLDivElement>(null);
 
   // Effect to handle AI-triggered code mode entry
@@ -114,6 +115,18 @@ const ChatLayout: React.FC = () => {
       codeTerminalRef.current.scrollTop = codeTerminalRef.current.scrollHeight;
     }
   }, [messages, isCodeMode, isAiThinking]);
+  
+    // Effect to handle exit transition
+  useEffect(() => {
+    if (isExitingCodeMode) {
+      const timer = setTimeout(() => {
+        setIsCodeMode(false);
+        setIsExitingCodeMode(false);
+      }, 2000); // Duration of the loading animation
+      return () => clearTimeout(timer);
+    }
+  }, [isExitingCodeMode, setIsCodeMode]);
+
 
   const handleEnterCodeMode = () => {
     setIsEnteringCodeMode(true);
@@ -121,6 +134,10 @@ const ChatLayout: React.FC = () => {
       setIsCodeMode(true);
       setIsEnteringCodeMode(false);
     }, 2000); // Duration of the loading animation
+  };
+  
+  const handleExitCodeMode = () => {
+    setIsExitingCodeMode(true);
   };
 
   // Effect to update greeting based on time of day
@@ -259,7 +276,7 @@ const ChatLayout: React.FC = () => {
   
   const renderCodeTerminal = () => {
     return (
-      <div className="font-code fixed inset-0 z-[100] flex animate-fade-in flex-col bg-black text-green-500">
+      <div className={cn("font-code fixed inset-0 z-[100] flex flex-col bg-black text-green-500", !isExitingCodeMode ? "animate-fade-in" : "animate-fade-out")}>
         <header className="flex items-center justify-between bg-[#0c0c0c] p-2 text-xs text-gray-300">
           <div className="flex items-center gap-2">
             <Square className="h-4 w-4 fill-white" />
@@ -268,7 +285,7 @@ const ChatLayout: React.FC = () => {
           <Button
             size="sm"
             variant="destructive"
-            onClick={() => setIsCodeMode(false)}
+            onClick={handleExitCodeMode}
             className="h-6 px-2 py-0 text-xs"
           >
             Exit Code Mode
@@ -435,6 +452,12 @@ const ChatLayout: React.FC = () => {
       {isEnteringCodeMode && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 animate-fade-in">
           <LoadingScreen message="Iniciando modo de código..." />
+        </div>
+      )}
+       {/* Code Mode Exit Transition Overlay */}
+      {isExitingCodeMode && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 animate-fade-in">
+          <LoadingScreen message="Saliendo del modo de código..." />
         </div>
       )}
     </div>
