@@ -306,7 +306,6 @@ const ChatLayout: React.FC = () => {
           ))}
           {isAiThinking && (
             <div className="mb-2">
-              <span className="align-top">C:\Users\LSAIG&gt;</span>
               <span className="inline-block h-4 w-2 animate-cmd-cursor-blink bg-green-500"></span>
             </div>
           )}
@@ -334,7 +333,7 @@ const ChatLayout: React.FC = () => {
       
       {!isCodeMode && (
         <SidebarInset
-          className="flex h-screen flex-col bg-background md:m-0 md:rounded-none md:shadow-none overflow-hidden"
+          className="flex h-screen flex-col bg-background md:m-0 md:rounded-none md:shadow-none overflow-hidden animate-fade-in"
           onClick={handlePageClick}
         >
           <div className="flex items-center justify-between p-3 md:p-4">
@@ -462,7 +461,7 @@ const ChatLayout: React.FC = () => {
         </div>
       )}
        {/* Code Mode Exit Transition Overlay */}
-      {isExitingCodeMode && (
+      {(isCodeMode && isExitingCodeMode) && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 animate-fade-in">
           <LoadingScreen message="Saliendo del modo de código..." />
         </div>
