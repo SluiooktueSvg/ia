@@ -412,7 +412,7 @@ const ChatLayout: React.FC = () => {
               <div className="flex h-full flex-col">
                 <div className="flex flex-1 flex-shrink items-center justify-center overflow-y-auto p-4">
                   <div className="w-full max-w-xl text-center">
-                    <div className="mb-4">
+                    <div className="mb-8">
                       {animatedGreeting && (
                         <p className="text-3xl font-semibold text-gradient-animated md:text-4xl">
                           {animatedGreeting}
