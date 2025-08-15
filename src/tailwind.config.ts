@@ -14,7 +14,7 @@ export default {
         body: ['Inter', 'sans-serif'],
         headline: ['Inter', 'sans-serif'],
         greeting: ['Manrope', 'sans-serif'],
-        code: ['monospace'],
+        code: ['Fira Code', 'monospace'],
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -163,6 +163,14 @@ export default {
           '50%': { transform: 'scale(1.1) translateX(5%)' },
           '100%': { transform: 'scale(1.1) translateX(-5%)' },
         },
+        'fade-in': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        'cmd-cursor-blink': {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -180,10 +188,12 @@ export default {
         'pulse-voice-speaking': 'pulse-voice-speaking 1.5s ease-in-out infinite',
         'wave': 'wave 4s linear infinite',
         'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
-        'fnaf-in': 'fnaf-monitor-in 0.3s forwards cubic-bezier(0.4, 0, 0.2, 1)',
-        'fnaf-out': 'fnaf-monitor-out 0.3s forwards cubic-bezier(0.4, 0, 0.2, 1)',
+        'fnaf-in': 'fnaf-monitor-in 0.35s forwards cubic-bezier(0.4, 0, 0.2, 1)',
+        'fnaf-out': 'fnaf-monitor-out 0.35s forwards cubic-bezier(0.4, 0, 0.2, 1)',
         'static-noise': 'static-noise 0.2s steps(8, end) infinite',
         'camera-pan': 'camera-pan 10s linear infinite',
+        'fade-in': 'fade-in 0.3s ease-in-out',
+        'cmd-cursor-blink': 'cmd-cursor-blink 1s step-end infinite',
       },
     },
   },

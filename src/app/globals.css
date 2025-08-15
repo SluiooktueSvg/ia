@@ -160,6 +160,11 @@ body {
       transform: scale(1.1) translateX(-5%);
     }
   }
+  
+  @keyframes cmd-cursor-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
 
   .animate-camera-pan {
     animation: camera-pan 10s linear infinite;

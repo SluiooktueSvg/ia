@@ -14,6 +14,7 @@ export function useChatController() {
   const [currentInput, setCurrentInput] = useState('');
   const [hasSentFirstMessage, setHasSentFirstMessage] = useState(false);
   const [isTtsQuotaExceeded, setIsTtsQuotaExceeded] = useState(false);
+  const [isCodeMode, setIsCodeMode] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth(); // Get user from auth context
 
@@ -147,6 +148,10 @@ export function useChatController() {
        };
       const aiResponse = await completeMessage(responseInput);
       
+      if (aiResponse.containsCode) {
+        setIsCodeMode(true);
+      }
+
       const refinedAiText = aiResponse.completion.trim();
 
       const finalAiMessage: ChatMessage = {
@@ -181,6 +186,7 @@ export function useChatController() {
     clearChatFromLocalStorage();
     setHasSentFirstMessage(false);
     setIsTtsQuotaExceeded(false); // Reset quota state on clear
+    setIsCodeMode(false); // Also exit code mode
     toast({
         title: "Chat Cleared",
         description: "Your chat history has been cleared.",
@@ -225,6 +231,8 @@ export function useChatController() {
     hasSentFirstMessage,
     isTtsQuotaExceeded,
     setIsTtsQuotaExceeded,
+    isCodeMode,
+    setIsCodeMode,
     sendMessage,
     handleInputChange, // Keep this for setting currentInput
     clearChat,

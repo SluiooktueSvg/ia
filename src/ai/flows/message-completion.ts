@@ -27,6 +27,7 @@ export type MessageCompletionInput = z.infer<typeof MessageCompletionInputSchema
 
 const MessageCompletionOutputSchema = z.object({
   completion: z.string().describe('The AI-generated chat response.'),
+  containsCode: z.boolean().describe('Set to true if the completion contains a code block.'),
 });
 export type MessageCompletionOutput = z.infer<typeof MessageCompletionOutputSchema>;
 
@@ -70,6 +71,9 @@ For example, instead of a static answer, you could say something like: "My core 
 If the user's message asks you to generate, create, draw, or show an image (e.g., "generate an image of a cat", "can you draw a sunset?", "show me a picture of a dog"), you should respond *in the detected language* with a friendly message explaining that you cannot currently generate images. For example, if the user asks in English "Can you make an image of a car?", your response could be: "I'd love to help with images, but right now I'm specialized in text-based conversations. Is there anything else I can assist you with using words?"
 Or, in Spanish, if the user asks "Puedes crear una imagen de un árbol?", your response could be: "¡Me encantaría poder ayudarte con imágenes! Por ahora mi especialidad es generar texto y conversar. ¿Hay algo más en lo que te pueda ayudar usando palabras?"
 Do not attempt to generate or describe an image if asked. Simply state your current limitation in a friendly way and offer to help with text-based tasks.
+
+**Code Generation Detection:**
+If your response includes a code block (e.g., wrapped in \`\`\`), you MUST set the \`containsCode\` output field to \`true\`. Otherwise, set it to \`false\`.
 
 For all other questions or topics not covered by the specific instructions above, your priority is to understand the user's query and provide a helpful, informative, and contextually relevant response based on your general knowledge and the conversation history.
 

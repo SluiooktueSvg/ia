@@ -8,7 +8,7 @@ import { useChatController } from '@/hooks/useChatController';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import LSAIGLogo from '@/components/AuraChatLogo';
 import { Button } from '@/components/ui/button';
-import { Save, FolderOpen, Trash2, Heart, LogOut, AudioLines, Camera } from 'lucide-react';
+import { Save, FolderOpen, Trash2, Heart, LogOut, AudioLines, Camera, Square } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { cn, inferGenderFromName } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
@@ -77,6 +77,8 @@ const ChatLayout: React.FC = () => {
     handleAudioError,
     isTtsQuotaExceeded,
     setIsTtsQuotaExceeded,
+    isCodeMode,
+    setIsCodeMode,
   } = useChatController();
   const { user, logout } = useAuth();
 
@@ -90,6 +92,14 @@ const ChatLayout: React.FC = () => {
   const [activeHearts, setActiveHearts] = useState<ActiveHeart[]>([]);
   
   const [isMonitorOpen, setIsMonitorOpen] = useState(false);
+  const codeTerminalRef = useRef<HTMLDivElement>(null);
+
+  // Effect to scroll to bottom of code terminal
+  useEffect(() => {
+    if (isCodeMode && codeTerminalRef.current) {
+      codeTerminalRef.current.scrollTop = codeTerminalRef.current.scrollHeight;
+    }
+  }, [messages, isCodeMode]);
 
   // Effect to update greeting based on time of day
   useEffect(() => {
@@ -196,6 +206,51 @@ const ChatLayout: React.FC = () => {
       setClickCount(0); // Reset click count after burst
     }
   };
+  
+  const renderCodeTerminal = () => (
+    <div className="font-code fixed inset-0 z-[100] flex animate-fade-in flex-col bg-black text-green-400">
+      <header className="flex items-center justify-between bg-[#0c0c0c] p-2 text-xs text-gray-300">
+        <div className="flex items-center gap-2">
+          <Square className="h-4 w-4 fill-white" />
+          <span>C:\WINDOWS\system32\cmd.exe - LSAIG Code Mode</span>
+        </div>
+        <Button
+          size="sm"
+          variant="destructive"
+          onClick={() => setIsCodeMode(false)}
+          className="h-6 px-2 py-0 text-xs"
+        >
+          Exit Code Mode
+        </Button>
+      </header>
+      <div ref={codeTerminalRef} className="flex-1 overflow-y-auto p-4">
+        <p>LSAIG [Version 1.0.0]</p>
+        <p>(c) LSAIG Corporation. All rights reserved.</p>
+        <br />
+        {messages.map((msg, index) => (
+          <div key={index} className="mb-2">
+            <span className={cn(msg.sender === 'user' ? "text-cyan-400" : "text-green-400")}>
+              C:\Users\{msg.sender === 'user' ? user?.displayName?.split(' ')[0] || 'User' : 'LSAIG'}&gt;
+            </span>
+            <pre className="inline whitespace-pre-wrap pl-2">{msg.text}</pre>
+          </div>
+        ))}
+         <div className="inline-block h-4 w-2 animate-cmd-cursor-blink bg-green-400" />
+      </div>
+      <footer className="bg-[#0c0c0c] p-2">
+         <ChatInput
+            currentMessage={currentInput}
+            setCurrentMessage={setCurrentInput}
+            onSendMessage={sendMessage}
+            isCentered={false}
+          />
+      </footer>
+    </div>
+  );
+
+  if (isCodeMode) {
+    return renderCodeTerminal();
+  }
 
   return (
     <SidebarInset
