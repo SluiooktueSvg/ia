@@ -46,6 +46,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       await signInWithPopup(auth, provider);
     } catch (error) {
       console.error("Error signing in with Google: ", error);
+      // Ensure loading is false if sign-in fails and there's no user.
       if (!user) {
         setLoading(false);
       }

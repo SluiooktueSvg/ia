@@ -229,35 +229,35 @@ const ChatLayout: React.FC = () => {
     }
   };
   
+  const parseAndRenderMessage = (text: string) => {
+    if (!text.includes('```')) {
+      return <pre className="inline whitespace-pre-wrap pl-2">{text}</pre>;
+    }
+
+    const parts = text.split('```');
+    return (
+      <div className="whitespace-pre-wrap pl-2">
+        {parts.map((part, index) => {
+          if (index % 2 === 1) {
+            // This is a code block
+            const codeLines = part.split('\n');
+            const language = codeLines.shift(); // Remove language identifier
+            const codeContent = codeLines.join('\n');
+            return (
+              <div key={index} className="my-2 rounded border border-green-500/30 bg-green-900/20 p-2">
+                <pre className="font-code text-sm">{codeContent}</pre>
+              </div>
+            );
+          } else {
+            // This is regular text
+            return <span key={index}>{part}</span>;
+          }
+        })}
+      </div>
+    );
+  };
+  
   const renderCodeTerminal = () => {
-    const parseAndRenderMessage = (text: string) => {
-      if (!text.includes('```')) {
-        return <pre className="inline whitespace-pre-wrap pl-2">{text}</pre>;
-      }
-  
-      const parts = text.split('```');
-      return (
-        <div className="whitespace-pre-wrap pl-2">
-          {parts.map((part, index) => {
-            if (index % 2 === 1) {
-              // This is a code block
-              const codeLines = part.split('\n');
-              const language = codeLines.shift(); // Remove language identifier
-              const codeContent = codeLines.join('\n');
-              return (
-                <div key={index} className="my-2 rounded border border-green-500/30 bg-green-900/20 p-2">
-                  <pre className="font-code text-sm">{codeContent}</pre>
-                </div>
-              );
-            } else {
-              // This is regular text
-              return <span key={index}>{part}</span>;
-            }
-          })}
-        </div>
-      );
-    };
-  
     return (
       <div className="font-code fixed inset-0 z-[100] flex animate-fade-in flex-col bg-black text-green-500">
         <header className="flex items-center justify-between bg-[#0c0c0c] p-2 text-xs text-gray-300">
