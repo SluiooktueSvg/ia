@@ -295,7 +295,9 @@ const ChatLayout: React.FC = () => {
         <div ref={codeTerminalRef} className="flex-1 overflow-y-auto p-4 text-sm">
           <p>LSAIG [Version 1.0.0]</p>
           <p>(c) LSAIG Corporation. All rights reserved.</p>
-          <br />
+          <div className="my-4 flex flex-col items-center justify-center">
+            <LSAIGLogo />
+          </div>
           {messages.map((msg, index) => (
             <div key={index} className="mb-2">
               <span className={cn('align-top', msg.sender === 'user' ? "text-cyan-400" : "text-green-500")}>
