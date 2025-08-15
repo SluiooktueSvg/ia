@@ -8,7 +8,7 @@ import { useChatController } from '@/hooks/useChatController';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import LSAIGLogo from '@/components/AuraChatLogo';
 import { Button } from '@/components/ui/button';
-import { Save, FolderOpen, Trash2, Heart, LogOut, AudioLines, Camera, Square, Terminal, X } from 'lucide-react';
+import { Save, FolderOpen, Trash2, Heart, LogOut, AudioLines, Camera, Square, Terminal, X, Minus } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { cn, inferGenderFromName } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
@@ -97,6 +97,7 @@ const ChatLayout: React.FC = () => {
   const [isMonitorOpen, setIsMonitorOpen] = useState(false);
   const [isEnteringCodeMode, setIsEnteringCodeMode] = useState(false);
   const [isExitingCodeMode, setIsExitingCodeMode] = useState(false);
+  const [isMaximized, setIsMaximized] = useState(true);
   const codeTerminalRef = useRef<HTMLDivElement>(null);
 
   // Effect to handle AI-triggered code mode entry
@@ -123,6 +124,7 @@ const ChatLayout: React.FC = () => {
       const timer = setTimeout(() => {
         setIsCodeMode(false);
         setIsExitingCodeMode(false);
+        setIsMaximized(true); // Reset maximization state on exit
       }, 2500); // 500ms for fade out + 2000ms for loading screen
       return () => clearTimeout(timer);
     }
@@ -139,6 +141,10 @@ const ChatLayout: React.FC = () => {
   
   const handleExitCodeMode = () => {
     setIsExitingCodeMode(true);
+  };
+
+  const handleToggleMaximize = () => {
+    setIsMaximized(!isMaximized);
   };
 
   // Effect to update greeting based on time of day
@@ -277,16 +283,20 @@ const ChatLayout: React.FC = () => {
   
   const renderCodeTerminal = () => {
     return (
-      <div className={cn("font-code fixed inset-0 z-[100] flex flex-col bg-black text-green-500 p-2", isExitingCodeMode ? "animate-fade-out" : "animate-fade-in")}>
-        <div className="flex flex-col flex-1 border border-gray-600/50 bg-[#060606]">
+      <div className={cn(
+        "font-code z-[100] flex flex-col bg-black text-green-500 p-2 transition-all duration-300",
+        isExitingCodeMode ? "animate-fade-out" : "animate-fade-in",
+        isMaximized ? "fixed inset-0" : "fixed inset-x-0 mx-auto top-10 w-[90vw] h-[80vh] max-w-4xl rounded-lg shadow-2xl"
+      )}>
+        <div className={cn("flex flex-col flex-1 border border-gray-600/50 bg-[#060606]", isMaximized ? "rounded-none" : "rounded-lg overflow-hidden")}>
           <header className="flex items-center justify-between bg-[#0c0c0c] p-1 text-xs text-gray-300 border-b border-gray-600/50">
             <div className="flex items-center gap-2 px-2">
               <Terminal className="h-4 w-4" />
               <span>C:\\WINDOWS\\system32\\cmd.exe - LSAIG Code Mode</span>
             </div>
             <div className="flex items-center">
-                <Button variant="ghost" size="icon" className="h-6 w-8 rounded-none hover:bg-white/10"><div className="w-3 h-px bg-white"/></Button>
-                <Button variant="ghost" size="icon" className="h-6 w-8 rounded-none hover:bg-white/10"><Square className="h-3 w-3" /></Button>
+                <Button variant="ghost" size="icon" onClick={handleExitCodeMode} className="h-6 w-8 rounded-none hover:bg-white/10"><Minus className="h-4 w-4" /></Button>
+                <Button variant="ghost" size="icon" onClick={handleToggleMaximize} className="h-6 w-8 rounded-none hover:bg-white/10"><Square className="h-3 w-3" /></Button>
                 <Button variant="destructive" size="icon" onClick={handleExitCodeMode} className="h-6 w-8 rounded-none hover:bg-red-700/80"><X className="h-4 w-4" /></Button>
             </div>
           </header>
