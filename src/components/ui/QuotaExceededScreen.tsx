@@ -13,7 +13,7 @@ const QuotaExceededScreen: React.FC = () => {
     )}>
       <div className="flex flex-col items-center">
         <LSAIGLogo />
-        <h1 className="mt-8 text-3xl font-light text-foreground">Keep on looking...</h1>
+        <h1 className="mt-8 text-3xl font-thin text-foreground">Keep on looking...</h1>
         <p className="mt-2 max-w-md text-muted-foreground">
           Has superado la cuota de solicitudes gratuitas para hoy. El acceso se restablecerá mañana.
         </p>
