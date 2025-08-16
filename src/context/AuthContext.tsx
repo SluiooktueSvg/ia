@@ -36,7 +36,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isFadingOut, setIsFadingOut] = useState(false);
 
   useEffect(() => {
-    const checkQuota = async () => {
+    let unsubscribe: () => void = () => {};
+
+    const checkQuotaAndAuth = async () => {
+      // 1. Check Quota
       let finalStatus: QuotaStatus = 'ok';
       try {
         await pingAI();
@@ -52,17 +55,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setIsFadingOut(true);
         setTimeout(() => {
           setQuotaStatus(finalStatus);
-        }, 500); 
+          // Only if quota is ok, we proceed with auth check logic
+          if (finalStatus === 'ok') {
+             // 2. Subscribe to Auth State Changes
+            unsubscribe = onAuthStateChanged(auth, (user) => {
+                setUser(user);
+                setLoading(false);
+                setLogoutStep('none');
+            });
+          } else {
+            // If quota is exceeded, we are done loading
+            setLoading(false);
+          }
+        }, 500);
       }
     };
 
-    checkQuota();
+    checkQuotaAndAuth();
 
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-      setLogoutStep('none'); // Reset on auth change
-    });
+    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
 
