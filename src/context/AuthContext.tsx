@@ -51,7 +51,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         } else {
           // If it's a different error (e.g., network), let the app load but log it.
           console.error("Non-quota error during AI ping:", error);
-          setQuotaStatus('ok');
+           setIsFadingOut(true);
+            setTimeout(() => {
+                setQuotaStatus('ok');
+            }, 500);
         }
       }
     };
