@@ -34,6 +34,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [logoutStep, setLogoutStep] = useState<LogoutStep>('none');
   const [quotaStatus, setQuotaStatus] = useState<QuotaStatus>('pending');
   const [isFadingOut, setIsFadingOut] = useState(false);
+  const [initialCheckDone, setInitialCheckDone] = useState(false);
 
   useEffect(() => {
     // Perform the API quota check first
@@ -56,6 +57,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 setQuotaStatus('ok');
             }, 500);
         }
+      } finally {
+        setInitialCheckDone(true);
       }
     };
 
@@ -107,13 +110,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
   };
 
+  const getLoadingScreen = () => {
+    if (!initialCheckDone) {
+      // Still checking, show fade-in loader
+      return <LoadingScreen className="animate-fade-in" />;
+    }
+    if (isFadingOut) {
+       // Done checking, show fade-out loader
+      return <LoadingScreen className="animate-fade-out" />;
+    }
+    return null;
+  }
+
   // Render based on quota status first
   if (quotaStatus === 'exceeded') {
     return <QuotaExceededScreen />;
   }
 
   if (quotaStatus === 'pending') {
-    return <LoadingScreen className={isFadingOut ? 'animate-fade-out' : ''} />;
+    return getLoadingScreen();
   }
 
   // --- From here, quota is 'ok' ---
