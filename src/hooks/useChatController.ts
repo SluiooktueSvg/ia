@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback, Dispatch, SetStateAction } from 'react';
 import type { ChatMessage } from '@/types/chat';
-import { loadChatFromLocalStorage, saveChatToLocalStorage, clearChatFromLocalStorage } from '@/lib/localStorage';
+import { loadChatFromLocalStorage, saveChatToLocalStorage, clearChatFromLocalStorage, getQuotaExceededFromLocalStorage, setQuotaExceededInLocalStorage, clearQuotaExceededFromLocalStorage } from '@/lib/localStorage';
 import { completeMessage, MessageCompletionInput } from '@/ai/flows/message-completion';
 import { analyzeSentiment, SentimentAnalysisInput } from '@/ai/flows/sentiment-analysis';
 import { useToast } from "@/hooks/use-toast";
@@ -21,6 +21,12 @@ export function useChatController() {
   const { user } = useAuth(); // Get user from auth context
 
   useEffect(() => {
+    // Check for persisted quota exceeded state first
+    if (getQuotaExceededFromLocalStorage()) {
+      setIsQuotaExceeded(true);
+      return; // Stop further initialization if quota is known to be exceeded
+    }
+
     const loadedMessages = loadChatFromLocalStorage();
     // Mark all loaded messages as played to prevent autoplay on load
     const messagesMarkedAsPlayed = loadedMessages.map(m => ({ ...m, hasPlayedAudio: true, audioUrl: m.audioUrl || undefined }));
@@ -58,6 +64,7 @@ export function useChatController() {
       const errorMessage = error.message || "Unknown error";
        if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('quota')) {
         setIsQuotaExceeded(true);
+        setQuotaExceededInLocalStorage();
       }
       setMessages(prev => prev.map(m => m.id === messageId ? { ...m, sentimentLoading: false } : m));
     }
@@ -199,6 +206,7 @@ export function useChatController() {
         // Check for quota error
         if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('quota')) {
             setIsQuotaExceeded(true);
+            setQuotaExceededInLocalStorage();
             // Remove the thinking placeholder if it exists
             setMessages(prev => prev.filter(m => m.id !== aiMessageId));
             return; // Stop further processing
@@ -230,6 +238,7 @@ export function useChatController() {
   const clearChat = () => {
     setMessages([]);
     clearChatFromLocalStorage();
+    clearQuotaExceededFromLocalStorage(); // Also clear the quota flag
     setHasSentFirstMessage(false);
     setIsTtsQuotaExceeded(false); // Reset quota state on clear
     setIsCodeMode(false); // Also exit code mode
@@ -249,6 +258,12 @@ export function useChatController() {
   };
   
   const loadChat = () => {
+    // Check for persisted quota exceeded state first
+    if (getQuotaExceededFromLocalStorage()) {
+      setIsQuotaExceeded(true);
+      return;
+    }
+
     const loadedMessages = loadChatFromLocalStorage();
     const messagesMarkedAsPlayed = loadedMessages.map(m => ({ ...m, hasPlayedAudio: true, audioUrl: m.audioUrl || undefined }));
     setMessages(messagesMarkedAsPlayed);
@@ -291,3 +306,5 @@ export function useChatController() {
     handleAudioError,
   };
 }
+
+    

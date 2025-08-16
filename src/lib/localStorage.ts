@@ -1,6 +1,8 @@
+
 import type { ChatMessage } from '@/types/chat';
 
 const CHAT_STORAGE_KEY = 'lsaigChatSession';
+const QUOTA_EXCEEDED_KEY = 'lsaigQuotaExceeded';
 
 export const saveChatToLocalStorage = (messages: ChatMessage[]): void => {
   try {
@@ -31,3 +33,33 @@ export const clearChatFromLocalStorage = (): void => {
     console.error("Failed to clear chat from local storage:", error);
   }
 };
+
+// Functions for managing the quota exceeded flag
+
+export const setQuotaExceededInLocalStorage = (): void => {
+  try {
+    localStorage.setItem(QUOTA_EXCEEDED_KEY, 'true');
+  } catch (error) {
+    console.error("Failed to set quota exceeded flag in local storage:", error);
+  }
+};
+
+export const getQuotaExceededFromLocalStorage = (): boolean => {
+  try {
+    const quotaExceeded = localStorage.getItem(QUOTA_EXCEEDED_KEY);
+    return quotaExceeded === 'true';
+  } catch (error) {
+    console.error("Failed to get quota exceeded flag from local storage:", error);
+    return false;
+  }
+};
+
+export const clearQuotaExceededFromLocalStorage = (): void => {
+  try {
+    localStorage.removeItem(QUOTA_EXCEEDED_KEY);
+  } catch (error) {
+    console.error("Failed to clear quota exceeded flag from local storage:", error);
+  }
+};
+
+    
