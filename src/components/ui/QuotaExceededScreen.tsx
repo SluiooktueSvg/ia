@@ -12,12 +12,14 @@ const QuotaExceededScreen: React.FC = () => {
       "animate-fade-in" // Add fade-in animation
     )}>
       <div className="flex flex-col items-center">
-        <LSAIGLogo />
-        <h1 className="mt-8 text-5xl font-thin text-foreground md:text-6xl">Keep on looking...</h1>
-        <p className="mt-2 max-w-md text-muted-foreground">
+        <div className="mb-12">
+          <LSAIGLogo />
+        </div>
+        <h1 className="text-5xl font-thin text-foreground md:text-6xl">Keep on looking...</h1>
+        <p className="mt-4 max-w-md text-muted-foreground">
           Has superado la cuota de solicitudes gratuitas para hoy. El acceso se restablecerá mañana.
         </p>
-        <p className="mt-4 text-xs text-muted-foreground/50">
+        <p className="mt-6 text-xs text-muted-foreground/50">
           Error Code: 429 Too Many Requests
         </p>
       </div>
