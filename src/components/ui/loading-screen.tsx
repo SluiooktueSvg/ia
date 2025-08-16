@@ -9,8 +9,6 @@ interface LoadingScreenProps {
   className?: string;
 }
 
-const loadingChars = ['<', '{', '/', '}', '>', '[', ']', '*', ';', '='];
-
 const LoadingScreen: React.FC<LoadingScreenProps> = ({ message, className }) => {
   const [isMounted, setIsMounted] = useState(false);
 
@@ -19,7 +17,11 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ message, className }) => 
   }, []);
 
   return (
-    <div className={cn("flex h-screen w-full flex-col items-center justify-center bg-background", className)}>
+    <div className={cn(
+      "flex h-screen w-full flex-col items-center justify-center bg-background transition-opacity duration-500",
+      isMounted ? "opacity-100" : "opacity-0",
+      className
+    )}>
       <div className="font-code text-2xl md:text-3xl text-primary flex gap-2">
          <span className="animate-code-load" style={{ animationDelay: '0.1s' }}>[</span>
          <span className="animate-code-load" style={{ animationDelay: '0.2s' }}>=</span>

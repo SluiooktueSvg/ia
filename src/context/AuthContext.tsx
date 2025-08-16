@@ -113,7 +113,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   if (quotaStatus === 'pending') {
-    return <LoadingScreen className={isFadingOut ? 'animate-fade-out' : 'animate-fade-in'} />;
+    return <LoadingScreen className={isFadingOut ? 'animate-fade-out' : ''} />;
   }
 
   // --- From here, quota is 'ok' ---
