@@ -12,9 +12,10 @@ const QuotaExceededScreen: React.FC = () => {
       "animate-fade-in" // Add fade-in animation
     )}>
       <div className="flex flex-col items-center">
-        <div className="mb-12">
+        <div className="mb-8">
           <LSAIGLogo />
         </div>
+        <div className="w-24 border-t border-muted-foreground/20 mb-8"></div>
         <h1 className="text-5xl font-thin text-foreground md:text-6xl">
           Keep on looking
           <span className="inline-block animate-[loading-dots-blink_1.4s_infinite_0.2s] [animation-fill-mode:both]">.</span>
