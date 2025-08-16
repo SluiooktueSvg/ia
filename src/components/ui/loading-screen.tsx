@@ -1,7 +1,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 interface LoadingScreenProps {
@@ -10,9 +10,16 @@ interface LoadingScreenProps {
 }
 
 const LoadingScreen: React.FC<LoadingScreenProps> = ({ message, className }) => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   return (
     <div className={cn(
       "flex h-screen w-full flex-col items-center justify-center bg-background",
+      isMounted ? 'animate-fade-in' : 'opacity-0', // Apply fade-in only on client after mount
       className
     )}>
       <div className="font-code text-2xl md:text-3xl text-primary flex gap-2">
@@ -24,7 +31,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ message, className }) => 
          <span className="animate-code-load" style={{ animationDelay: '0.6s' }}>]</span>
       </div>
       <p className="mt-6 text-sm text-muted-foreground animate-pulse">
-        {message ? message : <>&nbsp;</>}
+        {isMounted && message ? message : <>&nbsp;</>}
       </p>
     </div>
   );
