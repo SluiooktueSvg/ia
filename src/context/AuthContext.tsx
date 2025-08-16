@@ -105,7 +105,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const getLoadingScreen = (isFadingOut: boolean) => (
     <LoadingScreen
-      className={isFadingOut ? 'animate-fade-out' : 'animate-fade-in'}
+      className={isFadingOut ? 'animate-fade-out' : ''}
     />
   );
   
