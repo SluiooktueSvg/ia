@@ -22,10 +22,10 @@ const QuotaExceededScreen: React.FC = () => {
           <span className="inline-block animate-[loading-dots-blink_1.4s_infinite_0.6s] [animation-fill-mode:both]">.</span>
         </h1>
         <p className="mt-4 max-w-md text-muted-foreground">
-          信任如同一张纸，一旦皱了，即使抚平了，也恢复不了原样。
+          信任就像一面镜子，一旦破碎，虽然可以粘合，但裂痕永远清晰可见。
         </p>
         <p className="mt-6 text-xs text-muted-foreground/50">
-          Error Code: 429 Too Many Requests
+          错误代码：破镜难圆
         </p>
       </div>
     </div>
@@ -33,5 +33,3 @@ const QuotaExceededScreen: React.FC = () => {
 };
 
 export default QuotaExceededScreen;
-
-    
