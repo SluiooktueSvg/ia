@@ -13,13 +13,19 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ message, className }) => 
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
+    // This effect runs only on the client.
+    // We set a short timeout to allow the initial render to complete before starting the animation.
+    const timer = setTimeout(() => {
+      setIsMounted(true);
+    }, 10); // A small delay is sometimes needed to ensure the transition applies smoothly.
+    return () => clearTimeout(timer);
   }, []);
 
   return (
     <div className={cn(
-      "flex h-screen w-full flex-col items-center justify-center bg-background transition-opacity duration-500",
-      isMounted ? "opacity-100" : "opacity-0",
+      "flex h-screen w-full flex-col items-center justify-center bg-background",
+      // Apply fade-in animation only on the client after mounting
+      isMounted ? 'animate-fade-in' : 'opacity-0',
       className
     )}>
       <div className="font-code text-2xl md:text-3xl text-primary flex gap-2">
