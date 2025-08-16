@@ -6,11 +6,12 @@ import { cn } from '@/lib/utils';
 
 interface LoadingScreenProps {
   message?: string;
+  className?: string;
 }
 
 const loadingChars = ['<', '{', '/', '}', '>', '[', ']', '*', ';', '='];
 
-const LoadingScreen: React.FC<LoadingScreenProps> = ({ message }) => {
+const LoadingScreen: React.FC<LoadingScreenProps> = ({ message, className }) => {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -18,7 +19,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ message }) => {
   }, []);
 
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
+    <div className={cn("flex h-screen w-full flex-col items-center justify-center bg-background", className)}>
       <div className="font-code text-2xl md:text-3xl text-primary flex gap-2">
          <span className="animate-code-load" style={{ animationDelay: '0.1s' }}>[</span>
          <span className="animate-code-load" style={{ animationDelay: '0.2s' }}>=</span>

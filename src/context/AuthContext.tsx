@@ -33,13 +33,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(true);
   const [logoutStep, setLogoutStep] = useState<LogoutStep>('none');
   const [quotaStatus, setQuotaStatus] = useState<QuotaStatus>('pending');
+  const [isFadingOut, setIsFadingOut] = useState(false);
 
   useEffect(() => {
     // Perform the API quota check first
     const checkQuota = async () => {
       try {
         await pingAI();
-        setQuotaStatus('ok');
+        setIsFadingOut(true);
+        setTimeout(() => {
+          setQuotaStatus('ok');
+        }, 500); // Corresponds to fade-out duration
       } catch (error: any) {
         const errorMessage = error.message || "Unknown error";
         if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('quota')) {
@@ -106,7 +110,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   if (quotaStatus === 'pending') {
-    return <LoadingScreen message="Verificando el estado del servicio..." />;
+    return <LoadingScreen className={isFadingOut ? 'animate-fade-out' : 'animate-fade-in'} />;
   }
 
   // --- From here, quota is 'ok' ---
