@@ -16,26 +16,23 @@ export function useChatController() {
   const [isTtsQuotaExceeded, setIsTtsQuotaExceeded] = useState(false);
   const [isCodeMode, setIsCodeMode] = useState(false);
   const [isAiThinking, setIsAiThinking] = useState(false);
-  const [isQuotaExceeded, setIsQuotaExceeded] = useState(false); // New state for quota
+  const [isQuotaExceeded, setIsQuotaExceeded] = useState(false);
   const { toast } = useToast();
-  const { user } = useAuth(); // Get user from auth context
+  const { user } = useAuth();
 
   useEffect(() => {
-    // Check for persisted quota exceeded state first
     if (getQuotaExceededFromLocalStorage()) {
       setIsQuotaExceeded(true);
-      return; // Stop further initialization if quota is known to be exceeded
+      return;
     }
 
     const loadedMessages = loadChatFromLocalStorage();
-    // Mark all loaded messages as played to prevent autoplay on load
     const messagesMarkedAsPlayed = loadedMessages.map(m => ({ ...m, hasPlayedAudio: true, audioUrl: m.audioUrl || undefined }));
     setMessages(messagesMarkedAsPlayed);
 
     if (loadedMessages.length > 0) {
       setHasSentFirstMessage(true);
     }
-    // Analyze sentiment for AI messages loaded from history
     loadedMessages.forEach(msg => {
       if (msg.sender === 'ai' && !msg.sentiment && !msg.sentimentLoading) {
         fetchSentimentForMessage(msg.id, msg.text);
@@ -44,7 +41,7 @@ export function useChatController() {
   }, []);
 
   useEffect(() => {
-    if (hasSentFirstMessage) { // Only save if a message has been sent
+    if (hasSentFirstMessage) {
       saveChatToLocalStorage(messages);
     }
   }, [messages, hasSentFirstMessage]);
@@ -73,8 +70,6 @@ export function useChatController() {
   const handleAudioGenerated = useCallback((messageId: string, audioUrl: string) => {
     setMessages(prev => prev.map(m => {
       if (m.id === messageId) {
-        // If an audioUrl is provided, it means generation was successful or we're just updating state.
-        // If audioUrl is empty string, it's a signal to start loading.
         if (audioUrl) {
           return { ...m, audioUrl, audioLoading: false, hasPlayedAudio: true };
         } else {
@@ -86,18 +81,15 @@ export function useChatController() {
   }, []);
   
   const handleAudioError = useCallback((messageId: string, error: string) => {
-    // Check for quota error and set global state
     if (error.includes('429') || error.toLowerCase().includes('quota')) {
       setIsTtsQuotaExceeded(true);
       setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioLoading: false } : m));
-      // Use the default toast for quota issues, making it less alarming
       toast({
           title: "Límite de Audio Alcanzado",
           description: "¡Has alcanzado el límite de hoy! Inténtalo de nuevo mañana.",
           variant: "success",
       });
     } else {
-      // Handle other potential errors during audio generation
       setMessages(prev => prev.map(m => m.id === messageId ? { ...m, audioLoading: false } : m));
       toast({
           title: "Error al Generar Audio",
@@ -109,17 +101,15 @@ export function useChatController() {
 
 
   const sendMessage = async (text: string) => {
-    if (!text.trim() || !user || isQuotaExceeded) return;
-
-    // --- Client-side command handling for Code Mode ---
+    if (!text.trim() || !user || isQuotaExceeded || isAiThinking) return;
+    
     if (isCodeMode) {
       const command = text.trim().toLowerCase();
       if (command === 'cls' || command === 'clear') {
-        setMessages([]); // Clear messages in the view
-        setCurrentInput(''); // Clear the input field
-        return; // Stop execution, don't send to AI
+        setMessages([]);
+        setCurrentInput('');
+        return;
       }
-      // Add other commands here with `else if`
     }
     
     if (!hasSentFirstMessage) {
@@ -134,20 +124,17 @@ export function useChatController() {
       avatarUrl: user.photoURL,
     };
     
-    // Create the history for the AI call
     const historyForAI = [...messages, userMessage].map(m => ({
         isUser: m.sender === 'user',
         text: m.text,
     }));
 
-    // Add user message to state immediately for a responsive UI
     setMessages(prev => [...prev, userMessage]);
     setCurrentInput('');
     setIsAiThinking(true);
 
     const aiMessageId = Date.now().toString() + '-ai';
     
-    // In standard UI, add a placeholder. In code mode, the thinking indicator is handled separately.
     if (!isCodeMode) {
       const aiPlaceholderMessage: ChatMessage = {
         id: aiMessageId,
@@ -162,15 +149,14 @@ export function useChatController() {
 
 
     try {
-      // Analyze sentiment of the user's message before sending to completion
       const sentimentResult = await analyzeSentiment({ text });
       const userSentiment = sentimentResult.sentiment;
       
       const responseInput: MessageCompletionInput = { 
         userInputText: text,
-        history: historyForAI.slice(0, -1), // Send history *excluding* the latest user message which is the main input
-        userSentiment: userSentiment, // Pass the analyzed sentiment
-        isCodeMode: isCodeMode, // Pass the code mode state to the AI
+        history: historyForAI.slice(0, -1),
+        userSentiment: userSentiment,
+        isCodeMode: isCodeMode,
        };
       const aiResponse = await completeMessage(responseInput);
       
@@ -194,7 +180,6 @@ export function useChatController() {
         setMessages(prev => prev.map(m => m.id === aiMessageId ? finalAiMessage : m));
       }
       
-      // Fetch sentiment only for non-code mode for now
       if (!isCodeMode) {
         fetchSentimentForMessage(aiMessageId, finalAiMessage.text);
       }
@@ -203,33 +188,19 @@ export function useChatController() {
         console.error('Error getting AI response:', error);
         const errorMessage = error.message || "Unknown error";
         
-        // Check for quota error
         if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('quota')) {
             setIsQuotaExceeded(true);
             setQuotaExceededInLocalStorage();
-            // Remove the thinking placeholder if it exists
-            setMessages(prev => prev.filter(m => m.id !== aiMessageId));
-            return; // Stop further processing
-        }
-
-        const errorAiMessage: ChatMessage = {
-            id: aiMessageId,
-            text: "Sorry, I encountered an error.",
-            sender: 'ai',
-            timestamp: Date.now(),
-            sentimentLoading: false,
-            audioLoading: false,
-        };
-        if(isCodeMode) {
-            setMessages(prev => [...prev, errorAiMessage]);
         } else {
-            setMessages(prev => prev.map(m => m.id === aiMessageId ? errorAiMessage : m));
+             toast({
+                title: "AI Response Error",
+                description: "Could not get a response from the AI.",
+                variant: "destructive",
+            });
         }
-        toast({
-            title: "AI Response Error",
-            description: "Could not get a response from the AI.",
-            variant: "destructive",
-        });
+        // Remove the placeholder message on any error
+        setMessages(prev => prev.filter(m => m.id !== aiMessageId));
+
     } finally {
         setIsAiThinking(false);
     }
@@ -238,11 +209,11 @@ export function useChatController() {
   const clearChat = () => {
     setMessages([]);
     clearChatFromLocalStorage();
-    clearQuotaExceededFromLocalStorage(); // Also clear the quota flag
+    clearQuotaExceededFromLocalStorage();
     setHasSentFirstMessage(false);
-    setIsTtsQuotaExceeded(false); // Reset quota state on clear
-    setIsCodeMode(false); // Also exit code mode
-    setIsQuotaExceeded(false); // Also reset main quota state
+    setIsTtsQuotaExceeded(false);
+    setIsCodeMode(false);
+    setIsQuotaExceeded(false);
     toast({
         title: "Chat Cleared",
         description: "Your chat history has been cleared.",
@@ -258,7 +229,6 @@ export function useChatController() {
   };
   
   const loadChat = () => {
-    // Check for persisted quota exceeded state first
     if (getQuotaExceededFromLocalStorage()) {
       setIsQuotaExceeded(true);
       return;
@@ -267,7 +237,7 @@ export function useChatController() {
     const loadedMessages = loadChatFromLocalStorage();
     const messagesMarkedAsPlayed = loadedMessages.map(m => ({ ...m, hasPlayedAudio: true, audioUrl: m.audioUrl || undefined }));
     setMessages(messagesMarkedAsPlayed);
-    setIsTtsQuotaExceeded(false); // Reset quota state on load
+    setIsTtsQuotaExceeded(false);
 
     if (loadedMessages.length > 0) {
       setHasSentFirstMessage(true);
@@ -296,9 +266,9 @@ export function useChatController() {
     isCodeMode,
     setIsCodeMode,
     isAiThinking,
-    isQuotaExceeded, // Expose the new state
+    isQuotaExceeded,
     sendMessage,
-    handleInputChange, // Keep this for setting currentInput
+    handleInputChange,
     clearChat,
     saveChat,
     loadChat,
@@ -306,5 +276,3 @@ export function useChatController() {
     handleAudioError,
   };
 }
-
-    
