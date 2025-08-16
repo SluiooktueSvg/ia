@@ -3,10 +3,14 @@
 
 import React from 'react';
 import LSAIGLogo from '@/components/AuraChatLogo';
+import { cn } from '@/lib/utils';
 
 const QuotaExceededScreen: React.FC = () => {
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center bg-background p-4 text-center animate-fade-in">
+    <div className={cn(
+      "flex h-screen w-full flex-col items-center justify-center bg-background p-4 text-center",
+      "animate-fade-in" // Add fade-in animation
+    )}>
       <div className="flex flex-col items-center">
         <LSAIGLogo />
         <h1 className="mt-8 text-2xl font-semibold text-destructive">Límite de Solicitudes Alcanzado</h1>

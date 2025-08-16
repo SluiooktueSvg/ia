@@ -19,7 +19,9 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ message, className }) => 
   return (
     <div className={cn(
       "flex h-screen w-full flex-col items-center justify-center bg-background",
-      isMounted ? 'animate-fade-in' : 'opacity-0', // Apply fade-in only on client after mount
+      // Apply fade-in animation only on the client after mounting to avoid hydration errors
+      isMounted ? 'animate-fade-in' : 'opacity-0',
+      // Allow parent to pass down fade-out animation
       className
     )}>
       <div className="font-code text-2xl md:text-3xl text-primary flex gap-2">

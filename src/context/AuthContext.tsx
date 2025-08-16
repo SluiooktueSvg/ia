@@ -37,23 +37,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     const checkQuota = async () => {
+      let finalStatus: QuotaStatus = 'ok';
       try {
         await pingAI();
-        setIsFadingOut(true);
-        setTimeout(() => {
-          setQuotaStatus('ok');
-        }, 500); // Corresponds to fade-out duration
       } catch (error: any) {
         const errorMessage = error.message || "Unknown error";
         if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('quota')) {
-          setQuotaStatus('exceeded');
+          finalStatus = 'exceeded';
         } else {
           console.error("Non-quota error during AI ping:", error);
-           setIsFadingOut(true);
-            setTimeout(() => {
-                setQuotaStatus('ok');
-            }, 500);
+          finalStatus = 'ok'; // Assume ok for other errors
         }
+      } finally {
+        // Start fade out animation
+        setIsFadingOut(true);
+        // Wait for animation to finish, then update status
+        setTimeout(() => {
+          setQuotaStatus(finalStatus);
+        }, 500); // Must match fade-out duration
       }
     };
 
@@ -104,21 +105,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       finishSignOut(); // Proceed with logout even if sound fails
     };
   };
-
-  const getLoadingScreen = () => {
-    if (quotaStatus === 'pending') {
-      return <LoadingScreen className={isFadingOut ? 'animate-fade-out' : ''} message="Verificando el estado del servicio..." />;
-    }
-    return null;
+  
+  if (quotaStatus === 'pending') {
+    return (
+      <LoadingScreen
+        className={isFadingOut ? 'animate-fade-out' : ''}
+        message="Verificando el estado del servicio..."
+      />
+    );
   }
 
-  // Render based on quota status first
   if (quotaStatus === 'exceeded') {
     return <QuotaExceededScreen />;
-  }
-
-  if (quotaStatus === 'pending') {
-    return getLoadingScreen();
   }
 
   // --- From here, quota is 'ok' ---
