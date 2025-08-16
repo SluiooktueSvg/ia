@@ -106,7 +106,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   if (quotaStatus === 'pending') {
-    return <LoadingScreen message="Verificando el estado del servicio..." />;
+    return <LoadingScreen />;
   }
 
   // --- From here, quota is 'ok' ---
