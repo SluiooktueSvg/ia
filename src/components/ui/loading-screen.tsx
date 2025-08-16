@@ -10,9 +10,17 @@ interface LoadingScreenProps {
 }
 
 const LoadingScreen: React.FC<LoadingScreenProps> = ({ message, className }) => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   return (
     <div className={cn(
       "flex h-screen w-full flex-col items-center justify-center bg-background",
+      // Apply fade-in animation only on the client after mounting to avoid hydration errors
+      isMounted ? 'animate-fade-in' : 'opacity-0',
       // Allow parent to pass down fade-out animation
       className
     )}>
