@@ -36,55 +36,51 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isFadingOut, setIsFadingOut] = useState(false);
 
   useEffect(() => {
-    let unsubscribe: () => void = () => {};
-
-    const checkQuotaAndAuth = async () => {
-      // 1. Check Quota
-      let finalStatus: QuotaStatus = 'ok';
+    const checkQuota = async () => {
       try {
         await pingAI();
+        setQuotaStatus('ok');
       } catch (error: any) {
         const errorMessage = error.message || "Unknown error";
         if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('quota')) {
-          finalStatus = 'exceeded';
+          setQuotaStatus('exceeded');
         } else {
+          // For other errors (e.g., network), assume quota is ok and let the app handle it.
           console.error("Non-quota error during AI ping:", error);
-          finalStatus = 'ok'; // Assume ok for other errors
+          setQuotaStatus('ok'); 
         }
-      } finally {
-        setIsFadingOut(true);
-        setTimeout(() => {
-          setQuotaStatus(finalStatus);
-          // Only if quota is ok, we proceed with auth check logic
-          if (finalStatus === 'ok') {
-             // 2. Subscribe to Auth State Changes
-            unsubscribe = onAuthStateChanged(auth, (user) => {
-                setUser(user);
-                setLoading(false);
-                setLogoutStep('none');
-            });
-          } else {
-            // If quota is exceeded, we are done loading
-            setLoading(false);
-          }
-        }, 500);
       }
     };
 
-    checkQuotaAndAuth();
-
-    // Cleanup subscription on unmount
-    return () => unsubscribe();
+    checkQuota();
   }, []);
+
+  useEffect(() => {
+    if (quotaStatus === 'ok') {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        setUser(user);
+        setLoading(false);
+        setLogoutStep('none');
+      });
+      return () => unsubscribe();
+    } else if (quotaStatus === 'exceeded') {
+      // If quota is exceeded, we are done "loading" and can show the quota screen.
+      setLoading(false);
+    }
+  }, [quotaStatus]);
+
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
+    setLoading(true);
     try {
       await signInWithPopup(auth, provider);
+      // onAuthStateChanged will handle setting the user and loading state
     } catch (error) {
       console.error("Error signing in with Google: ", error);
-      if (!user) {
+      // If sign-in fails, ensure we are not stuck in a loading state
+      if (!auth.currentUser) {
         setLoading(false);
       }
     }
@@ -95,33 +91,32 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     setLogoutStep('playingSound');
     const logoutSound = new Audio('/sounds/good-bye.mp3');
-    logoutSound.play();
-
+    
     const finishSignOut = async () => {
       setLogoutStep('signingOut');
       try {
         await signOut(auth);
+        // onAuthStateChanged will set user to null and trigger re-render to login page.
       } catch (error) {
         console.error("Error signing out: ", error);
         setLogoutStep('none'); 
       }
     };
     
+    logoutSound.play().catch(e => {
+        console.error("Audio playback failed, signing out directly.", e);
+        finishSignOut();
+    });
+
     logoutSound.onended = finishSignOut;
     logoutSound.onerror = () => {
       console.error("Failed to play logout sound.");
       finishSignOut(); 
     };
   };
-
-  const getLoadingScreen = (isFadingOut: boolean) => (
-    <LoadingScreen
-      className={isFadingOut ? 'animate-fade-out' : ''}
-    />
-  );
   
-  if (quotaStatus === 'pending') {
-    return getLoadingScreen(isFadingOut);
+  if (quotaStatus === 'pending' || (quotaStatus === 'ok' && loading)) {
+    return <LoadingScreen />;
   }
 
   if (quotaStatus === 'exceeded') {
