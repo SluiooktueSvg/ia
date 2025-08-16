@@ -22,7 +22,7 @@ const QuotaExceededScreen: React.FC = () => {
           <span className="inline-block animate-[loading-dots-blink_1.4s_infinite_0.6s] [animation-fill-mode:both]">.</span>
         </h1>
         <p className="mt-4 max-w-md text-muted-foreground">
-          Has superado la cuota de solicitudes gratuitas para hoy. El acceso se restablecerá mañana.
+          破镜难重圆
         </p>
         <p className="mt-6 text-xs text-muted-foreground/50">
           Error Code: 429 Too Many Requests
