@@ -16,6 +16,7 @@ export function useChatController() {
   const [isTtsQuotaExceeded, setIsTtsQuotaExceeded] = useState(false);
   const [isCodeMode, setIsCodeMode] = useState(false);
   const [isAiThinking, setIsAiThinking] = useState(false);
+  const [isQuotaExceeded, setIsQuotaExceeded] = useState(false); // New state for quota
   const { toast } = useToast();
   const { user } = useAuth(); // Get user from auth context
 
@@ -52,14 +53,13 @@ export function useChatController() {
       const sentimentInput: SentimentAnalysisInput = { text };
       const sentimentResult = await analyzeSentiment(sentimentInput);
       setMessages(prev => prev.map(m => m.id === messageId ? { ...m, sentiment: sentimentResult.sentiment, sentimentLoading: false } : m));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching sentiment:', error);
+      const errorMessage = error.message || "Unknown error";
+       if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('quota')) {
+        setIsQuotaExceeded(true);
+      }
       setMessages(prev => prev.map(m => m.id === messageId ? { ...m, sentimentLoading: false } : m));
-      toast({
-        title: "Sentiment Analysis Error",
-        description: "Could not analyze message sentiment.",
-        variant: "destructive",
-      });
     }
   };
   
@@ -102,7 +102,7 @@ export function useChatController() {
 
 
   const sendMessage = async (text: string) => {
-    if (!text.trim() || !user) return;
+    if (!text.trim() || !user || isQuotaExceeded) return;
 
     // --- Client-side command handling for Code Mode ---
     if (isCodeMode) {
@@ -192,8 +192,18 @@ export function useChatController() {
         fetchSentimentForMessage(aiMessageId, finalAiMessage.text);
       }
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error getting AI response:', error);
+        const errorMessage = error.message || "Unknown error";
+        
+        // Check for quota error
+        if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('quota')) {
+            setIsQuotaExceeded(true);
+            // Remove the thinking placeholder if it exists
+            setMessages(prev => prev.filter(m => m.id !== aiMessageId));
+            return; // Stop further processing
+        }
+
         const errorAiMessage: ChatMessage = {
             id: aiMessageId,
             text: "Sorry, I encountered an error.",
@@ -223,6 +233,7 @@ export function useChatController() {
     setHasSentFirstMessage(false);
     setIsTtsQuotaExceeded(false); // Reset quota state on clear
     setIsCodeMode(false); // Also exit code mode
+    setIsQuotaExceeded(false); // Also reset main quota state
     toast({
         title: "Chat Cleared",
         description: "Your chat history has been cleared.",
@@ -270,6 +281,7 @@ export function useChatController() {
     isCodeMode,
     setIsCodeMode,
     isAiThinking,
+    isQuotaExceeded, // Expose the new state
     sendMessage,
     handleInputChange, // Keep this for setting currentInput
     clearChat,

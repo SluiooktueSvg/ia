@@ -15,6 +15,7 @@ import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import FnafMonitor from '@/components/ui/FnafMonitor';
 import LoadingScreen from '@/components/ui/loading-screen';
+import QuotaExceededScreen from '@/components/ui/QuotaExceededScreen';
 
 const helpMessages = [
   { male: "¿En qué puedo ayudarte hoy?", female: "¿En qué puedo ayudarte hoy?" },
@@ -82,6 +83,7 @@ const ChatLayout: React.FC = () => {
     isCodeMode,
     setIsCodeMode,
     isAiThinking,
+    isQuotaExceeded,
   } = useChatController();
   const { user, logout } = useAuth();
 
@@ -327,6 +329,10 @@ const ChatLayout: React.FC = () => {
     );
   };
   
+  if (isQuotaExceeded) {
+    return <QuotaExceededScreen />;
+  }
+
   if (isCodeMode && !isExitingCodeMode) {
     return renderCodeTerminal();
   }
