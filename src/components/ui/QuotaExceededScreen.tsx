@@ -15,7 +15,12 @@ const QuotaExceededScreen: React.FC = () => {
         <div className="mb-12">
           <LSAIGLogo />
         </div>
-        <h1 className="text-5xl font-thin text-foreground md:text-6xl">Keep on looking...</h1>
+        <h1 className="text-5xl font-thin text-foreground md:text-6xl">
+          Keep on looking
+          <span className="inline-block animate-[loading-dots-blink_1.4s_infinite_0.2s] [animation-fill-mode:both]">.</span>
+          <span className="inline-block animate-[loading-dots-blink_1.4s_infinite_0.4s] [animation-fill-mode:both]">.</span>
+          <span className="inline-block animate-[loading-dots-blink_1.4s_infinite_0.6s] [animation-fill-mode:both]">.</span>
+        </h1>
         <p className="mt-4 max-w-md text-muted-foreground">
           Has superado la cuota de solicitudes gratuitas para hoy. El acceso se restablecerá mañana.
         </p>
@@ -28,3 +33,5 @@ const QuotaExceededScreen: React.FC = () => {
 };
 
 export default QuotaExceededScreen;
+
+    

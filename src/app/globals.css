@@ -166,6 +166,12 @@ body {
     50% { opacity: 0; }
   }
 
+  /* Keyframes for loading dots animation */
+  @keyframes loading-dots-blink {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+  }
+
   .animate-camera-pan {
     animation: camera-pan 10s linear infinite;
   }
@@ -205,3 +211,5 @@ body {
     pointer-events: none;
   }
 }
+
+    
