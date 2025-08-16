@@ -49,12 +49,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           finalStatus = 'ok'; // Assume ok for other errors
         }
       } finally {
-        // Start fade out animation
         setIsFadingOut(true);
-        // Wait for animation to finish, then update status
         setTimeout(() => {
           setQuotaStatus(finalStatus);
-        }, 500); // Must match fade-out duration
+        }, 500); 
       }
     };
 
@@ -82,7 +80,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const logout = () => {
-    if (logoutStep !== 'none') return; // Prevent multiple calls
+    if (logoutStep !== 'none') return; 
 
     setLogoutStep('playingSound');
     const logoutSound = new Audio('/sounds/good-bye.mp3');
@@ -92,34 +90,33 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setLogoutStep('signingOut');
       try {
         await signOut(auth);
-        // onAuthStateChanged will handle the rest
       } catch (error) {
         console.error("Error signing out: ", error);
-        setLogoutStep('none'); // Reset on error
+        setLogoutStep('none'); 
       }
     };
     
     logoutSound.onended = finishSignOut;
     logoutSound.onerror = () => {
       console.error("Failed to play logout sound.");
-      finishSignOut(); // Proceed with logout even if sound fails
+      finishSignOut(); 
     };
   };
+
+  const getLoadingScreen = (isFadingOut: boolean) => (
+    <LoadingScreen
+      className={isFadingOut ? 'animate-fade-out' : 'animate-fade-in'}
+    />
+  );
   
   if (quotaStatus === 'pending') {
-    return (
-      <LoadingScreen
-        className={isFadingOut ? 'animate-fade-out' : ''}
-        message="Verificando el estado del servicio..."
-      />
-    );
+    return getLoadingScreen(isFadingOut);
   }
 
   if (quotaStatus === 'exceeded') {
     return <QuotaExceededScreen />;
   }
 
-  // --- From here, quota is 'ok' ---
   if (logoutStep === 'playingSound') {
     return <BlackScreen />;
   }
