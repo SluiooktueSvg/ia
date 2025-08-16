@@ -11,8 +11,11 @@ import {
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import LoadingScreen from '@/components/ui/loading-screen';
+import QuotaExceededScreen from '@/components/ui/QuotaExceededScreen';
+import { pingAI } from '@/ai/flows/ping-ai';
 
 type LogoutStep = 'none' | 'playingSound' | 'signingOut';
+type QuotaStatus = 'pending' | 'ok' | 'exceeded';
 
 interface AuthContextType {
   user: User | null;
@@ -29,8 +32,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [logoutStep, setLogoutStep] = useState<LogoutStep>('none');
+  const [quotaStatus, setQuotaStatus] = useState<QuotaStatus>('pending');
 
   useEffect(() => {
+    // Perform the API quota check first
+    const checkQuota = async () => {
+      try {
+        await pingAI();
+        setQuotaStatus('ok');
+      } catch (error: any) {
+        const errorMessage = error.message || "Unknown error";
+        if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('quota')) {
+          setQuotaStatus('exceeded');
+        } else {
+          // If it's a different error (e.g., network), let the app load but log it.
+          console.error("Non-quota error during AI ping:", error);
+          setQuotaStatus('ok');
+        }
+      }
+    };
+
+    checkQuota();
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
@@ -46,7 +69,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       await signInWithPopup(auth, provider);
     } catch (error) {
       console.error("Error signing in with Google: ", error);
-      // Ensure loading is false if sign-in fails and there's no user.
       if (!user) {
         setLoading(false);
       }
@@ -78,6 +100,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
   };
 
+  // Render based on quota status first
+  if (quotaStatus === 'exceeded') {
+    return <QuotaExceededScreen />;
+  }
+
+  if (quotaStatus === 'pending') {
+    return <LoadingScreen message="Verificando el estado del servicio..." />;
+  }
+
+  // --- From here, quota is 'ok' ---
   if (logoutStep === 'playingSound') {
     return <BlackScreen />;
   }
@@ -85,7 +117,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   if (logoutStep === 'signingOut') {
     return <LoadingScreen message="Cerrando sesión..." />;
   }
-
 
   return (
     <AuthContext.Provider value={{ user, loading, signInWithGoogle, logout }}>
