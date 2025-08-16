@@ -6,7 +6,7 @@ import LSAIGLogo from '@/components/AuraChatLogo';
 
 const QuotaExceededScreen: React.FC = () => {
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center bg-background p-4 text-center">
+    <div className="flex h-screen w-full flex-col items-center justify-center bg-background p-4 text-center animate-fade-in">
       <div className="flex flex-col items-center">
         <LSAIGLogo />
         <h1 className="mt-8 text-2xl font-semibold text-destructive">Límite de Solicitudes Alcanzado</h1>
