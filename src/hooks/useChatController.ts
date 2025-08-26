@@ -114,12 +114,14 @@ export function useChatController() {
       avatarUrl: user.photoURL,
     };
     
-    const historyForAI = [...messages, userMessage].map(m => ({
+    const allMessages = [...messages, userMessage];
+
+    const historyForAI = allMessages.map(m => ({
         isUser: m.sender === 'user',
         text: m.text,
-    }));
+    })).slice(0, -1); // Exclude the current user message from history for the prompt
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages(allMessages);
     setCurrentInput('');
     setIsAiThinking(true);
 
@@ -141,7 +143,7 @@ export function useChatController() {
       
       const responseInput: MessageCompletionInput = { 
         userInputText: text,
-        history: historyForAI.slice(0, -1),
+        history: historyForAI,
         userSentiment: userSentiment,
        };
       const aiResponse = await completeMessage(responseInput);
