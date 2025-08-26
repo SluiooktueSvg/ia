@@ -253,10 +253,11 @@ const ChatLayout: React.FC = () => {
           </div>
         </div>
 
-        <div className={cn("flex flex-1 flex-col", hasSentFirstMessage ? "h-full" : "min-h-0")}>
+        <div className="flex-1 flex flex-col h-full min-h-0">
           {hasSentFirstMessage ? (
             <>
               <MessageList 
+                className="flex-grow"
                 messages={messages} 
                 onAudioGenerated={handleAudioGenerated}
                 onAudioError={handleAudioError}

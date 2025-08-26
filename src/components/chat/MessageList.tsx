@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import type { ChatMessage } from '@/types/chat';
 import MessageBubble from './MessageBubble';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 
 interface MessageListProps {
   messages: ChatMessage[];
@@ -10,9 +11,10 @@ interface MessageListProps {
   onAudioError: (messageId: string, error: string) => void;
   isTtsQuotaExceeded: boolean;
   setIsTtsQuotaExceeded: (value: boolean) => void;
+  className?: string;
 }
 
-const MessageList: React.FC<MessageListProps> = ({ messages, onAudioGenerated, onAudioError, isTtsQuotaExceeded, setIsTtsQuotaExceeded }) => {
+const MessageList: React.FC<MessageListProps> = ({ messages, onAudioGenerated, onAudioError, isTtsQuotaExceeded, setIsTtsQuotaExceeded, className }) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
 
@@ -23,7 +25,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, onAudioGenerated, o
   }, [messages]);
 
   return (
-    <ScrollArea className="flex-grow p-4 md:p-6" ref={scrollAreaRef} viewportRef={viewportRef} role="log" aria-live="polite">
+    <ScrollArea className={cn("p-4 md:p-6", className)} ref={scrollAreaRef} viewportRef={viewportRef} role="log" aria-live="polite">
       <div className="space-y-2">
         {messages.map((msg) => (
           <MessageBubble 
