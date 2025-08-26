@@ -42,13 +42,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setQuotaStatus('ok');
       } catch (error: any) {
         const errorMessage = error.message || "Unknown error";
+        // Only consider it a quota issue if the error explicitly says so.
         if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('quota')) {
           setQuotaStatus('exceeded');
         } else {
-          // For any other errors (network, internal, etc.), we cannot guarantee service
-          // availability, so we'll treat it as a quota issue to be safe.
-          console.error("AI service ping failed, treating as quota exceeded:", error);
-          setQuotaStatus('exceeded'); 
+          // For any other transient errors, assume the service is available
+          // and let the user try to log in. The error will be caught later
+          // if it's persistent.
+          console.warn("AI service ping failed with a non-quota error, proceeding:", error);
+          setQuotaStatus('ok'); 
         }
       }
     };
