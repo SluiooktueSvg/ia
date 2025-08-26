@@ -15,6 +15,7 @@ import QuotaExceededScreen from '@/components/ui/QuotaExceededScreen';
 import { pingAI } from '@/ai/flows/ping-ai';
 
 type LogoutStep = 'none' | 'playingSound' | 'signingOut';
+type AIStatus = 'checking' | 'available' | 'unavailable';
 
 interface AuthContextType {
   user: User | null;
@@ -31,15 +32,33 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [logoutStep, setLogoutStep] = useState<LogoutStep>('none');
+  const [aiStatus, setAiStatus] = useState<AIStatus>('checking');
   
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-      setLogoutStep('none');
-    });
-    return () => unsubscribe();
+    const checkAiStatus = async () => {
+      try {
+        await pingAI();
+        setAiStatus('available');
+      } catch (error) {
+        console.error("AI service ping failed:", error);
+        setAiStatus('unavailable');
+      }
+    };
+    checkAiStatus();
   }, []);
+
+  useEffect(() => {
+    if (aiStatus === 'available') {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        setUser(user);
+        setLoading(false);
+        setLogoutStep('none');
+      });
+      return () => unsubscribe();
+    } else if (aiStatus === 'unavailable') {
+      setLoading(false);
+    }
+  }, [aiStatus]);
 
 
   const signInWithGoogle = async () => {
@@ -87,8 +106,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
   };
   
-  if (loading) {
+  if (aiStatus === 'checking' || loading) {
     return <LoadingScreen />;
+  }
+
+  if (aiStatus === 'unavailable') {
+    return <QuotaExceededScreen />;
   }
 
   if (logoutStep === 'playingSound') {
