@@ -119,7 +119,7 @@ export function useChatController() {
     const historyForAI = allMessages.map(m => ({
         isUser: m.sender === 'user',
         text: m.text,
-    })).slice(0, -1); // Exclude the current user message from history for the prompt
+    }));
 
     setMessages(allMessages);
     setCurrentInput('');
@@ -143,7 +143,7 @@ export function useChatController() {
       
       const responseInput: MessageCompletionInput = { 
         userInputText: text,
-        history: historyForAI,
+        history: historyForAI, // Pass the full history including the latest user message
         userSentiment: userSentiment,
        };
       const aiResponse = await completeMessage(responseInput);
