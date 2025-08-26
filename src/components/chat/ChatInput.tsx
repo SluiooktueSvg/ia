@@ -14,7 +14,6 @@ interface ChatInputProps {
   currentMessage: string;
   setCurrentMessage: (message: string) => void;
   isCentered?: boolean;
-  isCodeMode?: boolean;
 }
 
 const placeholderPhrases = [
@@ -34,7 +33,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
   currentMessage,
   setCurrentMessage,
   isCentered = false,
-  isCodeMode = false,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
@@ -45,12 +43,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const { toast } = useToast();
   const { user } = useAuth();
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (isCodeMode && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isCodeMode]);
 
   useEffect(() => {
     // This effect runs only on the client, so `window` is available.
@@ -146,7 +138,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   // --- Placeholder Animation Effect ---
   useEffect(() => {
-    if (currentMessage || isListening || isCodeMode) {
+    if (currentMessage || isListening) {
         setAnimatedPlaceholder('');
         return;
     }
@@ -199,7 +191,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
     return () => {
         cancelAnimationFrame(animationFrameId);
     };
-  }, [currentMessage, isListening, isCodeMode]);
+  }, [currentMessage, isListening]);
 
   // --- Autoresize Textarea ---
   useEffect(() => {
@@ -210,7 +202,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
     }
   }, [currentMessage]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCurrentMessage(e.target.value);
   };
 
@@ -222,33 +214,12 @@ const ChatInput: React.FC<ChatInputProps> = ({
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmit();
     }
   };
-  
-  if (isCodeMode) {
-    return (
-      <div className="mt-2">
-        <form id="chat-input-form" onSubmit={handleSubmit} className="flex items-center">
-          <span className="text-cyan-400">
-            C:\Users\{user?.displayName?.split(' ')[0] || 'User'}>
-          </span>
-          <input
-            ref={inputRef}
-            type="text"
-            value={currentMessage}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            className="flex-1 bg-transparent text-green-500 font-code outline-none pl-2"
-            autoFocus
-          />
-        </form>
-      </div>
-    );
-  }
 
   const placeholderTextToShow = currentMessage ? "" : (isListening ? "Escuchando..." : animatedPlaceholder);
   const displayBlinkingCursor = !currentMessage && !isListening && showCursor;

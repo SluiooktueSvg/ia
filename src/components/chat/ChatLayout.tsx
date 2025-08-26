@@ -8,13 +8,12 @@ import { useChatController } from '@/hooks/useChatController';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import LSAIGLogo from '@/components/AuraChatLogo';
 import { Button } from '@/components/ui/button';
-import { Save, FolderOpen, Trash2, Heart, LogOut, AudioLines, Camera, Square, Terminal, X, Minus } from 'lucide-react';
+import { Save, FolderOpen, Trash2, Heart, LogOut, AudioLines, Camera, Terminal } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { cn, inferGenderFromName } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import FnafMonitor from '@/components/ui/FnafMonitor';
-import LoadingScreen from '@/components/ui/loading-screen';
 import QuotaExceededScreen from '@/components/ui/QuotaExceededScreen';
 
 const helpMessages = [
@@ -80,8 +79,6 @@ const ChatLayout: React.FC = () => {
     handleAudioError,
     isTtsQuotaExceeded,
     setIsTtsQuotaExceeded,
-    isCodeMode,
-    setIsCodeMode,
     isAiThinking,
     isQuotaExceeded,
   } = useChatController();
@@ -90,58 +87,12 @@ const ChatLayout: React.FC = () => {
   const [greetingText, setGreetingText] = useState('');
   const [animatedGreeting, setAnimatedGreeting] = useState('');
   const [dynamicHelpText, setDynamicHelpText] = useState('');
-  const { toast } = useToast();
-
+  
   const [clickCount, setClickCount] = useState(0);
   const [lastClickTime, setLastClickTime] = useState(0);
   const [activeHearts, setActiveHearts] = useState<ActiveHeart[]>([]);
   
   const [isMonitorOpen, setIsMonitorOpen] = useState(false);
-  const [isEnteringCodeMode, setIsEnteringCodeMode] = useState(false);
-  const [isExitingCodeMode, setIsExitingCodeMode] = useState(false);
-  const codeTerminalRef = useRef<HTMLDivElement>(null);
-
-  // Effect to handle AI-triggered code mode entry
-  useEffect(() => {
-    if (isCodeMode && !isEnteringCodeMode) {
-      // This can happen if the AI response triggers code mode.
-      // We can add the transition here as well if desired.
-      // For now, we just ensure we are not stuck in a transition state.
-    }
-  }, [isCodeMode, isEnteringCodeMode]);
-
-
-  // Effect to scroll to bottom of code terminal
-  useEffect(() => {
-    if (isCodeMode && codeTerminalRef.current) {
-      codeTerminalRef.current.scrollTop = codeTerminalRef.current.scrollHeight;
-    }
-  }, [messages, isCodeMode, isAiThinking]);
-  
-    // Effect to handle exit transition
-  useEffect(() => {
-    if (isExitingCodeMode) {
-      // The fade-out animation is 500ms. We wait for that + 2000ms for loading screen
-      const timer = setTimeout(() => {
-        setIsCodeMode(false);
-        setIsExitingCodeMode(false);
-      }, 2500); // 500ms for fade out + 2000ms for loading screen
-      return () => clearTimeout(timer);
-    }
-  }, [isExitingCodeMode, setIsCodeMode]);
-
-
-  const handleEnterCodeMode = () => {
-    setIsEnteringCodeMode(true);
-    setTimeout(() => {
-      setIsCodeMode(true);
-      setIsEnteringCodeMode(false);
-    }, 2000); // Duration of the loading animation
-  };
-  
-  const handleExitCodeMode = () => {
-    setIsExitingCodeMode(true);
-  };
 
   // Effect to update greeting based on time of day
   useEffect(() => {
@@ -249,234 +200,123 @@ const ChatLayout: React.FC = () => {
     }
   };
   
-  const parseAndRenderMessage = (text: string) => {
-    if (!text.includes('```')) {
-      return <pre className="inline whitespace-pre-wrap pl-2">{text}</pre>;
-    }
-
-    const parts = text.split('```');
-    return (
-      <div className="whitespace-pre-wrap pl-2">
-        {parts.map((part, index) => {
-          if (index % 2 === 1) {
-            // This is a code block
-            const codeLines = part.split('\n');
-            const language = codeLines.shift(); // Remove language identifier
-            const codeContent = codeLines.join('\n');
-            return (
-              <div key={index} className="my-2 rounded border border-green-500/30 bg-green-900/20 p-2">
-                <pre className="font-code text-sm">{codeContent}</pre>
-              </div>
-            );
-          } else {
-            // This is regular text
-            return <span key={index}>{part}</span>;
-          }
-        })}
-      </div>
-    );
-  };
-  
-  const renderCodeTerminal = () => {
-    return (
-      <div className={cn(
-        "font-code fixed inset-0 z-[100] flex flex-col bg-black text-green-500 p-1 transition-opacity duration-500",
-        isExitingCodeMode ? "animate-fade-out" : "animate-fade-in"
-      )}>
-        {/* Window Title Bar */}
-        <header className="flex h-8 items-center justify-between rounded-t-md bg-[#0c0c0c] border-b border-gray-700 px-2">
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-white">C:\WINDOWS\system32\cmd.exe - LSAIG Code Mode</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" onClick={handleExitCodeMode} className="h-6 w-6 text-white hover:bg-red-600">
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        </header>
-
-        <div ref={codeTerminalRef} className="flex-1 overflow-y-auto p-4 text-sm bg-black">
-           <div className="mb-4 flex flex-col items-center justify-center">
-            <LSAIGLogo variant="terminal" />
-            <div className="mt-2 text-center text-xs text-green-500/80">
-                <p>LSAIG [Version 1.0.0]</p>
-                <p>(c) LSAIG Corporation. All rights reserved.</p>
-            </div>
-          </div>
-          {messages.map((msg, index) => (
-            <div key={index} className="mb-2">
-              <span className={cn('align-top', msg.sender === 'user' ? "text-cyan-400" : "text-green-500")}>
-                {msg.sender === 'user' ? `C:\\Users\\${user?.displayName?.split(' ')[0] || 'User'}>` : 'LSAIG>'}
-              </span>
-              {msg.sender === 'ai' ? parseAndRenderMessage(msg.text) : <pre className="inline whitespace-pre-wrap pl-2">{msg.text}</pre>}
-            </div>
-          ))}
-          {isAiThinking && (
-            <div className="mb-2">
-              <span className="inline-block h-4 w-2 animate-cmd-cursor-blink bg-green-500"></span>
-            </div>
-          )}
-          {!isAiThinking && (
-            <ChatInput
-              isCodeMode={true}
-              currentMessage={currentInput}
-              setCurrentMessage={setCurrentInput}
-              onSendMessage={sendMessage}
-            />
-          )}
-        </div>
-      </div>
-    );
-  };
-  
   if (isQuotaExceeded) {
     return <QuotaExceededScreen />;
   }
 
-  if (isCodeMode && !isExitingCodeMode) {
-    return renderCodeTerminal();
-  }
-
   return (
     <div className="relative h-screen w-full">
-      {/* This renders the terminal during the fade-out so it's visible under the loading overlay */}
-      {(isCodeMode && isExitingCodeMode) && renderCodeTerminal()}
-      
-      {!isCodeMode && (
-        <SidebarInset
-          className="flex h-screen flex-col bg-background md:m-0 md:rounded-none md:shadow-none overflow-hidden animate-fade-in"
-          onClick={handlePageClick}
-        >
-          <div className="flex items-center justify-between p-3 md:p-4">
-            <div className="flex items-center gap-2">
-              <SidebarTrigger className="md:hidden" />
-              <LSAIGLogo />
-            </div>
-            <div className="flex items-center gap-1 rounded-full bg-card p-1 shadow-md">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9"
-                aria-label="Toggle code mode"
-                onClick={handleEnterCodeMode}
-              >
-                <Terminal className="h-4 w-4 md:h-5 md:w-5" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9" 
-                aria-label="Toggle camera monitor"
-                onClick={() => setIsMonitorOpen(!isMonitorOpen)}
-              >
-                <Camera className="h-4 w-4 md:h-5 md:w-5" />
-              </Button>
-              <Button asChild variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9" aria-label="Voice chat">
-                <Link href="/voice">
-                  <AudioLines className="h-4 w-4 md:h-5 md:w-5" />
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon" onClick={saveChat} aria-label="Save chat" className="h-8 w-8 rounded-full hover:animate-pulse-custom md:h-9 md:w-9">
-                <Save className="h-4 w-4 md:h-5 md:w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" onClick={loadChat} aria-label="Load chat" className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9">
-                <FolderOpen className="h-4 w-4 md:h-5 md:w-5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => {
-                  clearChat();
-                }}
-                aria-label="Clear chat"
-                className="h-8 w-8 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10 hover:animate-shake md:h-9 md:w-9"
-              >
-                <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" onClick={logout} aria-label="Log out" className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9">
-                <LogOut className="h-4 w-4 md:h-5 md:w-5" />
-              </Button>
-            </div>
+      <SidebarInset
+        className="flex h-screen flex-col bg-background md:m-0 md:rounded-none md:shadow-none overflow-hidden animate-fade-in"
+        onClick={handlePageClick}
+      >
+        <div className="flex items-center justify-between p-3 md:p-4">
+          <div className="flex items-center gap-2">
+            <SidebarTrigger className="md:hidden" />
+            <LSAIGLogo />
           </div>
-
-          <div className={cn("flex flex-1 flex-col", hasSentFirstMessage ? "h-full" : "min-h-0")}>
-            {hasSentFirstMessage ? (
-              <>
-                <MessageList 
-                  messages={messages} 
-                  onAudioGenerated={handleAudioGenerated}
-                  onAudioError={handleAudioError}
-                  isTtsQuotaExceeded={isTtsQuotaExceeded}
-                  setIsTtsQuotaExceeded={setIsTtsQuotaExceeded}
-                />
-                <ChatInput
-                  currentMessage={currentInput}
-                  setCurrentMessage={setCurrentInput}
-                  onSendMessage={sendMessage}
-                />
-              </>
-            ) : (
-              <div className="flex h-full flex-col">
-                <div className="flex flex-1 flex-shrink items-center justify-center overflow-y-auto p-4">
-                  <div className="w-full max-w-xl text-center">
-                    <div className="mb-8">
-                      {animatedGreeting && (
-                        <p className="text-3xl font-semibold text-gradient-animated md:text-4xl">
-                          {animatedGreeting}
-                        </p>
-                      )}
-                      {dynamicHelpText && <p className="mt-2 text-sm text-muted-foreground md:text-base">{dynamicHelpText}</p>}
-                    </div>
-                    <ChatInput
-                      currentMessage={currentInput}
-                      setCurrentMessage={setCurrentInput}
-                      onSendMessage={sendMessage}
-                      isCentered={true}
-                    />
-                  </div>
-                </div>
-                <footer className="flex-shrink-0 px-4 py-4 text-center text-xs text-muted-foreground">
-                  <p>&copy; {new Date().getFullYear()} LSAIG. All rights reserved.</p>
-                  <p>Sluiooktue Inc. Luis M.</p>
-                </footer>
-              </div>
-            )}
-          </div>
-          
-          {/* FNAF Monitor */}
-          <FnafMonitor isOpen={isMonitorOpen} />
-
-          {/* Heart Burst Effect Renderer */}
-          {activeHearts.map(heart => (
-            <Heart
-              key={heart.id}
-              className="absolute text-red-500 animate-float-fade"
-              style={{
-                left: `${heart.x}px`,
-                top: `${heart.y}px`,
-                transform: 'translate(-50%, -50%)',
-                pointerEvents: 'none',
-                zIndex: 9999,
+          <div className="flex items-center gap-1 rounded-full bg-card p-1 shadow-md">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9" 
+              aria-label="Toggle camera monitor"
+              onClick={() => setIsMonitorOpen(!isMonitorOpen)}
+            >
+              <Camera className="h-4 w-4 md:h-5 md:w-5" />
+            </Button>
+            <Button asChild variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9" aria-label="Voice chat">
+              <Link href="/voice">
+                <AudioLines className="h-4 w-4 md:h-5 md:w-5" />
+              </Link>
+            </Button>
+            <Button variant="ghost" size="icon" onClick={saveChat} aria-label="Save chat" className="h-8 w-8 rounded-full hover:animate-pulse-custom md:h-9 md:w-9">
+              <Save className="h-4 w-4 md:h-5 md:w-5" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={loadChat} aria-label="Load chat" className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9">
+              <FolderOpen className="h-4 w-4 md:h-5 md:w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                clearChat();
               }}
-              size={24}
-              fill="currentColor"
-            />
-          ))}
-        </SidebarInset>
-      )}
+              aria-label="Clear chat"
+              className="h-8 w-8 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10 hover:animate-shake md:h-9 md:w-9"
+            >
+              <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={logout} aria-label="Log out" className="h-8 w-8 rounded-full hover:scale-110 transition-transform duration-150 md:h-9 md:w-9">
+              <LogOut className="h-4 w-4 md:h-5 md:w-5" />
+            </Button>
+          </div>
+        </div>
 
-      {/* Code Mode Transition Overlay */}
-      {isEnteringCodeMode && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 animate-fade-in">
-          <LoadingScreen message="Iniciando modo de código..." />
+        <div className={cn("flex flex-1 flex-col", hasSentFirstMessage ? "h-full" : "min-h-0")}>
+          {hasSentFirstMessage ? (
+            <>
+              <MessageList 
+                messages={messages} 
+                onAudioGenerated={handleAudioGenerated}
+                onAudioError={handleAudioError}
+                isTtsQuotaExceeded={isTtsQuotaExceeded}
+                setIsTtsQuotaExceeded={setIsTtsQuotaExceeded}
+              />
+              <ChatInput
+                currentMessage={currentInput}
+                setCurrentMessage={setCurrentInput}
+                onSendMessage={sendMessage}
+              />
+            </>
+          ) : (
+            <div className="flex h-full flex-col">
+              <div className="flex flex-1 flex-shrink items-center justify-center overflow-y-auto p-4">
+                <div className="w-full max-w-xl text-center">
+                  <div className="mb-8">
+                    {animatedGreeting && (
+                      <p className="text-3xl font-semibold text-gradient-animated md:text-4xl">
+                        {animatedGreeting}
+                      </p>
+                    )}
+                    {dynamicHelpText && <p className="mt-2 text-sm text-muted-foreground md:text-base">{dynamicHelpText}</p>}
+                  </div>
+                  <ChatInput
+                    currentMessage={currentInput}
+                    setCurrentMessage={setCurrentInput}
+                    onSendMessage={sendMessage}
+                    isCentered={true}
+                  />
+                </div>
+              </div>
+              <footer className="flex-shrink-0 px-4 py-4 text-center text-xs text-muted-foreground">
+                <p>&copy; {new Date().getFullYear()} LSAIG. All rights reserved.</p>
+                <p>Sluiooktue Inc. Luis M.</p>
+              </footer>
+            </div>
+          )}
         </div>
-      )}
-       {/* Code Mode Exit Transition Overlay */}
-      {(isCodeMode && isExitingCodeMode) && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 animate-fade-in">
-          <LoadingScreen message="Saliendo del modo de código..." />
-        </div>
-      )}
+        
+        {/* FNAF Monitor */}
+        <FnafMonitor isOpen={isMonitorOpen} />
+
+        {/* Heart Burst Effect Renderer */}
+        {activeHearts.map(heart => (
+          <Heart
+            key={heart.id}
+            className="absolute text-red-500 animate-float-fade"
+            style={{
+              left: `${heart.x}px`,
+              top: `${heart.y}px`,
+              transform: 'translate(-50%, -50%)',
+              pointerEvents: 'none',
+              zIndex: 9999,
+            }}
+            size={24}
+            fill="currentColor"
+          />
+        ))}
+      </SidebarInset>
     </div>
   );
 };

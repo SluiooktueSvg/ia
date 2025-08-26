@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback, Dispatch, SetStateAction } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { ChatMessage } from '@/types/chat';
 import { loadChatFromLocalStorage, saveChatToLocalStorage, clearChatFromLocalStorage, getQuotaExceededFromLocalStorage, setQuotaExceededInLocalStorage, clearQuotaExceededFromLocalStorage } from '@/lib/localStorage';
 import { completeMessage, MessageCompletionInput } from '@/ai/flows/message-completion';
@@ -14,7 +14,6 @@ export function useChatController() {
   const [currentInput, setCurrentInput] = useState('');
   const [hasSentFirstMessage, setHasSentFirstMessage] = useState(false);
   const [isTtsQuotaExceeded, setIsTtsQuotaExceeded] = useState(false);
-  const [isCodeMode, setIsCodeMode] = useState(false);
   const [isAiThinking, setIsAiThinking] = useState(false);
   const [isQuotaExceeded, setIsQuotaExceeded] = useState(false);
   const { toast } = useToast();
@@ -103,15 +102,6 @@ export function useChatController() {
   const sendMessage = async (text: string) => {
     if (!text.trim() || !user || isQuotaExceeded || isAiThinking) return;
     
-    if (isCodeMode) {
-      const command = text.trim().toLowerCase();
-      if (command === 'cls' || command === 'clear') {
-        setMessages([]);
-        setCurrentInput('');
-        return;
-      }
-    }
-    
     if (!hasSentFirstMessage) {
       setHasSentFirstMessage(true);
     }
@@ -135,18 +125,15 @@ export function useChatController() {
 
     const aiMessageId = Date.now().toString() + '-ai';
     
-    if (!isCodeMode) {
-      const aiPlaceholderMessage: ChatMessage = {
-        id: aiMessageId,
-        text: 'Thinking...',
-        sender: 'ai',
-        timestamp: Date.now(),
-        sentimentLoading: true,
-        audioLoading: false,
-      };
-      setMessages(prev => [...prev, aiPlaceholderMessage]);
-    }
-
+    const aiPlaceholderMessage: ChatMessage = {
+      id: aiMessageId,
+      text: 'Thinking...',
+      sender: 'ai',
+      timestamp: Date.now(),
+      sentimentLoading: true,
+      audioLoading: false,
+    };
+    setMessages(prev => [...prev, aiPlaceholderMessage]);
 
     try {
       const sentimentResult = await analyzeSentiment({ text });
@@ -156,13 +143,8 @@ export function useChatController() {
         userInputText: text,
         history: historyForAI.slice(0, -1),
         userSentiment: userSentiment,
-        isCodeMode: isCodeMode,
        };
       const aiResponse = await completeMessage(responseInput);
-      
-      if (aiResponse.containsCode && !isCodeMode) {
-        setIsCodeMode(true);
-      }
 
       const refinedAiText = aiResponse.completion.trim();
 
@@ -174,15 +156,9 @@ export function useChatController() {
         sentimentLoading: false,
       };
       
-      if(isCodeMode) {
-        setMessages(prev => [...prev, finalAiMessage]);
-      } else {
-        setMessages(prev => prev.map(m => m.id === aiMessageId ? finalAiMessage : m));
-      }
+      setMessages(prev => prev.map(m => m.id === aiMessageId ? finalAiMessage : m));
       
-      if (!isCodeMode) {
-        fetchSentimentForMessage(aiMessageId, finalAiMessage.text);
-      }
+      fetchSentimentForMessage(aiMessageId, finalAiMessage.text);
 
     } catch (error: any) {
         console.error('Error getting AI response:', error);
@@ -212,7 +188,6 @@ export function useChatController() {
     clearQuotaExceededFromLocalStorage();
     setHasSentFirstMessage(false);
     setIsTtsQuotaExceeded(false);
-    setIsCodeMode(false);
     setIsQuotaExceeded(false);
     toast({
         title: "Chat Cleared",
@@ -263,8 +238,6 @@ export function useChatController() {
     hasSentFirstMessage,
     isTtsQuotaExceeded,
     setIsTtsQuotaExceeded,
-    isCodeMode,
-    setIsCodeMode,
     isAiThinking,
     isQuotaExceeded,
     sendMessage,
