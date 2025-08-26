@@ -15,7 +15,6 @@ import QuotaExceededScreen from '@/components/ui/QuotaExceededScreen';
 import { pingAI } from '@/ai/flows/ping-ai';
 
 type LogoutStep = 'none' | 'playingSound' | 'signingOut';
-type QuotaStatus = 'pending' | 'ok' | 'exceeded';
 
 interface AuthContextType {
   user: User | null;
@@ -32,45 +31,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [logoutStep, setLogoutStep] = useState<LogoutStep>('none');
-  const [quotaStatus, setQuotaStatus] = useState<QuotaStatus>('pending');
-  const [isFadingOut, setIsFadingOut] = useState(false);
-
+  
   useEffect(() => {
-    const checkQuota = async () => {
-      try {
-        await pingAI();
-        setQuotaStatus('ok');
-      } catch (error: any) {
-        const errorMessage = error.message || "Unknown error";
-        // Only consider it a quota issue if the error explicitly says so.
-        if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('quota')) {
-          setQuotaStatus('exceeded');
-        } else {
-          // For any other transient errors, assume the service is available
-          // and let the user try to log in. The error will be caught later
-          // if it's persistent.
-          console.warn("AI service ping failed with a non-quota error, proceeding:", error);
-          setQuotaStatus('ok'); 
-        }
-      }
-    };
-
-    checkQuota();
-  }, []);
-
-  useEffect(() => {
-    if (quotaStatus === 'ok') {
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-        setUser(user);
-        setLoading(false);
-        setLogoutStep('none');
-      });
-      return () => unsubscribe();
-    } else if (quotaStatus === 'exceeded') {
-      // If quota is exceeded, we are done "loading" and can show the quota screen.
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
       setLoading(false);
-    }
-  }, [quotaStatus]);
+      setLogoutStep('none');
+    });
+    return () => unsubscribe();
+  }, []);
 
 
   const signInWithGoogle = async () => {
@@ -118,12 +87,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
   };
   
-  if (quotaStatus === 'pending' || (quotaStatus === 'ok' && loading)) {
+  if (loading) {
     return <LoadingScreen />;
-  }
-
-  if (quotaStatus === 'exceeded') {
-    return <QuotaExceededScreen />;
   }
 
   if (logoutStep === 'playingSound') {
