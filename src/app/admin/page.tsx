@@ -5,7 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import LoadingScreen from '@/components/ui/loading-screen';
-import SeleneLogo from '@/components/SeleneLogo';
+import SeleneLogo from '@/components/AuraChatLogo';
 import { Button } from '@/components/ui/button';
 import { LogOut, Terminal } from 'lucide-react';
 
@@ -34,9 +34,6 @@ export default function AdminPage() {
             </div>
             <div className="max-w-md">
                 <h1 className="text-7xl font-bold text-red-500 font-code animate-pulse">Oops.</h1>
-                <p className="mt-4 text-lg text-neutral-300 font-code">
-                    Error de sistema: Conexión con el núcleo de Selene interrumpida.
-                </p>
                 <p className="mt-2 text-sm text-neutral-500 font-code">
                    Se ha detectado una fluctuación en la matriz de empatía. Imposible renderizar la interfaz de creador. Por favor, revise el estabilizador de positrones y vuelva a intentarlo.
                 </p>
