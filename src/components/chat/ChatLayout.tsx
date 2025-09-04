@@ -6,7 +6,7 @@ import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import { useChatController } from '@/hooks/useChatController';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import SeleneLogo from '@/components/AuraChatLogo';
+import SeleneLogo from '@/components/SeleneLogo';
 import { Button } from '@/components/ui/button';
 import { Save, FolderOpen, Trash2, Heart, LogOut, AudioLines, Camera } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
