@@ -35,7 +35,7 @@ export default function AdminPage() {
             <div className="max-w-md">
                 <h1 className="text-7xl font-bold text-red-500 font-code animate-pulse">Oops.</h1>
                 <p className="mt-2 text-sm text-neutral-500 font-code">
-                   Se ha detectado una fluctuación en la matriz de empatía. Imposible renderizar la interfaz de creador. Por favor, revise el estabilizador de positrones y vuelva a intentarlo.
+                   Detectamos algunos inconvenientes con Selene. Esto puede deberse a ajustes en el servidor, variaciones en la red o procesos en curso, sin embargo, ya se esta tratando de solucionar este problema. Puedes contactar con el desarollador a continuacion: Sluiooktue Inc.
                 </p>
                  <p className="mt-6 text-xs text-green-500/30 font-code">
                     ERROR_CODE: KERNEL_CONNECTION_LOST_7F8C1
