@@ -8,7 +8,7 @@ import { useChatController } from '@/hooks/useChatController';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import SeleneLogo from '@/components/AuraChatLogo';
 import { Button } from '@/components/ui/button';
-import { Save, FolderOpen, Trash2, Heart, LogOut, AudioLines, Camera, Terminal } from 'lucide-react';
+import { Save, FolderOpen, Trash2, Heart, LogOut, AudioLines, Camera } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { cn, inferGenderFromName } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
@@ -252,10 +252,10 @@ const ChatLayout: React.FC = () => {
                 <div className="w-full max-w-2xl text-center">
                   <div className="mb-8">
                     {greetingPrefix && rotatingWords.length > 0 && (
-                       <h1 className="text-3xl font-semibold md:text-4xl">
-                         <span className="text-gradient-animated">{greetingPrefix}</span>{' '}
+                       <h1 className="text-3xl font-semibold md:text-4xl flex justify-center items-baseline">
+                         <span className="text-gradient-animated mr-2">{greetingPrefix}</span>
                          <span className="relative inline-block h-[1.2em] w-48 text-left">
-                           <span className={cn('absolute w-full text-accent', animationClass)}>
+                           <span className={cn('absolute w-full text-gradient-animated', animationClass)}>
                              {rotatingWords[currentWordIndex]}
                            </span>
                          </span>
@@ -304,5 +304,3 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
-
-    
