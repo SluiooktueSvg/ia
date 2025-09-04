@@ -6,7 +6,7 @@ import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import { useChatController } from '@/hooks/useChatController';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import LSAIGLogo from '@/components/AuraChatLogo';
+import SeleneLogo from '@/components/SeleneLogo';
 import { Button } from '@/components/ui/button';
 import { Save, FolderOpen, Trash2, Heart, LogOut, AudioLines, Camera, Terminal } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
@@ -213,7 +213,7 @@ const ChatLayout: React.FC = () => {
         <div className="flex items-center justify-between p-3 md:p-4">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="md:hidden" />
-            <LSAIGLogo />
+            <SeleneLogo />
           </div>
           <div className="flex items-center gap-1 rounded-full bg-card p-1 shadow-md">
             <Button 
@@ -255,7 +255,7 @@ const ChatLayout: React.FC = () => {
 
         <div className="flex-1 flex flex-col h-full min-h-0">
           {hasSentFirstMessage ? (
-            <>
+            <div className="flex h-full flex-col flex-shrink-0">
               <MessageList 
                 className="flex-grow"
                 messages={messages} 
@@ -269,7 +269,7 @@ const ChatLayout: React.FC = () => {
                 setCurrentMessage={setCurrentInput}
                 onSendMessage={sendMessage}
               />
-            </>
+            </div>
           ) : (
             <div className="flex h-full flex-col">
               <div className="flex flex-1 flex-shrink items-center justify-center overflow-y-auto p-4">
@@ -291,7 +291,7 @@ const ChatLayout: React.FC = () => {
                 </div>
               </div>
               <footer className="flex-shrink-0 px-4 py-4 text-center text-xs text-muted-foreground">
-                <p>&copy; {new Date().getFullYear()} LSAIG. All rights reserved.</p>
+                <p>&copy; {new Date().getFullYear()} Selene. All rights reserved.</p>
                 <p>Sluiooktue Inc. Luis M.</p>
               </footer>
             </div>

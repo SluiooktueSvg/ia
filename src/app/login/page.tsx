@@ -5,7 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import LSAIGLogo from '@/components/AuraChatLogo';
+import SeleneLogo from '@/components/SeleneLogo';
 import LoadingScreen from '@/components/ui/loading-screen';
 import GoogleLogo from '@/components/GoogleLogo';
 
@@ -50,8 +50,8 @@ export default function LoginPage() {
   return (
     <div className="flex h-screen w-full items-center justify-center bg-background p-4">
       <div className="flex max-w-sm flex-col items-center text-center">
-        <LSAIGLogo />
-        <h1 className="text-2xl font-semibold mt-4">Welcome to LSAIG</h1>
+        <SeleneLogo />
+        <h1 className="text-2xl font-semibold mt-4">Welcome to Selene</h1>
         <p className="text-muted-foreground mt-2">Sign in to start chatting with the AI.</p>
         <Button onClick={handleSignIn} className="mt-6 w-full">
           <GoogleLogo className="mr-2 h-5 w-5" />

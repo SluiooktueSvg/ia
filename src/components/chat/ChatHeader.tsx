@@ -1,5 +1,5 @@
 import React from 'react';
-import LSAIGLogo from '@/components/AuraChatLogo'; // Path remains AuraChatLogo.tsx, but imports LSAIGLogo
+import SeleneLogo from '@/components/SeleneLogo';
 import { Button } from '@/components/ui/button';
 import { Save, FolderOpen, Trash2, Moon, Sun } from 'lucide-react'; // Assuming Moon/Sun for theme toggle
 import { SidebarTrigger } from '@/components/ui/sidebar';
@@ -17,7 +17,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ onSaveChat, onLoadChat, onClear
     <header className="flex items-center justify-between border-b border-border bg-card p-3 md:p-4 shadow-sm">
       <div className="flex items-center gap-2">
         <SidebarTrigger className="md:hidden" />
-        <LSAIGLogo />
+        <SeleneLogo />
       </div>
       <div className="flex items-center gap-2">
         <Button variant="ghost" size="icon" onClick={onSaveChat} aria-label="Save chat">

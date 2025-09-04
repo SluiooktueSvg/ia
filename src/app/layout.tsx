@@ -5,7 +5,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { AuthProvider } from '@/context/AuthContext';
 
 export const metadata: Metadata = {
-  title: 'LSAIG',
+  title: 'Selene',
   description: 'AI-powered chat application',
 };
 

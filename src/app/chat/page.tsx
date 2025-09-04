@@ -52,7 +52,7 @@ function ChatPageClient() {
   return <ChatLayout />;
 }
 
-export default function AuraChatPage() {
+export default function SeleneChatPage() {
   return (
     <Suspense fallback={<LoadingScreen />}>
       <ChatPageClient />

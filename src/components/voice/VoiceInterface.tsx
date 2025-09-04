@@ -4,7 +4,7 @@
 import React from 'react';
 import { useVoiceController } from '@/hooks/useVoiceController';
 import { cn } from '@/lib/utils';
-import LSAIGLogo from '../AuraChatLogo';
+import SeleneLogo from '../SeleneLogo';
 
 const VoiceInterface: React.FC = () => {
   const {
@@ -54,7 +54,7 @@ const VoiceInterface: React.FC = () => {
   return (
     <div className="flex h-full w-full flex-col items-center justify-center gap-8 overflow-hidden bg-background text-center">
       <div className="absolute top-16">
-        <LSAIGLogo />
+        <SeleneLogo />
       </div>
 
       {/* Main voice visualizer button */}

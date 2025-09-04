@@ -1,8 +1,8 @@
 
 import type { ChatMessage } from '@/types/chat';
 
-const CHAT_STORAGE_KEY = 'lsaigChatSession';
-const QUOTA_EXCEEDED_KEY = 'lsaigQuotaExceeded';
+const CHAT_STORAGE_KEY = 'seleneChatSession';
+const QUOTA_EXCEEDED_KEY = 'seleneQuotaExceeded';
 
 export const saveChatToLocalStorage = (messages: ChatMessage[]): void => {
   try {
@@ -61,5 +61,3 @@ export const clearQuotaExceededFromLocalStorage = (): void => {
     console.error("Failed to clear quota exceeded flag from local storage:", error);
   }
 };
-
-    

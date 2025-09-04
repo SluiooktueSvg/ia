@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import LSAIGLogo from '@/components/AuraChatLogo';
+import SeleneLogo from '@/components/SeleneLogo';
 import { cn } from '@/lib/utils';
 
 const QuotaExceededScreen: React.FC = () => {
@@ -13,7 +13,7 @@ const QuotaExceededScreen: React.FC = () => {
     )}>
       <div className="flex flex-col items-center">
         <div className="mb-8">
-          <LSAIGLogo />
+          <SeleneLogo />
         </div>
         <div className="w-24 border-t border-muted-foreground/20 mb-8"></div>
         <h1 className="text-5xl font-thin text-foreground md:text-6xl">
