@@ -6,7 +6,7 @@ import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import { useChatController } from '@/hooks/useChatController';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import SeleneLogo from '@/components/SeleneLogo';
+import AuraChatLogo from '@/components/AuraChatLogo';
 import { Button } from '@/components/ui/button';
 import { Save, FolderOpen, Trash2, Heart, LogOut, AudioLines, Camera } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
@@ -18,7 +18,7 @@ import QuotaExceededScreen from '@/components/ui/QuotaExceededScreen';
 
 const helpMessages = [
   { male: "¿En qué puedo ayudarte hoy?", female: "¿En qué puedo ayudarte hoy?" },
-  { male: "¿Listo para explorar algunas ideas?", female: "¿Listo para explorar algunas ideas?" },
+  { male: "¿Listo para explorar algunas ideas?", female: "¿Lista para explorar algunas ideas?" },
   { male: "¿Sobre qué te gustaría conversar?", female: "¿Sobre qué te gustaría conversar?" },
   { male: "Estoy aquí para ayudarte. ¿Qué tienes en mente?", female: "Estoy aquí para ayudarte. ¿Qué tienes en mente?" },
   { male: "¿Cómo puedo hacer tu día un poco mejor?", female: "¿Cómo puedo hacer tu día un poco mejor?" },
@@ -112,14 +112,26 @@ const ChatLayout: React.FC = () => {
     const name = user?.displayName?.split(' ')[0] || 'Humano';
     const gender = user?.displayName ? inferGenderFromName(user.displayName) : 'male';
     
-    const words = [
-      name,
-      'explorador' + (gender === 'female' ? 'a' : ''),
-      'amigo' + (gender === 'female' ? 'a' : ''),
-      'creador' + (gender === 'female' ? 'a' : ''),
-      'crack',
-      'campeón' + (gender === 'female' ? 'a' : ''),
-    ];
+    let words = [];
+    if (gender === 'female') {
+      words = [
+        name,
+        'exploradora',
+        'amiga',
+        'creadora',
+        'crack',
+        'campeona',
+      ];
+    } else {
+      words = [
+        name,
+        'explorador',
+        'amigo',
+        'creador',
+        'crack',
+        'campeón',
+      ];
+    }
     setRotatingWords(words);
   }, [user]);
 
@@ -189,7 +201,7 @@ const ChatLayout: React.FC = () => {
         <div className="flex items-center justify-between p-3 md:p-4">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="md:hidden" />
-            <SeleneLogo />
+            <AuraChatLogo />
           </div>
           <div className="flex items-center gap-1 rounded-full bg-card p-1 shadow-md">
             <Button 
@@ -252,16 +264,14 @@ const ChatLayout: React.FC = () => {
                 <div className="w-full max-w-2xl text-center">
                   <div className="mb-8">
                     {greetingPrefix && rotatingWords.length > 0 && (
-                       <h1 className="text-3xl font-semibold md:text-4xl flex justify-center items-baseline overflow-hidden h-[1.5em]">
+                       <h1 className="text-3xl font-semibold md:text-4xl flex justify-center items-baseline h-[1.5em]">
                          <span className="text-gradient-animated mr-2">{greetingPrefix}</span>
-                         <div className="relative h-[1.2em] text-left">
-                          <span
-                              key={currentWordIndex}
-                              className={cn('text-gradient-animated', animationClass)}
-                          >
-                            {rotatingWords[currentWordIndex]}
-                          </span>
-                         </div>
+                         <span
+                            key={currentWordIndex}
+                            className={cn('text-gradient-animated', animationClass)}
+                         >
+                          {rotatingWords[currentWordIndex]}
+                         </span>
                        </h1>
                     )}
                     {dynamicHelpText && <p className="mt-2 text-sm text-muted-foreground md:text-base">{dynamicHelpText}</p>}
@@ -307,3 +317,5 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
+
+    
