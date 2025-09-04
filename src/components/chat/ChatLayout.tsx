@@ -42,6 +42,7 @@ const helpMessages = [
   { male: "¿Qué misterios resolveremos hoy?", female: "¿Qué misterios resolveremos hoy?" },
   { male: "Tu asistente de ideas está operativo. ¿Comenzamos?", female: "Tu asistente de ideas está operativo. ¿Comenzamos?" },
   { male: "¿Hay algo nuevo que quieras aprender o discutir?", female: "¿Hay algo nuevo que quieras aprender o discutir?" },
+_
   { male: "Siempre es un buen momento para una nueva pregunta.", female: "Siempre es un buen momento para una nueva pregunta." },
   { male: "¿Cómo puedo ser de utilidad en este momento?", female: "¿Cómo puedo ser de utilidad en este momento?" },
   { male: "Estoy escuchando. ¿Qué se te ocurre?", female: "Estoy escuchando. ¿Qué se te ocurre?" },
@@ -253,7 +254,7 @@ const ChatLayout: React.FC = () => {
                   <div className="mb-8">
                     {greetingPrefix && rotatingWords.length > 0 && (
                       <h1 className="text-3xl font-semibold text-gradient-animated md:text-4xl">
-                        {greetingPrefix}
+                        {greetingPrefix}{' '}
                         <span className="relative inline-block h-[1.2em] w-48 text-left">
                           <span className={cn('absolute w-full', animationClass)}>
                             {rotatingWords[currentWordIndex]}
@@ -304,3 +305,5 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
+
+    
