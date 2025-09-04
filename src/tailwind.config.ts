@@ -182,7 +182,15 @@ export default {
           '70%': { content: "']'" },
           '80%': { content: "'*'" },
           '90%': { opacity: '0.6', color: 'hsl(var(--chart-2))', content: "';'" },
-        }
+        },
+        'slide-in-down': {
+          '0%': { transform: 'translateY(100%)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        'slide-out-up': {
+          '0%': { transform: 'translateY(0)', opacity: '1' },
+          '100%': { transform: 'translateY(-100%)', opacity: '0' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -205,6 +213,8 @@ export default {
         'fade-out': 'fade-out 0.5s ease-in-out forwards',
         'cmd-cursor-blink': 'cmd-cursor-blink 1s step-end infinite',
         'code-load': 'code-load 1.5s infinite',
+        'slide-in-down': 'slide-in-down 0.5s ease-out forwards',
+        'slide-out-up': 'slide-out-up 0.5s ease-out forwards',
       },
     },
   },
@@ -226,3 +236,4 @@ export default {
     
 
     
+

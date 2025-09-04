@@ -6,7 +6,7 @@ import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import { useChatController } from '@/hooks/useChatController';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import SeleneLogo from '@/components/SeleneLogo';
+import SeleneLogo from '@/components/AuraChatLogo';
 import { Button } from '@/components/ui/button';
 import { Save, FolderOpen, Trash2, Heart, LogOut, AudioLines, Camera, Terminal } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
@@ -62,8 +62,7 @@ const CLICK_TIMEOUT_MS = 500;
 const HEART_ANIMATION_DURATION_MS = 2000;
 const HEARTS_PER_BURST = 5;
 
-const GREETING_TIME_CHECK_INTERVAL_MS = 60000; // Check time every 1 minute
-const GREETING_SCRAMBLE_SPEED_MS = 30; // Speed of the scramble effect
+const WORD_CHANGE_INTERVAL_MS = 2500; // Time between word changes
 
 const ChatLayout: React.FC = () => {
   const {
@@ -84,8 +83,11 @@ const ChatLayout: React.FC = () => {
   } = useChatController();
   const { user, logout } = useAuth();
 
-  const [greetingText, setGreetingText] = useState('');
-  const [animatedGreeting, setAnimatedGreeting] = useState('');
+  const [greetingPrefix, setGreetingPrefix] = useState('');
+  const [rotatingWords, setRotatingWords] = useState<string[]>([]);
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [animationClass, setAnimationClass] = useState('animate-slide-in-down');
+
   const [dynamicHelpText, setDynamicHelpText] = useState('');
   
   const [clickCount, setClickCount] = useState(0);
@@ -94,74 +96,48 @@ const ChatLayout: React.FC = () => {
   
   const [isMonitorOpen, setIsMonitorOpen] = useState(false);
 
-  // Effect to update greeting based on time of day
+  // Effect to set up greeting and rotating words
   useEffect(() => {
-    const updateGreeting = () => {
-      const currentHour = new Date().getHours();
-      const name = user?.displayName ? `, ${user.displayName.split(' ')[0]}` : ''; // Get first name
-      let newGreeting = '';
-      if (currentHour < 12) {
-        newGreeting = `Buenos días${name}`;
-      } else if (currentHour < 18) {
-        newGreeting = `Buenas tardes${name}`;
-      } else {
-        newGreeting = `Buenas noches${name}`;
-      }
-      setGreetingText(newGreeting);
-    };
-
-    updateGreeting(); // Initial determination
-    const timeCheckIntervalId = setInterval(updateGreeting, GREETING_TIME_CHECK_INTERVAL_MS);
-    return () => clearInterval(timeCheckIntervalId);
+    const currentHour = new Date().getHours();
+    let prefix = '';
+    if (currentHour < 12) {
+      prefix = 'Buenos días,';
+    } else if (currentHour < 18) {
+      prefix = 'Buenas tardes,';
+    } else {
+      prefix = 'Buenas noches,';
+    }
+    setGreetingPrefix(prefix);
+    
+    const name = user?.displayName?.split(' ')[0] || 'Humano';
+    const gender = user?.displayName ? inferGenderFromName(user.displayName) : 'male';
+    
+    const words = [
+      name,
+      'explorador' + (gender === 'female' ? 'a' : ''),
+      'amigo' + (gender === 'female' ? 'a' : ''),
+      'creador' + (gender === 'female' ? 'a' : ''),
+      'crack',
+      'campeón' + (gender === 'female' ? 'a' : ''),
+    ];
+    setRotatingWords(words);
   }, [user]);
 
-  // Effect for "scrambled" text animation
+  // Effect for rotating words animation
   useEffect(() => {
-    if (!greetingText) return;
+    if (rotatingWords.length === 0) return;
 
-    let animationFrameId: number;
-    let revealIndex = 0;
-    let lastUpdateTime = 0;
-    
-    const chars = '█▓▒░ABCDEFGHIJKLMNÑOPQRSTUVWXYZabcdefghijklmnñopqrstuvwxyz0123456789!?#$&*@';
-    
-    const animate = (timestamp: number) => {
-      if (timestamp - lastUpdateTime < GREETING_SCRAMBLE_SPEED_MS) {
-        animationFrameId = requestAnimationFrame(animate);
-        return;
-      }
+    const intervalId = setInterval(() => {
+      setAnimationClass('animate-slide-out-up'); // Animate out
 
-      if (revealIndex >= greetingText.length) {
-        setAnimatedGreeting(greetingText);
-        return;
-      }
-      
-      lastUpdateTime = timestamp;
-      
-      let scrambled = '';
-      for (let i = 0; i < greetingText.length; i++) {
-        if (i < revealIndex) {
-          scrambled += greetingText[i];
-        } else {
-          scrambled += chars[Math.floor(Math.random() * chars.length)];
-        }
-      }
-      setAnimatedGreeting(scrambled);
-      
-      if (Math.random() > 0.3) { // Stagger the reveal for a more natural feel
-        revealIndex++;
-      }
+      setTimeout(() => {
+        setCurrentWordIndex(prevIndex => (prevIndex + 1) % rotatingWords.length);
+        setAnimationClass('animate-slide-in-down'); // Animate in
+      }, 500); // Wait for out animation to finish
+    }, WORD_CHANGE_INTERVAL_MS);
 
-      animationFrameId = requestAnimationFrame(animate);
-    };
-
-    animationFrameId = requestAnimationFrame(animate);
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-    };
-
-  }, [greetingText]);
+    return () => clearInterval(intervalId);
+  }, [rotatingWords]);
 
   useEffect(() => {
     const randomMessage = helpMessages[Math.floor(Math.random() * helpMessages.length)];
@@ -273,12 +249,17 @@ const ChatLayout: React.FC = () => {
           ) : (
             <div className="flex h-full flex-col">
               <div className="flex flex-1 flex-shrink items-center justify-center overflow-y-auto p-4">
-                <div className="w-full max-w-xl text-center">
+                <div className="w-full max-w-2xl text-center">
                   <div className="mb-8">
-                    {animatedGreeting && (
-                      <p className="text-3xl font-semibold text-gradient-animated md:text-4xl">
-                        {animatedGreeting}
-                      </p>
+                    {greetingPrefix && rotatingWords.length > 0 && (
+                      <h1 className="text-3xl font-semibold text-gradient-animated md:text-4xl">
+                        {greetingPrefix}
+                        <span className="relative inline-block h-[1.2em] w-48 text-left">
+                          <span className={cn('absolute w-full', animationClass)}>
+                            {rotatingWords[currentWordIndex]}
+                          </span>
+                        </span>
+                      </h1>
                     )}
                     {dynamicHelpText && <p className="mt-2 text-sm text-muted-foreground md:text-base">{dynamicHelpText}</p>}
                   </div>
