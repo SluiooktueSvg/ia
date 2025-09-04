@@ -32,15 +32,6 @@ export default function AdminPage() {
             <div className="absolute top-5 left-5">
                 <SeleneLogo variant="terminal" />
             </div>
-             <div className="absolute top-5 right-5 flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => router.push('/chat')}>
-                    Go to Chat <Terminal className="ml-2 h-4 w-4" />
-                </Button>
-                <Button variant="destructive" size="sm" onClick={logout}>
-                    Logout <LogOut className="ml-2 h-4 w-4" />
-                </Button>
-            </div>
-            
             <div className="max-w-md">
                 <h1 className="text-7xl font-bold text-red-500 font-code animate-pulse">Oops.</h1>
                 <p className="mt-4 text-lg text-neutral-300 font-code">
