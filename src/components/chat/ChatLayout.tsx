@@ -42,7 +42,6 @@ const helpMessages = [
   { male: "¿Qué misterios resolveremos hoy?", female: "¿Qué misterios resolveremos hoy?" },
   { male: "Tu asistente de ideas está operativo. ¿Comenzamos?", female: "Tu asistente de ideas está operativo. ¿Comenzamos?" },
   { male: "¿Hay algo nuevo que quieras aprender o discutir?", female: "¿Hay algo nuevo que quieras aprender o discutir?" },
-_
   { male: "Siempre es un buen momento para una nueva pregunta.", female: "Siempre es un buen momento para una nueva pregunta." },
   { male: "¿Cómo puedo ser de utilidad en este momento?", female: "¿Cómo puedo ser de utilidad en este momento?" },
   { male: "Estoy escuchando. ¿Qué se te ocurre?", female: "Estoy escuchando. ¿Qué se te ocurre?" },
