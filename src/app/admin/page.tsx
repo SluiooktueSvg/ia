@@ -17,13 +17,13 @@ export default function AdminPage() {
         if (!loading) {
             if (!user) {
                 router.push('/login');
-            } else if (!user.displayName?.toLowerCase().includes('luis')) {
+            } else if (!user.displayName?.toLowerCase().includes('dayana')) {
                 router.push('/chat');
             }
         }
     }, [user, loading, router]);
 
-    if (loading || !user || !user.displayName?.toLowerCase().includes('luis')) {
+    if (loading || !user || !user.displayName?.toLowerCase().includes('dayana')) {
         return <LoadingScreen />;
     }
 

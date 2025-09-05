@@ -16,7 +16,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!loading && user) {
-      if (user.displayName?.toLowerCase().includes('luis')) {
+      if (user.displayName?.toLowerCase().includes('dayana')) {
         router.push('/admin');
       } else {
         router.push('/chat');
