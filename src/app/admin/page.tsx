@@ -30,7 +30,7 @@ export default function AdminPage() {
     return (
         <div className="flex h-screen w-full flex-col items-center justify-center bg-black p-4 text-center">
             <div className="absolute top-5 left-5">
-                <SeleneLogo variant="terminal" />
+                <SeleneLogo />
             </div>
             <div className="max-w-md">
                 <h1 className="text-7xl font-bold text-red-500 font-code animate-pulse">Oops.</h1>
