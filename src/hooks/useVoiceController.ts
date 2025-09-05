@@ -47,7 +47,7 @@ export function useVoiceController() {
 
       const response = await completeMessage({
         userInputText: text,
-        history: historyForAI.slice(0, -1),
+        history: historyForAI, // Corrected: Send the full history including the new message
         userSentiment: userSentiment, // Pass sentiment to the message completion flow
       });
 
