@@ -264,7 +264,7 @@ const ChatLayout: React.FC = () => {
                 <div className="w-full max-w-2xl text-center">
                   <div className="mb-8">
                     {greetingPrefix && rotatingWords.length > 0 && (
-                       <h1 className="text-3xl font-semibold md:text-4xl flex justify-center items-baseline h-[1.5em]">
+                       <h1 className="text-3xl font-semibold sm:text-4xl whitespace-nowrap h-[1.2em] flex items-baseline justify-center">
                          <span className="text-gradient-animated mr-2">{greetingPrefix}</span>
                          <span
                             key={currentWordIndex}
