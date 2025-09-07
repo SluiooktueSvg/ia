@@ -235,7 +235,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
     >
       <div className={cn(
         "relative flex w-full items-end gap-2",
-        isCentered && "bg-card rounded-3xl border border-border/50 p-1"
+        isCentered && "bg-card rounded-full border border-transparent focus-within:border-accent p-1"
       )}>
         <Textarea
           ref={textareaRef}
@@ -244,23 +244,23 @@ const ChatInput: React.FC<ChatInputProps> = ({
           onKeyDown={handleKeyDown}
           placeholder={placeholderTextToShow + (displayBlinkingCursor ? '▋' : '')}
           className={cn(
-            "flex-grow resize-none overflow-y-hidden rounded-3xl py-2 pl-4 pr-[72px] text-base min-h-[46px] max-h-32 shadow-none border-0 transition-colors duration-200",
+            "flex-grow resize-none overflow-y-hidden rounded-full py-3 pl-5 pr-[84px] text-base min-h-[52px] max-h-32 shadow-none border-0 transition-colors duration-200",
             "focus:ring-0",
             !currentMessage && "placeholder-muted-foreground/70",
-            isCentered ? "bg-card" : "bg-card focus:border-green-500"
+             isCentered ? "bg-card" : "bg-card border"
           )}
           rows={1}
           aria-label="Chat message input"
           disabled={isListening}
         />
-        <div className="absolute right-2 bottom-1.5 flex items-center gap-1">
+        <div className="absolute right-2.5 bottom-[9px] flex items-center gap-1.5">
             {isSpeechRecognitionSupported && (
               <Button
                 type="button"
                 size="icon"
                 onClick={handleMicClick}
                 className={cn(
-                    "h-8 w-8 rounded-full focus:ring-accent",
+                    "h-9 w-9 rounded-full focus:ring-accent",
                     isListening ? "bg-red-500 text-white hover:bg-red-600 animate-pulse" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                 )}
                 aria-label={isListening ? "Stop listening" : "Start listening"}
@@ -271,7 +271,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
             <Button
               type="submit"
               size="icon"
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-accent"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-accent"
               aria-label="Send message"
               disabled={!currentMessage.trim() || isListening}
             >
