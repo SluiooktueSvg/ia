@@ -235,7 +235,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
     >
       <div className={cn(
         "relative flex w-full items-end gap-2",
-        isCentered && "bg-card rounded-2xl border border-border/50 p-1"
+        isCentered && "bg-card rounded-3xl border border-border/50 p-1"
       )}>
         <Textarea
           ref={textareaRef}
@@ -244,7 +244,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           onKeyDown={handleKeyDown}
           placeholder={placeholderTextToShow + (displayBlinkingCursor ? '▋' : '')}
           className={cn(
-            "flex-grow resize-none overflow-y-hidden rounded-2xl py-2 pl-4 pr-[72px] text-base min-h-[44px] max-h-32 shadow-none border-0 transition-colors duration-200",
+            "flex-grow resize-none overflow-y-hidden rounded-3xl py-2 pl-4 pr-[72px] text-base min-h-[46px] max-h-32 shadow-none border-0 transition-colors duration-200",
             "focus:ring-0",
             !currentMessage && "placeholder-muted-foreground/70",
             isCentered ? "bg-card" : "bg-card focus:border-green-500"
