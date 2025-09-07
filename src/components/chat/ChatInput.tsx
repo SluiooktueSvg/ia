@@ -243,7 +243,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           onKeyDown={handleKeyDown}
           placeholder={placeholderTextToShow + (displayBlinkingCursor ? '▋' : '')}
           className={cn(
-            "flex-grow resize-none overflow-y-hidden bg-card rounded-3xl py-3 pl-5 pr-20 text-base min-h-[52px] max-h-32 shadow-none border transition-colors duration-200",
+            "flex-grow resize-none overflow-y-hidden bg-card rounded-3xl py-3 pl-5 pr-20 text-sm md:text-base min-h-[52px] max-h-32 shadow-none border transition-colors duration-200",
             "focus:border-green-500 focus:ring-0",
             !currentMessage && "placeholder-muted-foreground/70" 
           )}

@@ -31,11 +31,11 @@ const helpMessages = [
   { male: "Exploremos juntos. ¿Qué tema te interesa?", female: "Exploremos juntos. ¿Qué tema te interesa?" },
   { male: "Tu asistente virtual a la orden. ¿Qué puedo hacer por ti?", female: "Tu asistente virtual a la orden. ¿Qué puedo hacer por ti?" },
   { male: "¿Listo para una charla productiva y amena?", female: "¿Lista para una charla productiva y amena?" },
-  { male: "Cuéntame, ¿qué proyecto o pregunta traes entre manos?", female: "Cuéntame, ¿qué proyecto o pregunta traes entre manos?" },
+  { male: "Cuéntame, ¿qué proyecto o pregunta traes entre manos?", female: "Cuéntame, qué proyecto o pregunta traes entre manos?" },
   { male: "La curiosidad es el primer paso al conocimiento. ¿Qué te intriga hoy?", female: "La curiosidad es el primer paso al conocimiento. ¿Qué te intriga hoy?" },
   { male: "¿Necesitas inspiración o información? Estoy a un clic.", female: "¿Necesitas inspiración o información? Estoy a un clic." },
   { male: "¿En qué puedo ayudarte a pensar o resolver?", female: "¿En qué puedo ayudarte a pensar o resolver?" },
-  { male: "Conversemos un rato, ¿qué te apetece explorar?", female: "Conversemos un rato, ¿qué te apetece explorar?" },
+  { male: "Conversemos un rato, ¿qué te apetece explorar?", female: "Conversemos un rato, qué te apetece explorar?" },
   { male: "Mi sistema está listo para procesar tus ideas y preguntas.", female: "Mi sistema está listo para procesar tus ideas y preguntas." },
   { male: "La IA está aquí para ti. ¿Cómo empezamos?", female: "La IA está aquí para ti. ¿Cómo empezamos?" },
   { male: "Pregunta, crea, descubre. ¡Estoy para asistirte!", female: "Pregunta, crea, descubre. ¡Estoy para asistirte!" },
@@ -317,5 +317,3 @@ const ChatLayout: React.FC = () => {
 };
 
 export default ChatLayout;
-
-    
